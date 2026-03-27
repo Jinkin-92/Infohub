@@ -48,6 +48,7 @@ def init_db_command() -> None:
 @cli.command("status")
 @click.option("--json-output", is_flag=True)
 def status_command(json_output: bool) -> None:
+    init_database()
     session_factory = create_session_factory()
     with session_factory() as session:
         payload = serialize_statuses(list_strategy_statuses(session))

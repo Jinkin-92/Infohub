@@ -12,6 +12,7 @@ import math
 import os
 
 import pandas as pd
+import requests
 
 from config.settings import settings
 
@@ -164,7 +165,15 @@ class DataFetcher:
             self._write_cache("stock_list", df.to_dict(orient="records"))
             return df
 
-        spot = self._ak.stock_zh_a_spot_em()
+        try:
+            spot = self._ak.stock_zh_a_spot_em()
+        except requests.RequestException as exc:
+            proxy = settings.data.akshare_proxy_url or "(not configured)"
+            raise RuntimeError(
+                f"AkShare stock list request failed. Current proxy: {proxy}. "
+                "Please verify Clash Verge is running, system proxy/TUN are enabled, "
+                "and the configured local proxy port is reachable."
+            ) from exc
         df = pd.DataFrame(
             {
                 "symbol": spot["代码"].astype(str).str.zfill(6),
@@ -189,7 +198,10 @@ class DataFetcher:
             self._write_cache(cache_key, df.to_dict(orient="records"))
             return df
 
-        history = self._ak.stock_zh_a_hist(symbol=symbol, period="daily", adjust="qfq").tail(period)
+        try:
+            history = self._ak.stock_zh_a_hist(symbol=symbol, period="daily", adjust="qfq").tail(period)
+        except requests.RequestException as exc:
+            raise RuntimeError(f"AkShare daily history request failed for {symbol}.") from exc
         df = pd.DataFrame(
             {
                 "date": history["日期"].astype(str),
@@ -232,7 +244,10 @@ class DataFetcher:
             return LOCAL_INDEX_CLOSES[index_code]
         if index_code.endswith(".SH"):
             symbol = index_code.split(".")[0]
-            history = self._ak.stock_zh_index_daily(symbol=symbol)
+            try:
+                history = self._ak.stock_zh_index_daily(symbol=symbol)
+            except requests.RequestException as exc:
+                raise RuntimeError(f"AkShare index request failed for {index_code}.") from exc
             return _safe_float(history.iloc[-1]["close"])
         return 0.0
 
@@ -241,7 +256,10 @@ class DataFetcher:
             item = next(record for record in LOCAL_SYMBOLS if record["symbol"] == symbol)
             return _generate_local_history(symbol, item["close"], max(period, 180)).tail(period).reset_index(drop=True)
 
-        history = self._ak.fund_etf_hist_em(symbol=symbol, period="daily", adjust="qfq").tail(period)
+        try:
+            history = self._ak.fund_etf_hist_em(symbol=symbol, period="daily", adjust="qfq").tail(period)
+        except requests.RequestException as exc:
+            raise RuntimeError(f"AkShare ETF history request failed for {symbol}.") from exc
         return pd.DataFrame(
             {
                 "date": history["日期"].astype(str),
@@ -265,7 +283,10 @@ class DataFetcher:
             self._write_cache(cache_key, values)
             return values
 
-        calendar = self._ak.tool_trade_date_hist_sina()
+        try:
+            calendar = self._ak.tool_trade_date_hist_sina()
+        except requests.RequestException as exc:
+            raise RuntimeError("AkShare trade calendar request failed.") from exc
         values = [item.strftime("%Y-%m-%d") if hasattr(item, "strftime") else str(item)[:10] for item in calendar["trade_date"].tolist()]
         self._write_cache(cache_key, values)
         return values
