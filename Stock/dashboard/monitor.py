@@ -9,9 +9,9 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 
 from config.settings import settings
-from data.fetcher import DataFetcher, LOCAL_INDEX_CLOSES, LOCAL_SYMBOLS
 from database.models import DailyNav, DataSourceEvent, Position, Signal, Strategy, Transaction
 from database.operations import create_session_factory
 
@@ -19,11 +19,11 @@ from database.operations import create_session_factory
 SHANGHAI_TZ = ZoneInfo("Asia/Shanghai")
 
 RULES_BY_STRATEGY = {
-    "momentum": "每日可调仓；优先保留动量得分靠前标的；若持仓跌破止损阈值则卖出；A股卖出遵循 T+1。",
-    "dividend_lowvol": "每日可调仓；优先保留高股息且低波动标的；股息率明显下滑或触发止损时卖出；A股卖出遵循 T+1。",
-    "global_alloc": "每日可调仓；按目标 ETF 权重进行再平衡；权重偏离越大越优先调整；ETF 可当日卖出。",
-    "high_growth": "每日可调仓；优先保留营收和利润高增长标的；不再满足成长条件或触发止损时卖出；A股卖出遵循 T+1。",
-    "personal": "每日可调仓；依据上证指数区间动态调整总仓位，并在银行/黄金/金属之间分配；A股卖出遵循 T+1。",
+    "momentum": "每日可调仓；优先保留动量评分靠前的标的；若持仓跌破止损阈值则卖出；A 股卖出遵循 T+1。",
+    "dividend_lowvol": "每日可调仓；优先保留高股息且低波动标的；若股息率显著下滑或触发止损则卖出；A 股卖出遵循 T+1。",
+    "global_alloc": "每日可调仓；按目标 ETF 权重执行再平衡；权重偏离越大越优先调整；ETF 当日可卖出。",
+    "high_growth": "每日可调仓；优先保留营收和利润高增长标的；若成长性退化或触发止损则卖出；A 股卖出遵循 T+1。",
+    "personal": "每日可调仓；依据指数区间动态调整总仓位，并在银行、黄金、金属之间分配；A 股卖出遵循 T+1。",
 }
 
 
@@ -36,7 +36,7 @@ def format_datetime_shanghai(value: str | None) -> str:
     return parsed.astimezone(SHANGHAI_TZ).strftime("%Y-%m-%d %H:%M:%S")
 
 
-def _data_source_summary(events: list[DataSourceEvent], latest_nav_date: str | None) -> dict[str, object]:
+def _summarize_source_events(events: list[DataSourceEvent], latest_nav_date: str | None) -> dict[str, object]:
     warning_count = sum(1 for item in events if item.severity != "info")
     fallback_count = sum(1 for item in events if item.fallback_mode and item.fallback_mode not in {"skipped"})
     skipped_count = sum(1 for item in events if item.fallback_mode == "skipped")
@@ -55,38 +55,6 @@ def _data_source_summary(events: list[DataSourceEvent], latest_nav_date: str | N
     }
 
 
-def _load_market_stats(provider: str) -> dict[str, object]:
-    stock_count = 0
-    error = None
-    try:
-        fetcher = DataFetcher(provider)
-        stock_count = len(fetcher.get_stock_list())
-    except Exception as exc:  # pragma: no cover
-        error = str(exc)
-    return {
-        "stock_count": stock_count,
-        "etf_count": len([item for item in LOCAL_SYMBOLS if item.get("is_etf")]),
-        "index_count": len(LOCAL_INDEX_CLOSES),
-        "error": error,
-    }
-
-
-def _resolve_latest_prices(provider: str, symbols: list[str]) -> dict[str, float]:
-    prices: dict[str, float] = {}
-    if not symbols:
-        return prices
-    try:
-        fetcher = DataFetcher(provider)
-        for symbol in symbols:
-            try:
-                prices[symbol] = fetcher.get_stock_snapshot(symbol).close
-            except Exception:
-                continue
-    except Exception:
-        return prices
-    return prices
-
-
 def _daily_pnl_amount(navs: list[DailyNav], latest: DailyNav | None) -> float:
     if latest is None or len(navs) < 2:
         return 0.0
@@ -102,26 +70,54 @@ def _holding_days(latest_date: str | None, buy_date: str) -> int:
         return 0
 
 
+def _build_price_map(
+    positions: list[Position],
+    transactions: list[Transaction],
+    signals: list[Signal],
+) -> dict[str, float]:
+    """
+    Pure DB-backed reference price map.
+
+    The dashboard should not trigger provider requests. We therefore derive a
+    reference mark from the latest signal or transaction seen in SQLite and
+    fall back to average cost for held positions.
+    """
+
+    price_map: dict[str, float] = {}
+    for signal in sorted(signals, key=lambda item: item.id, reverse=True):
+        if signal.ref_price and signal.symbol not in price_map:
+            price_map[signal.symbol] = signal.ref_price
+    for tx in sorted(transactions, key=lambda item: item.id, reverse=True):
+        if tx.price and tx.symbol not in price_map:
+            price_map[tx.symbol] = tx.price
+    for position in positions:
+        price_map.setdefault(position.symbol, position.avg_cost)
+    return price_map
+
+
 def build_dashboard_snapshot(db_path: Path | None = None) -> dict[str, object]:
     resolved_db_path = (db_path or settings.db.resolved_path).resolve()
     session_factory = create_session_factory(resolved_db_path)
     with session_factory() as session:
-        strategies = session.scalars(select(Strategy).order_by(Strategy.id)).all()
+        strategies = session.scalars(
+            select(Strategy).options(selectinload(Strategy.portfolio)).order_by(Strategy.id)
+        ).all()
         positions = session.scalars(select(Position).order_by(Position.strategy_id, Position.symbol)).all()
         transactions = session.scalars(select(Transaction).order_by(Transaction.id.desc())).all()
         signals = session.scalars(select(Signal).order_by(Signal.id.desc())).all()
         navs = session.scalars(select(DailyNav).order_by(DailyNav.strategy_id, DailyNav.date)).all()
         source_events = session.scalars(select(DataSourceEvent).order_by(DataSourceEvent.id.desc())).all()
-        strategy_core = {
-            strategy.id: {
-                "name": strategy.name,
-                "display_name": strategy.display_name,
-                "benchmark": strategy.benchmark or "-",
-                "initial_capital": strategy.initial_capital,
-                "cash": strategy.portfolio.cash if strategy.portfolio else strategy.initial_capital,
-            }
-            for strategy in strategies
+
+    strategy_core = {
+        strategy.id: {
+            "name": strategy.name,
+            "display_name": strategy.display_name,
+            "benchmark": strategy.benchmark or "-",
+            "initial_capital": strategy.initial_capital,
+            "cash": strategy.portfolio.cash if strategy.portfolio else strategy.initial_capital,
         }
+        for strategy in strategies
+    }
 
     navs_by_strategy: dict[int, list[DailyNav]] = {}
     for nav in navs:
@@ -131,16 +127,23 @@ def build_dashboard_snapshot(db_path: Path | None = None) -> dict[str, object]:
     latest_run_provider = source_events[0].provider if source_events else settings.data.provider
     latest_run_date = source_events[0].trade_date if source_events else latest_nav_date or "-"
     latest_run_time = format_datetime_shanghai(source_events[0].created_at.isoformat() + "+00:00") if source_events else "-"
-    summary = _data_source_summary(source_events, latest_nav_date)
-    market_stats = _load_market_stats(latest_run_provider)
-    current_prices = _resolve_latest_prices(latest_run_provider, [position.symbol for position in positions])
+    source_summary = _summarize_source_events(source_events, latest_nav_date)
+    latest_transactions_date = max((tx.trade_date for tx in transactions), default=latest_run_date)
+    price_map = _build_price_map(positions, transactions, signals)
+
+    unique_symbols = sorted(
+        {
+            *(item.symbol for item in positions),
+            *(item.symbol for item in transactions),
+            *(item.symbol for item in signals),
+        }
+    )
 
     total_cash = sum(item["cash"] for item in strategy_core.values())
     total_stock_value = sum(
         (navs_by_strategy.get(strategy.id, [])[-1].stock_value if navs_by_strategy.get(strategy.id) else 0.0)
         for strategy in strategies
     )
-    latest_transactions_date = max((tx.trade_date for tx in transactions), default=latest_run_date)
 
     overview_rows: list[dict[str, object]] = []
     overview_curve: list[dict[str, object]] = []
@@ -165,7 +168,7 @@ def build_dashboard_snapshot(db_path: Path | None = None) -> dict[str, object]:
             {
                 "策略": core["display_name"],
                 "策略代码": core["name"],
-                "数据状态": summary["状态"],
+                "数据状态": source_summary["状态"],
                 "总资产": total_asset,
                 "总市值": stock_value,
                 "浮动盈亏": floating_pnl,
@@ -198,19 +201,19 @@ def build_dashboard_snapshot(db_path: Path | None = None) -> dict[str, object]:
 
         detail_positions: list[dict[str, object]] = []
         for position in positions_for_strategy:
-            current_price = current_prices.get(position.symbol, position.avg_cost)
-            market_value = round(position.shares * current_price, 2)
+            reference_price = price_map.get(position.symbol, position.avg_cost)
+            market_value = round(position.shares * reference_price, 2)
             weight = round((market_value / total_asset) * 100, 2) if total_asset else 0.0
-            pnl_amount = round((current_price - position.avg_cost) * position.shares, 2)
-            pnl_ratio = round(((current_price / position.avg_cost) - 1.0) * 100, 2) if position.avg_cost else 0.0
+            pnl_amount = round((reference_price - position.avg_cost) * position.shares, 2)
+            pnl_ratio = round(((reference_price / position.avg_cost) - 1.0) * 100, 2) if position.avg_cost else 0.0
             detail_positions.append(
                 {
                     "代码": position.symbol,
                     "名称": position.name or position.symbol,
                     "持仓股数": position.shares,
                     "个股仓位(%)": weight,
-                    "成本": round(position.avg_cost, 2),
-                    "现价": round(current_price, 2),
+                    "成本价": round(position.avg_cost, 2),
+                    "参考价": round(reference_price, 2),
                     "持股天数": _holding_days(latest_nav_date, position.buy_date),
                     "浮盈亏金额": pnl_amount,
                     "浮盈亏比例(%)": pnl_ratio,
@@ -263,7 +266,7 @@ def build_dashboard_snapshot(db_path: Path | None = None) -> dict[str, object]:
             "stock_value": stock_value,
             "month_trade_count": len(transactions_for_strategy),
             "signal_status": "有待处理" if any(not signal.executed for signal in signals_for_strategy) else "已执行",
-            "data_status": summary["状态"],
+            "data_status": source_summary["状态"],
             "positions": detail_positions,
             "curve": detail_curve,
             "records": detail_records,
@@ -284,9 +287,9 @@ def build_dashboard_snapshot(db_path: Path | None = None) -> dict[str, object]:
 
     source_info = {
         "最新更新时间": latest_run_time,
-        "数据状态": summary["状态"],
+        "数据状态": source_summary["状态"],
         "数据库路径": str(resolved_db_path),
-        "数据库标的总数量": f"A股 {market_stats['stock_count']} / ETF {market_stats['etf_count']} / 指数 {market_stats['index_count']}",
+        "数据库标的总数量": len(unique_symbols),
         "数据库更新频率": "开市日每日执行，支持手动补跑",
     }
 
@@ -297,7 +300,7 @@ def build_dashboard_snapshot(db_path: Path | None = None) -> dict[str, object]:
         "latest_run_provider": latest_run_provider,
         "latest_run_date": latest_run_date,
         "latest_run_time_shanghai": latest_run_time,
-        "data_source_summary": summary,
+        "data_source_summary": source_summary,
         "source_info": source_info,
         "overview_rows": overview_rows,
         "overview_curve": overview_curve,
