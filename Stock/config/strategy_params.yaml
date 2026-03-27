@@ -1,0 +1,24 @@
+momentum:
+  top_n: 10
+  stop_loss_pct: -20
+dividend_lowvol:
+  top_n: 15
+  min_dividend_yield: 3.0
+  max_volatility: 35.0
+  stop_loss_pct: -25
+global_alloc:
+  drift_threshold_pct: 8.0
+  targets:
+    "510300": 0.25
+    "513500": 0.15
+    "518880": 0.20
+    "511010": 0.25
+    "159980": 0.15
+high_growth:
+  top_n: 10
+  stop_loss_pct: -20
+personal:
+  targets:
+    bank: 0.50
+    gold: 0.25
+    metal: 0.25
