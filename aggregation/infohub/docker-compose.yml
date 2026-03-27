@@ -1,0 +1,103 @@
+version: "3.9"
+
+services:
+  # PostgreSQL数据库
+  postgres:
+    image: postgres:16-alpine
+    container_name: infohub-postgres
+    environment:
+      POSTGRES_DB: infohub
+      POSTGRES_USER: infohub
+      POSTGRES_PASSWORD: infohub123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/src/db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U infohub -d infohub"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - infohub-network
+
+  # RSSHub服务
+  rsshub:
+    image: diygod/rsshub:latest
+    container_name: infohub-rsshub
+    ports:
+      - "1200:1200"
+    environment:
+      NODE_ENV: production
+      CACHE_TYPE: memory
+      # 需要Cookie的平台在这里配置
+      # ZHIHU_COOKIES: ""
+      # TWITTER_COOKIE: ""
+    restart: unless-stopped
+    networks:
+      - infohub-network
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:1200"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # 后端API服务
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: infohub-backend
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: postgresql://infohub:infohub123@postgres:5432/infohub
+      RSSHUB_URL: http://rsshub:1200
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rsshub:
+        condition: service_started
+    # 限制端口暴露（工程审查要求S1-1）
+    # 仅内部网络访问，不映射到宿主机
+    networks:
+      - infohub-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # 前端Next.js服务
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: infohub-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      API_PROXY_TARGET: http://backend:3001
+    depends_on:
+      backend:
+        condition: service_started
+    networks:
+      - infohub-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  infohub-network:
+    driver: bridge
