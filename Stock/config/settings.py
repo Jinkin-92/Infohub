@@ -53,10 +53,12 @@ class DataSourceConfig:
     provider: str = field(default_factory=lambda: os.getenv("DATA_PROVIDER", "akshare"))
     instock_project_path: str = field(default_factory=lambda: os.getenv("INSTOCK_PROJECT_PATH", "d:/code/stock-deploy"))
     instock_mysql_password: str = field(default_factory=lambda: os.getenv("INSTOCK_MYSQL_PASSWORD", ""))
+    instock_proxy_url: str = field(default_factory=lambda: os.getenv("INSTOCK_PROXY_URL", "").strip())
+    instock_eastmoney_cookie: str = field(default_factory=lambda: os.getenv("INSTOCK_EASTMONEY_COOKIE", "").strip())
     cache_dir: str = field(default_factory=lambda: os.getenv("CACHE_DIR", "data/cache"))
     cache_expire_seconds: int = field(default_factory=lambda: int(os.getenv("CACHE_EXPIRE_SECONDS", "3600")))
     universe_sample_size: int = field(default_factory=lambda: int(os.getenv("UNIVERSE_SAMPLE_SIZE", "20")))
-    akshare_proxy_url: str = field(default_factory=lambda: os.getenv("AKSHARE_PROXY_URL", "http://127.0.0.1:7897"))
+    akshare_proxy_url: str = field(default_factory=lambda: os.getenv("AKSHARE_PROXY_URL", "").strip())
 
     @property
     def resolved_cache_dir(self) -> Path:
@@ -73,6 +75,12 @@ class DataSourceConfig:
         if not self.akshare_proxy_url:
             return {}
         return {"http": self.akshare_proxy_url, "https": self.akshare_proxy_url}
+
+    @property
+    def instock_proxies(self) -> dict[str, str]:
+        if not self.instock_proxy_url:
+            return {}
+        return {"http": self.instock_proxy_url, "https": self.instock_proxy_url}
 
 
 @dataclass(slots=True)

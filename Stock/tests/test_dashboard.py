@@ -15,8 +15,14 @@ def test_build_dashboard_snapshot_reads_sqlite_state(tmp_path):
     assert snapshot["strategy_count"] == 5
     assert snapshot["total_cash"] >= 0
     assert snapshot["total_stock_value"] >= 0
-    assert snapshot["strategies"]
-    assert snapshot["nav_compare"]
+    assert snapshot["overview_rows"]
+    assert snapshot["overview_curve"]
+    assert "data_source_summary" in snapshot
+    assert "latest_run_provider" in snapshot
+    assert "source_info" in snapshot
+    assert "strategy_pages" in snapshot
+    assert snapshot["strategy_pages"]["momentum"]["rule_text"]
+    assert "数据库路径" in snapshot["source_info"]
 
 
 def test_format_datetime_shanghai_converts_timezone():

@@ -4,6 +4,7 @@ Logging helpers shared by the CLI and background jobs.
 
 from __future__ import annotations
 
+import logging
 import sys
 from functools import wraps
 from pathlib import Path
@@ -22,6 +23,7 @@ def setup_logging(level: str = "INFO", log_file: str = "logs/run.log", json_form
         return logger
 
     Path(log_file).parent.mkdir(parents=True, exist_ok=True)
+    provider_log_file = Path(log_file).with_name("provider.log")
     logger.remove()
     logger.add(
         sys.stdout,
@@ -43,6 +45,20 @@ def setup_logging(level: str = "INFO", log_file: str = "logs/run.log", json_form
         serialize=json_format,
         format="{message}" if json_format else "{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}",
     )
+
+    # Route stdlib logging such as data-provider fallback warnings to a file only,
+    # so foreground CLI sessions and Streamlit terminals stay quiet.
+    provider_handler = logging.FileHandler(provider_log_file, encoding="utf-8")
+    provider_handler.setLevel(getattr(logging, level.upper(), logging.INFO))
+    provider_handler.setFormatter(
+        logging.Formatter("%(asctime)s | %(levelname)s | %(name)s:%(lineno)d | %(message)s")
+    )
+    logging.basicConfig(
+        level=getattr(logging, level.upper(), logging.INFO),
+        handlers=[provider_handler],
+        force=True,
+    )
+
     _CONFIGURED = True
     return logger
 

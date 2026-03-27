@@ -137,3 +137,16 @@ class Dividend(Base):
     payment_date: Mapped[str] = mapped_column(String(16), nullable=False)
 
     strategy: Mapped[Strategy] = relationship(back_populates="dividends")
+
+
+class DataSourceEvent(Base):
+    __tablename__ = "data_source_events"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    trade_date: Mapped[str] = mapped_column(String(16), nullable=False)
+    provider: Mapped[str] = mapped_column(String(32), nullable=False)
+    severity: Mapped[str] = mapped_column(String(16), nullable=False, default="info")
+    target: Mapped[str] = mapped_column(String(128), nullable=False)
+    fallback_mode: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    message: Mapped[str] = mapped_column(Text, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow_naive, nullable=False)

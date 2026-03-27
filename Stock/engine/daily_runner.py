@@ -16,6 +16,7 @@ from database.operations import (
     get_active_strategies,
     get_positions_by_strategy,
     init_database,
+    replace_data_source_events,
     replace_strategy_signals,
 )
 from engine.executor import execute_signal
@@ -25,14 +26,8 @@ from strategies.registry import get_strategy
 
 
 def _is_rebalance_day(strategy_name: str, trade_date: date) -> bool:
-    if strategy_name == "momentum":
-        return trade_date.day <= 3
-    if strategy_name == "dividend_lowvol":
-        return trade_date.month in {3, 6, 9, 12} and trade_date.day <= 5
-    if strategy_name == "global_alloc":
-        return trade_date.day >= 25
-    if strategy_name == "high_growth":
-        return trade_date.month in {4, 8, 10, 12} and trade_date.day <= 10
+    # Product rule: every strategy may rebalance on any trading day.
+    # Actual execution still obeys market-open constraints and A-share T+1 in executor.py.
     return True
 
 
@@ -136,5 +131,16 @@ def run_daily(provider: str | None = None, trade_date: date | None = None, notif
                     },
                 }
             )
+
+        events = fetcher.events or [
+            {
+                "severity": "info",
+                "target": "run",
+                "fallback_mode": None,
+                "message": f"{fetcher.provider} data fetch completed without fallback",
+            }
+        ]
+        replace_data_source_events(session, trade_date_str, fetcher.provider, events)
+        session.commit()
 
     return {"date": trade_date_str, "is_trading_day": True, "db_path": str(db_path), "strategies": daily_report_runs}

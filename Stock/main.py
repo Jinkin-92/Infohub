@@ -5,6 +5,7 @@ CLI entrypoint aligned with SYSTEM_DESIGN.md.
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -66,24 +67,39 @@ def status_command(json_output: bool) -> None:
 @click.option("--host", default="127.0.0.1", show_default=True)
 @click.option("--port", default=8501, show_default=True, type=int)
 @click.option("--headless/--no-headless", default=False, show_default=True)
-def dashboard_command(host: str, port: int, headless: bool) -> None:
+@click.option("--background", is_flag=True, default=False, help="Start Streamlit in the background and return immediately.")
+def dashboard_command(host: str, port: int, headless: bool, background: bool) -> None:
     app_path = Path(__file__).resolve().parent / "dashboard" / "app.py"
-    subprocess.run(
-        [
-            sys.executable,
-            "-m",
-            "streamlit",
-            "run",
-            str(app_path),
-            "--server.address",
-            host,
-            "--server.port",
-            str(port),
-            "--server.headless",
-            "true" if headless else "false",
-        ],
-        check=True,
-    )
+    command = [
+        sys.executable,
+        "-m",
+        "streamlit",
+        "run",
+        str(app_path),
+        "--server.address",
+        host,
+        "--server.port",
+        str(port),
+        "--server.headless",
+        "true" if headless else "false",
+    ]
+    if background:
+        log_path = settings.resolved_log_file.parent / "dashboard.log"
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        with log_path.open("a", encoding="utf-8") as log_handle:
+            kwargs = {
+                "stdout": log_handle,
+                "stderr": subprocess.STDOUT,
+                "stdin": subprocess.DEVNULL,
+                "cwd": str(Path(__file__).resolve().parent),
+                "start_new_session": True,
+            }
+            if os.name == "nt":
+                kwargs["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.DETACHED_PROCESS
+            process = subprocess.Popen(command, **kwargs)
+        click.echo(f"Dashboard started in background on http://{host}:{port} (pid={process.pid})")
+        return
+    subprocess.run(command, check=True)
 
 
 if __name__ == "__main__":

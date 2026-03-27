@@ -13,7 +13,7 @@ from sqlalchemy import create_engine, delete, select
 from sqlalchemy.orm import Session, sessionmaker
 
 from config.settings import settings
-from database.models import Base, DailyNav, Dividend, Portfolio, Position, Signal, Strategy, Transaction
+from database.models import Base, DailyNav, DataSourceEvent, Dividend, Portfolio, Position, Signal, Strategy, Transaction
 
 
 def _utcnow_naive() -> datetime:
@@ -222,6 +222,19 @@ def record_daily_nav(session: Session, payload: dict) -> DailyNav:
             setattr(existing, key, value)
     session.flush()
     return existing
+
+
+def replace_data_source_events(session: Session, trade_date: str, provider: str, events: list[dict]) -> list[DataSourceEvent]:
+    session.execute(
+        delete(DataSourceEvent).where(
+            DataSourceEvent.trade_date == trade_date,
+            DataSourceEvent.provider == provider,
+        )
+    )
+    created = [DataSourceEvent(trade_date=trade_date, provider=provider, **event) for event in events]
+    session.add_all(created)
+    session.flush()
+    return created
 
 
 def serialize_statuses(statuses: list[StrategyStatus]) -> list[dict]:
