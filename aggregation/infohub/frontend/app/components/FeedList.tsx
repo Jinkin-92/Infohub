@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import useSWR from 'swr'
+import useSWR, { useSWRConfig } from 'swr'
 import { feedApi, itemTagsApi, sourcesApi, tagsApi } from '../lib/api'
 import { Item, Source, Tag, PLATFORM_CONFIG } from '../types'
 import { cn, formatDate } from '../lib/utils'
@@ -147,6 +147,8 @@ export function FeedList({
   const [offset, setOffset] = useState(0)
   const [hasMore, setHasMore] = useState(true)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [isTabSwitching, setIsTabSwitching] = useState(false)
+  const { cache } = useSWRConfig()
 
   const { data: tagsData } = useSWR('tags', () => tagsApi.getAll(), {
     revalidateOnFocus: false,
@@ -154,14 +156,21 @@ export function FeedList({
   })
   const availableTags = tagsData?.tags || []
 
-  const { data: sourcesData } = useSWR('sources-status', () => sourcesApi.getAll(), {
-    revalidateOnFocus: false,
-    dedupingInterval: 10000,
-  })
+  const { data: sourcesData } = useSWR(
+    ['sources-status', refreshTrigger],
+    () => sourcesApi.getAll(),
+    {
+      revalidateOnFocus: false,
+    }
+  )
   const sources = (sourcesData?.sources || []).filter(
     (source) => source.enabled && (!platform || source.platform === platform)
   )
-  const erroredSources = sources.filter((source: Source) => source.status === 'error')
+
+  // Only show error if the current platform's sources are ALL in error state
+  // This prevents showing stale errors when switching tabs
+  const allSourcesErrored = sources.length > 0 && sources.every((source: Source) => source.status === 'error')
+  const erroredSources = allSourcesErrored ? sources : []
 
   const { data, error, isLoading, mutate } = useSWR(
     ['feed', platform, searchQuery, tagId, offset],
@@ -179,7 +188,8 @@ export function FeedList({
     },
     {
       revalidateOnFocus: false,
-      dedupingInterval: 5000,
+      shouldRetryOnError: false,
+      dedupingInterval: 0,
     }
   )
 
@@ -205,7 +215,15 @@ export function FeedList({
     setItems([])
     setOffset(0)
     setHasMore(true)
-  }, [platform, searchQuery, tagId])
+    setIsTabSwitching(true)
+    // Clear SWR cache for this key to ensure fresh fetch, not cached error/empty state
+    const cacheKey = ['feed', platform, searchQuery, tagId, 0]
+    cache.delete(cacheKey)
+    // Trigger revalidation and wait for it to complete before clearing the switching state
+    mutate()
+      .catch(() => {}) // Ignore errors, they'll be handled by SWR's error state
+      .finally(() => setIsTabSwitching(false))
+  }, [platform, searchQuery, tagId, mutate, cache])
 
   useEffect(() => {
     if (!refreshTrigger || refreshTrigger <= 0) {
@@ -339,7 +357,7 @@ export function FeedList({
     }
   }, [])
 
-  if (isLoading && items.length === 0) {
+  if ((isLoading || isTabSwitching) && items.length === 0) {
     return (
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         {Array.from({ length: 6 }).map((_, index) => (
