@@ -124,6 +124,59 @@ function initSQLiteTables() {
     CREATE INDEX IF NOT EXISTS idx_items_published ON items(published_at DESC);
     CREATE INDEX IF NOT EXISTS idx_items_platform ON items(platform);
     CREATE INDEX IF NOT EXISTS idx_item_tags_tag ON item_tags(tag_id);
+
+    -- WeChat 扩展表 (Phase 1: WeRss 集成)
+    CREATE TABLE IF NOT EXISTS wechat_accounts (
+      id                    TEXT PRIMARY KEY,
+      mp_name               TEXT NOT NULL,
+      mp_cover              TEXT,
+      mp_intro              TEXT,
+      faker_id              TEXT NOT NULL,
+      status                INTEGER DEFAULT 1,
+      sync_time             INTEGER,
+      update_time           INTEGER,
+      created_at            TEXT DEFAULT (datetime('now')),
+      updated_at            TEXT DEFAULT (datetime('now'))
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_wechat_accounts_faker ON wechat_accounts(faker_id);
+    CREATE INDEX IF NOT EXISTS idx_wechat_accounts_status ON wechat_accounts(status);
+
+    CREATE TABLE IF NOT EXISTS sources_wechat_ext (
+      source_id             INTEGER PRIMARY KEY REFERENCES sources(id) ON DELETE CASCADE,
+      faker_id              TEXT NOT NULL,
+      mp_cover              TEXT,
+      sync_time             INTEGER,
+      update_time           INTEGER,
+      cookie_configured     INTEGER DEFAULT 0,
+      token_configured      INTEGER DEFAULT 0,
+      created_at            TEXT DEFAULT (datetime('now')),
+      updated_at            TEXT DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS items_wechat_ext (
+      item_id               INTEGER PRIMARY KEY REFERENCES items(id) ON DELETE CASCADE,
+      content               TEXT,
+      digest                TEXT,
+      content_hash          TEXT,
+      is_full_text          INTEGER DEFAULT 0,
+      created_at            TEXT DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS wechat_settings (
+      id                    INTEGER PRIMARY KEY CHECK (id = 1),
+      cookie                TEXT,
+      token                 TEXT,
+      user_agent            TEXT,
+      proxy_enabled         INTEGER DEFAULT 0,
+      proxy_url             TEXT,
+      deno_proxy_url        TEXT,
+      gather_content        INTEGER DEFAULT 0,
+      gather_model          TEXT DEFAULT 'web',
+      updated_at            TEXT DEFAULT (datetime('now'))
+    );
+
+    INSERT OR IGNORE INTO wechat_settings (id) VALUES (1);
   `);
 
   const defaultTags = [
