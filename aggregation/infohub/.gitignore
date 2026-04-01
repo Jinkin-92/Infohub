@@ -48,3 +48,4 @@ rsshub-local/logs/
 # OS
 .DS_Store
 Thumbs.db
+.gstack/

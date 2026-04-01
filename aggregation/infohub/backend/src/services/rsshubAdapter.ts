@@ -48,6 +48,22 @@ export class RSSHubAdapter {
   }
 
   /**
+   * 构建微信公众账号 RSS URL（通过传送门）
+   * @param account 公众号名称（去掉 weixin 后的部分）
+   */
+  buildWechatUrl(account: string): string {
+    return `${this.baseUrl}/wechat/csm/${account}`;
+  }
+
+  /**
+   * 构建微博用户 RSS URL
+   * @param uid 微博用户 UID
+   */
+  buildWeiboUrl(uid: string): string {
+    return `${this.baseUrl}/weibo/user/${uid}`;
+  }
+
+  /**
    * 检查RSSHub健康状态
    */
   async healthCheck(): Promise<{ healthy: boolean; latency: number }> {

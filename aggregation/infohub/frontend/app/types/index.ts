@@ -1,7 +1,7 @@
 export interface Source {
   id: number
   name: string
-  platform: 'zhihu' | 'x' | 'news' | 'custom' | 'bilibili' | 'youtube' | 'wechat'
+  platform: 'zhihu' | 'x' | 'news' | 'custom' | 'bilibili' | 'youtube' | 'wechat' | 'weibo'
   input_url: string
   rss_url: string
   platform_id: string | null
@@ -97,6 +97,7 @@ export const PLATFORM_CONFIG: Record<string, PlatformConfig> = {
   bilibili: { id: 'bilibili', name: 'B站', color: '#FB7299', icon: 'bilibili' },
   youtube: { id: 'youtube', name: 'YouTube', color: '#FF0000', icon: 'youtube' },
   wechat: { id: 'wechat', name: '微信公众号', color: '#07C160', icon: 'wechat' },
+  weibo: { id: 'weibo', name: '微博', color: '#E6162D', icon: 'weibo' },
   news: { id: 'news', name: '新闻', color: '#FF6B6B', icon: 'news' },
   custom: { id: 'custom', name: 'RSS', color: '#6B7280', icon: 'rss' },
 }

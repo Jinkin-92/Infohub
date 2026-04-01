@@ -22,6 +22,8 @@ export function TabBar({
     { id: 'all', name: '全部', color: '#4CA6E1' },
     PLATFORM_CONFIG.zhihu,
     PLATFORM_CONFIG.x,
+    PLATFORM_CONFIG.wechat,
+    PLATFORM_CONFIG.weibo,
     PLATFORM_CONFIG.bilibili,
     PLATFORM_CONFIG.youtube,
     PLATFORM_CONFIG.news,

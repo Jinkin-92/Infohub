@@ -119,6 +119,75 @@ curl -X POST http://localhost:3002/api/sources \
 curl -X POST http://localhost:3002/api/sources/{source_id}/collect
 ```
 
+---
+
+## Cookie 自动提取（可选功能）
+
+部分平台（知乎、微博、小红书等）需要登录态才能获取完整内容。InfoHub 支持从 Chrome 自动提取 Cookie，无需手动复制。
+
+### 前置要求：开启 Chrome 远程调试
+
+**步骤 1：打开 Chrome 远程调试端口**
+
+方式一：命令行启动 Chrome
+
+```bash
+# Windows
+chrome.exe --remote-debugging-port=18792
+
+# macOS
+/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=18792
+
+# Linux
+google-chrome --remote-debugging-port=18792
+```
+
+方式二：图形界面启用
+
+1. 在 Chrome 地址栏打开 `chrome://inspect/#remote-debugging`
+2. 勾选 **"Allow remote debugging for this browser instance"**
+3. 重启 Chrome（确保已登录要提取 Cookie 的网站）
+
+**步骤 2：验证 Chrome 连接状态**
+
+打开 `chrome://inspect/#remote-debugging`，你应该能在 "Remote Target" 列表中看到 Chrome 实例。
+
+**步骤 3：在 InfoHub 中获取 Cookie**
+
+1. 打开 InfoHub 首页
+2. 点击右上角**设置**按钮
+3. 进入**通用**标签页
+4. 找到**从 Chrome 获取 Cookie**区域
+5. 确保看到 "Chrome 已连接" 状态
+6. 点击**一键获取全部 Cookie**按钮
+
+### 支持的平台
+
+| 平台 | Cookie 关键字段 | 说明 |
+| --- | --- | --- |
+| 知乎 | `z_c0`, `d_c0`, `q_c1` | 需要登录才能查看完整回答 |
+| 微博 | `SUB`, `SUBP` | 需要登录才能查看全部内容 |
+| 小红书 | `a1`, `webId` | 需要登录才能查看笔记详情 |
+| 豆瓣 | `dbcl2`, `ck` | 需要登录才能查看豆列 |
+| X/Twitter | `auth_token` | 需要登录才能查看推文 |
+
+### 自定义 Chrome 调试端口
+
+如果 18792 端口被占用，可以在 `.env` 文件中配置：
+
+```bash
+# 后端
+echo "CHROME_DEBUG_PORT=18793" >> backend/.env
+```
+
+### 故障排除
+
+| 问题 | 解决方案 |
+| --- | --- |
+| 显示 "Chrome 未连接" | 确保用 `--remote-debugging-port` 启动 Chrome，或在 `chrome://inspect` 中勾选调试选项 |
+| Cookie 获取失败 | 确保在 Chrome 中已登录目标网站，然后重试 |
+| Cookie 过期 | 删除 `rsshub-local/.env` 中对应的 Cookie 行，重启 RSSHub 后重新获取 |
+
 ## API文档
 
 ### Feed API

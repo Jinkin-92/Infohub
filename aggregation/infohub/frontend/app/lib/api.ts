@@ -266,3 +266,69 @@ export const settingsApi = {
     })
   },
 }
+
+/**
+ * Cookie API
+ */
+export interface CookieStatusResponse {
+  ok: boolean
+  data: {
+    chromeConnected: boolean
+    chromePort: number
+    chromeError?: string
+    platforms: Array<{
+      platform: string
+      key: string
+      url: string
+      configured: boolean
+      loggedIn: boolean
+    }>
+  }
+}
+
+export interface CookieExtractResponse {
+  ok: boolean
+  data?: {
+    total: number
+    success: number
+    failed: number
+    results: Array<{
+      platform: string
+      success: boolean
+      cookies: Record<string, string>
+      error?: string
+    }>
+    settings: Array<{
+      key: string
+      label: string
+      configured: boolean
+    }>
+  }
+  error?: string
+  code?: string
+}
+
+export const cookieApi = {
+  /**
+   * 获取 Cookie 状态
+   */
+  async getStatus(): Promise<CookieStatusResponse> {
+    return fetchApi(`${API_BASE}/cookie/status`)
+  },
+
+  /**
+   * 从 Chrome 提取 Cookie
+   */
+  async extract(): Promise<CookieExtractResponse> {
+    return fetchApi(`${API_BASE}/cookie/extract`, {
+      method: 'POST',
+    })
+  },
+
+  /**
+   * 检查 Chrome 连接状态
+   */
+  async checkChrome(): Promise<{ ok: boolean; data: { connected: boolean; port: number; error?: string } }> {
+    return fetchApi(`${API_BASE}/cookie/chrome`)
+  },
+}

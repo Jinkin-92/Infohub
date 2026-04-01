@@ -11,6 +11,7 @@ import feedRouter from './routes/feed.js';
 import sourcesRouter from './routes/sources.js';
 import settingsRouter from './routes/settings.js';
 import tagsRouter from './routes/tags.js';
+import cookieRouter from './routes/cookie.js';
 
 function createApp(): Hono {
   const app = new Hono();
@@ -38,6 +39,7 @@ function createApp(): Hono {
   app.route('/api/sources', sourcesRouter);
   app.route('/api/settings', settingsRouter);
   app.route('/api/tags', tagsRouter);
+  app.route('/api/cookie', cookieRouter);
 
   app.notFound(() => {
     return new Response(

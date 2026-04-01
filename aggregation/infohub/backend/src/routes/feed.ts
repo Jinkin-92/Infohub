@@ -7,7 +7,7 @@ import { NotFoundError } from '../middleware/error.js';
 const feedRouter = new Hono();
 
 const getItemsSchema = z.object({
-  platform: z.enum(['zhihu', 'x', 'news', 'custom', 'bilibili', 'youtube', 'wechat']).optional(),
+  platform: z.enum(['zhihu', 'x', 'news', 'custom', 'bilibili', 'youtube', 'wechat', 'weibo']).optional(),
   limit: z.coerce.number().min(1).max(100).default(20),
   offset: z.coerce.number().min(0).default(0),
   unread_only: z.enum(['true', 'false']).optional(),
@@ -19,7 +19,7 @@ const markAsReadSchema = z.object({
 });
 
 const markAllAsReadSchema = z.object({
-  platform: z.enum(['zhihu', 'x', 'news', 'custom', 'bilibili', 'youtube', 'wechat']).optional(),
+  platform: z.enum(['zhihu', 'x', 'news', 'custom', 'bilibili', 'youtube', 'wechat', 'weibo']).optional(),
 });
 
 feedRouter.get('/', validateQuery(getItemsSchema), async (c) => {

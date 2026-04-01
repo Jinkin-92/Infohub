@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import useSWR from 'swr'
 import { cn } from '../lib/utils'
-import { settingsApi, sourcesApi, tagsApi } from '../lib/api'
+import { settingsApi, sourcesApi, tagsApi, cookieApi } from '../lib/api'
 import { IntegrationSetting, PLATFORM_CONFIG, Source, Tag } from '../types'
 import { useTheme } from './ThemeProvider'
 
@@ -436,9 +436,14 @@ function GeneralTab() {
   const { data, mutate, isLoading } = useSWR('settings-integrations', () => settingsApi.getIntegrations(), {
     revalidateOnFocus: false,
   })
+  const { data: cookieStatus } = useSWR('cookie-status', () => cookieApi.getStatus(), {
+    revalidateOnFocus: false,
+  })
   const [values, setValues] = useState<Record<string, string>>({})
   const [notice, setNotice] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
+  const [isExtracting, setIsExtracting] = useState(false)
+  const [extractNotice, setExtractNotice] = useState<string | null>(null)
 
   useEffect(() => {
     if (!data?.rsshub.settings) {
@@ -474,6 +479,38 @@ function GeneralTab() {
       setIsSaving(false)
     }
   }, [mutate, values])
+
+  const handleExtractCookies = useCallback(async () => {
+    setIsExtracting(true)
+    setExtractNotice(null)
+
+    try {
+      const response = await cookieApi.extract()
+      if (response.ok && response.data) {
+        const { success, failed, results } = response.data
+        const successPlatforms = results.filter((r) => r.success).map((r) => r.platform)
+        if (successPlatforms.length > 0) {
+          setExtractNotice(`成功从 ${successPlatforms.join('、')} 获取 Cookie`)
+        } else {
+          setExtractNotice('未能获取任何平台的 Cookie，请确保已在 Chrome 中登录相关网站')
+        }
+        if (failed > 0) {
+          const failedPlatforms = results.filter((r) => !r.success).map((r) => r.platform)
+          setExtractNotice((prev) => `${prev || ''}（${failedPlatforms.join('、')} 失败）`)
+        }
+        // Refresh settings
+        await mutate()
+      } else if (response.code === 'CHROME_NOT_CONNECTED') {
+        setExtractNotice('Chrome 远程调试未连接。请在 chrome://inspect/#remote-debugging 中开启调试选项')
+      } else {
+        setExtractNotice(response.error || '获取 Cookie 失败')
+      }
+    } catch (error) {
+      setExtractNotice(error instanceof Error ? error.message : '获取 Cookie 失败')
+    } finally {
+      setIsExtracting(false)
+    }
+  }, [mutate])
 
   return (
     <div className="p-6">
@@ -523,6 +560,60 @@ function GeneralTab() {
               <div className="rounded-lg border border-border-color bg-bg-secondary px-4 py-3 text-sm text-text-secondary">
                 <p>配置文件：{data?.rsshub.envPath}</p>
                 <p>服务地址：http://localhost:{data?.rsshub.port ?? 1200}</p>
+              </div>
+
+              {/* Chrome Cookie 提取区域 */}
+              <div className="rounded-xl border border-accent/30 bg-accent/5 p-4">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h5 className="font-medium text-text-primary">从 Chrome 获取 Cookie</h5>
+                    <p className="text-xs text-text-secondary mt-1">
+                      自动从已登录的 Chrome 中提取 Cookie（需要开启远程调试）
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={cn(
+                        'h-2 w-2 rounded-full',
+                        cookieStatus?.data?.chromeConnected ? 'bg-green-500' : 'bg-red-500'
+                      )}
+                    />
+                    <span className="text-xs text-text-secondary">
+                      Chrome {cookieStatus?.data?.chromeConnected ? '已连接' : '未连接'}
+                      {cookieStatus?.data?.chromePort ? ` (端口 ${cookieStatus.data.chromePort})` : ''}
+                    </span>
+                  </div>
+                </div>
+
+                {extractNotice && (
+                  <div className="mb-3 rounded-lg border border-border-color bg-bg-secondary px-4 py-3 text-sm text-text-secondary">
+                    {extractNotice}
+                  </div>
+                )}
+
+                <button
+                  onClick={handleExtractCookies}
+                  disabled={isExtracting || !cookieStatus?.data?.chromeConnected}
+                  className="rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {isExtracting ? (
+                    <span className="flex items-center gap-2">
+                      <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      提取中...
+                    </span>
+                  ) : (
+                    '一键获取全部 Cookie'
+                  )}
+                </button>
+
+                {!cookieStatus?.data?.chromeConnected && (
+                  <p className="mt-2 text-xs text-text-muted">
+                    如需启用，请前往 chrome://inspect/#remote-debugging 勾选 "Allow remote debugging"
+                  </p>
+                )}
               </div>
 
               {data?.rsshub.settings.map((setting) => (

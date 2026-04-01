@@ -1,7 +1,7 @@
 ﻿export interface Source {
   id: number;
   name: string;
-  platform: 'zhihu' | 'x' | 'news' | 'custom' | 'bilibili' | 'youtube' | 'wechat';
+  platform: 'zhihu' | 'x' | 'news' | 'custom' | 'bilibili' | 'youtube' | 'wechat' | 'weibo';
   input_url: string;
   rss_url: string;
   platform_id: string | null;

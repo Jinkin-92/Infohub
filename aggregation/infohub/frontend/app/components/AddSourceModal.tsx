@@ -53,6 +53,24 @@ export function AddSourceModal({ isOpen, onClose, onSuccess }: AddSourceModalPro
       return
     }
 
+    // 微信公众号文章
+    if (input.includes('mp.weixin.qq.com')) {
+      setDetectedPlatform('wechat')
+      return
+    }
+
+    // 传送门公众号
+    if (input.includes('chuansongme.com')) {
+      setDetectedPlatform('wechat')
+      return
+    }
+
+    // 微博
+    if (input.includes('weibo.com') || input.includes('weibo.cn')) {
+      setDetectedPlatform('weibo')
+      return
+    }
+
     // B站
     if (input.includes('bilibili.com') || input.includes('space.bilibili.com')) {
       setDetectedPlatform('bilibili')
@@ -155,7 +173,7 @@ export function AddSourceModal({ isOpen, onClose, onSuccess }: AddSourceModalPro
                 添加订阅源
               </h2>
               <p className="text-sm text-text-secondary">
-                支持知乎、X(Twitter)、RSS 订阅
+                支持知乎、X、微信、微博、B站、YouTube、RSS
               </p>
             </div>
           </div>
@@ -264,6 +282,28 @@ export function AddSourceModal({ isOpen, onClose, onSuccess }: AddSourceModalPro
                   style={{ backgroundColor: PLATFORM_CONFIG.youtube.color }}
                 />
                 YouTube 频道
+              </button>
+              <button
+                type="button"
+                onClick={() => fillExample('https://mp.weixin.qq.com/s/example')}
+                className="px-3 py-1.5 text-sm bg-bg-tertiary hover:bg-bg-primary text-text-secondary hover:text-text-primary rounded-lg transition-colors"
+              >
+                <span
+                  className="inline-block w-1.5 h-1.5 rounded-full mr-1.5"
+                  style={{ backgroundColor: PLATFORM_CONFIG.wechat.color }}
+                />
+                微信公众号
+              </button>
+              <button
+                type="button"
+                onClick={() => fillExample('https://weibo.com/u/1234567890')}
+                className="px-3 py-1.5 text-sm bg-bg-tertiary hover:bg-bg-primary text-text-secondary hover:text-text-primary rounded-lg transition-colors"
+              >
+                <span
+                  className="inline-block w-1.5 h-1.5 rounded-full mr-1.5"
+                  style={{ backgroundColor: PLATFORM_CONFIG.weibo.color }}
+                />
+                微博用户
               </button>
               <button
                 type="button"

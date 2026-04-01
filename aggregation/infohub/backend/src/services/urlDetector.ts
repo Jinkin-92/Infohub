@@ -16,6 +16,35 @@ export class URLDetector {
   async detect(inputUrl: string): Promise<DetectionResult> {
     this.validateUrl(inputUrl);
 
+    // 检测 we-mp-rss 微信公众号 RSS 服务
+    // 格式: http://localhost:8001/feed/MP_WXS_xxx.rss
+    if (/\/feed\/MP_WXS_/.test(inputUrl)) {
+      const feedMatch = inputUrl.match(/\/feed\/([^\/\?]+)/);
+      const feedId = feedMatch?.[1] ?? '';
+
+      // 尝试获取 RSS 标题作为公众号名称
+      try {
+        const title = await this.fetchRssTitle(inputUrl);
+        if (title) {
+          return {
+            platform: 'wechat',
+            platformId: feedId,
+            rssUrl: inputUrl,
+            displayName: title,
+          };
+        }
+      } catch {
+        // 忽略获取标题失败，使用默认名称
+      }
+
+      return {
+        platform: 'wechat',
+        platformId: feedId,
+        rssUrl: inputUrl,
+        displayName: '微信公众号',
+      };
+    }
+
     let url: URL;
     try {
       url = new URL(inputUrl);
@@ -66,6 +95,16 @@ export class URLDetector {
         rssUrl: this.rsshubAdapter.buildBilibiliUrl(uid),
         displayName: `Bilibili · UID ${uid}`,
       };
+    }
+
+    // 微信公众号文章或主页
+    if (host === 'mp.weixin.qq.com') {
+      return this.detectWechat(url);
+    }
+
+    // 微博用户页面
+    if (host === 'weibo.com' || host === 'weibo.cn') {
+      return this.detectWeibo(url);
     }
 
     if (host === 'youtube.com' || host === 'youtu.be') {
@@ -122,6 +161,84 @@ export class URLDetector {
     }
 
     throw new BadRequestError('Unsupported YouTube URL. Use /@handle or /channel/<id>.');
+  }
+
+  private detectWechat(url: URL): DetectionResult {
+    const path = url.pathname;
+
+    // 文章链接格式：/s/xxxxxxxx
+    if (path.startsWith('/s/')) {
+      const biz = url.searchParams.get('__biz') || '';
+      const mid = url.searchParams.get('mid') || '';
+
+      // 尝试从 meta 标签提取公众号名称（需要在页面中获取）
+      // 这里用 biz 作为 platformId
+      return {
+        platform: 'wechat',
+        platformId: biz || mid,
+        rssUrl: this.rsshubAdapter.buildWechatUrl(biz || mid),
+        displayName: '微信文章',
+      };
+    }
+
+    // 公众号主页格式：/profile/xxxx
+    if (path.startsWith('/profile/')) {
+      const biz = path.split('/profile/')[1]?.split('/')[0] || '';
+      return {
+        platform: 'wechat',
+        platformId: biz,
+        rssUrl: this.rsshubAdapter.buildWechatUrl(biz),
+        displayName: `WeChat · ${biz.slice(0, 8)}...`,
+      };
+    }
+
+    // 通用微信链接，使用完整 URL 作为 RSS
+    return {
+      platform: 'wechat',
+      platformId: '',
+      rssUrl: url.toString(),
+      displayName: 'WeChat',
+    };
+  }
+
+  private detectWeibo(url: URL): DetectionResult {
+    const path = url.pathname;
+
+    // 微博个人主页格式：/u/1234567890 或 /1234567890
+    const uMatch = path.match(/^\/u\/(\d+)/);
+    if (uMatch) {
+      return {
+        platform: 'weibo',
+        platformId: uMatch[1],
+        rssUrl: this.rsshubAdapter.buildWeiboUrl(uMatch[1]),
+        displayName: `Weibo · UID ${uMatch[1]}`,
+      };
+    }
+
+    // 纯数字 ID：/1234567890
+    const idMatch = path.match(/^\/(\d{8,})/);
+    if (idMatch) {
+      return {
+        platform: 'weibo',
+        platformId: idMatch[1],
+        rssUrl: this.rsshubAdapter.buildWeiboUrl(idMatch[1]),
+        displayName: `Weibo · UID ${idMatch[1]}`,
+      };
+    }
+
+    // 短用户名格式：/username
+    const segments = path.split('/').filter(Boolean);
+    if (segments.length > 0) {
+      const username = segments[0];
+      return {
+        platform: 'weibo',
+        platformId: username,
+        rssUrl: this.rsshubAdapter.buildWeiboUrl(username),
+        displayName: `Weibo · @${username}`,
+      };
+    }
+
+    throw new BadRequestError('Could not extract Weibo user id');
   }
 
   private async resolveYouTubeChannelId(handle: string): Promise<string> {
@@ -202,6 +319,27 @@ export class URLDetector {
     }
 
     return parts[1].split('/')[0];
+  }
+
+  private async fetchRssTitle(rssUrl: string): Promise<string | null> {
+    try {
+      const response = await fetch(rssUrl, {
+        headers: {
+          accept: 'application/rss+xml, application/xml, text/xml',
+        },
+        signal: AbortSignal.timeout(10000),
+      });
+
+      if (!response.ok) {
+        return null;
+      }
+
+      const xml = await response.text();
+      const titleMatch = xml.match(/<channel>[\s\S]*?<title>([^<]+)<\/title>/i);
+      return titleMatch?.[1] ?? null;
+    } catch {
+      return null;
+    }
   }
 }
 
