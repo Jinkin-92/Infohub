@@ -6,6 +6,8 @@ import type { RSSItem, CollectionResult, Source } from '../types/index.js';
 import { ServiceUnavailableError } from '../middleware/error.js';
 import { env } from '../config/env.js';
 import { bilibiliPublicCollector } from './bilibiliPublicCollector.js';
+import { weChatArticleCollector } from './wechat/index.js';
+import { sql } from '../db/client.js';
 
 const execFileAsync = promisify(execFile);
 
@@ -183,6 +185,20 @@ export class Collector {
 
     if (source.platform === 'youtube') {
       return this.collectYouTubeItems(sourceUrl);
+    }
+
+    if (source.platform === 'wechat') {
+      // 获取 faker_id 并使用微信专用采集器
+      const wechatExt = await sql.get<{ faker_id: string }>(
+        'SELECT faker_id FROM sources_wechat_ext WHERE source_id = ?',
+        [source.id]
+      );
+      if (wechatExt) {
+        const count = await weChatArticleCollector.collectAndStore(wechatExt.faker_id, source.id);
+        console.log(`[Collector] WeChat source ${source.id} collected ${count} articles`);
+        return []; // 文章已直接写入数据库，这里返回空数组
+      }
+      throw new Error(`WeChat source ${source.id} has no faker_id`);
     }
 
     if (this.isRsshubUrl(sourceUrl)) {

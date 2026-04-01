@@ -12,6 +12,7 @@ import sourcesRouter from './routes/sources.js';
 import settingsRouter from './routes/settings.js';
 import tagsRouter from './routes/tags.js';
 import cookieRouter from './routes/cookie.js';
+import wechatRouter from './routes/wechat.js';
 
 function createApp(): Hono {
   const app = new Hono();
@@ -40,6 +41,7 @@ function createApp(): Hono {
   app.route('/api/settings', settingsRouter);
   app.route('/api/tags', tagsRouter);
   app.route('/api/cookie', cookieRouter);
+  app.route('/api/wechat', wechatRouter);
 
   app.notFound(() => {
     return new Response(

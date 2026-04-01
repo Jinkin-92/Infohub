@@ -71,21 +71,6 @@ function logError(message: string) {
   console.error(`[Migration ERROR] ${message}`);
 }
 
-function warn(message: string) {
-  console.warn(`[Migration WARN] ${message}`);
-}
-
-/**
- * 解码 base64 faker_id
- */
-function decodeFakeId(encoded: string): string {
-  try {
-    return Buffer.from(encoded, 'base64').toString('utf-8');
-  } catch {
-    return encoded;
-  }
-}
-
 /**
  * 转换 Unix 时间戳为 ISO 字符串
  */
