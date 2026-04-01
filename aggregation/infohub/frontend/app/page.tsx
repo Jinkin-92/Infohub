@@ -19,6 +19,7 @@ export default function Home() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [refreshTrigger, setRefreshTrigger] = useState(0)
   const [availableTags, setAvailableTags] = useState<Tag[]>([])
+  const [tabVersion, setTabVersion] = useState(0)
 
   const { data: unreadData, mutate: mutateUnread } = useSWR(
     ['unread-breakdown', refreshTrigger],
@@ -62,6 +63,7 @@ export default function Home() {
         onTabChange={(tab) => {
           setActiveTab(tab)
           setSelectedTagId(null)
+          setTabVersion((v) => v + 1)
         }}
         onAddClick={() => setIsAddModalOpen(true)}
         onSettingsClick={() => setIsSettingsOpen(true)}
@@ -89,10 +91,12 @@ export default function Home() {
 
       <div className="mx-auto max-w-content px-4 py-4 sm:px-6 lg:px-8">
         <FeedList
+          key={`${platformFilter ?? 'all'}-${tabVersion}`}
           platform={platformFilter}
           searchQuery={searchQuery}
           tagId={selectedTagId}
           refreshTrigger={refreshTrigger}
+          tabVersion={tabVersion}
           sourceUnreadCounts={unreadData?.by_source}
           onCountsChange={() => {
             void mutateUnread()

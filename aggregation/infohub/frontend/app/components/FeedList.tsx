@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import useSWR, { useSWRConfig } from 'swr'
+import useSWR from 'swr'
 import { feedApi, itemTagsApi, sourcesApi, tagsApi } from '../lib/api'
 import { Item, Source, Tag, PLATFORM_CONFIG } from '../types'
 import { cn, formatDate } from '../lib/utils'
@@ -11,6 +11,7 @@ interface FeedListProps {
   searchQuery?: string
   tagId?: number | null
   refreshTrigger?: number
+  tabVersion?: number
   sourceUnreadCounts?: Record<string, number>
   onCountsChange?: () => void
 }
@@ -140,6 +141,7 @@ export function FeedList({
   searchQuery,
   tagId,
   refreshTrigger,
+  tabVersion = 0,
   sourceUnreadCounts = {},
   onCountsChange,
 }: FeedListProps) {
@@ -148,7 +150,6 @@ export function FeedList({
   const [hasMore, setHasMore] = useState(true)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [isTabSwitching, setIsTabSwitching] = useState(false)
-  const { cache } = useSWRConfig()
 
   const { data: tagsData } = useSWR('tags', () => tagsApi.getAll(), {
     revalidateOnFocus: false,
@@ -173,7 +174,7 @@ export function FeedList({
   const erroredSources = allSourcesErrored ? sources : []
 
   const { data, error, isLoading, mutate } = useSWR(
-    ['feed', platform, searchQuery, tagId, offset],
+    ['feed', platform, searchQuery, tagId, offset, tabVersion],
     () => {
       if (tagId) {
         return tagsApi.getItems(tagId, { limit: PAGE_SIZE, offset })
@@ -216,14 +217,12 @@ export function FeedList({
     setOffset(0)
     setHasMore(true)
     setIsTabSwitching(true)
-    // Clear SWR cache for this key to ensure fresh fetch, not cached error/empty state
-    const cacheKey = ['feed', platform, searchQuery, tagId, 0]
-    cache.delete(cacheKey)
-    // Trigger revalidation and wait for it to complete before clearing the switching state
-    mutate()
+    // Use mutate with revalidate: true to force fresh fetch instead of cached data
+    const cacheKey = ['feed', platform, searchQuery, tagId, 0, tabVersion]
+    void mutate(cacheKey, undefined, { revalidate: true })
       .catch(() => {}) // Ignore errors, they'll be handled by SWR's error state
       .finally(() => setIsTabSwitching(false))
-  }, [platform, searchQuery, tagId, mutate, cache])
+  }, [platform, searchQuery, tagId, tabVersion, mutate])
 
   useEffect(() => {
     if (!refreshTrigger || refreshTrigger <= 0) {
