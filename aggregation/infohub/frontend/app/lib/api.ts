@@ -332,3 +332,129 @@ export const cookieApi = {
     return fetchApi(`${API_BASE}/cookie/chrome`)
   },
 }
+
+/**
+ * WeChat API
+ */
+export interface WeChatAuthStatus {
+  ok: boolean
+  data: {
+    configured: boolean
+    cookieValid: boolean
+    tokenValid: boolean
+    cookieConfigured: boolean
+    tokenConfigured: boolean
+  }
+}
+
+export interface WeChatSearchResult {
+  ok: boolean
+  data: {
+    total: number
+    accounts: Array<{
+      fakeid: string
+      name: string
+      alias: string
+      avatar: string
+    }>
+  }
+  error?: string
+}
+
+export interface WeChatCollectResult {
+  ok: boolean
+  data?: {
+    collected: Record<string, number>
+    totalSources: number
+  }
+  error?: string
+}
+
+export interface WeChatSettings {
+  ok: boolean
+  data: {
+    gatherContent: boolean
+    gatherModel: 'web' | 'app' | 'api'
+    proxyEnabled: boolean
+    proxyUrl: string
+    denoProxyUrl: string
+  }
+}
+
+export const wechatApi = {
+  /**
+   * 获取微信认证状态
+   */
+  async getAuthStatus(): Promise<WeChatAuthStatus> {
+    return fetchApi(`${API_BASE}/wechat/auth/status`)
+  },
+
+  /**
+   * 设置微信认证信息
+   */
+  async setCredentials(credentials: { cookie: string; token: string; userAgent?: string }): Promise<{ ok: boolean; error?: string }> {
+    return fetchApi(`${API_BASE}/wechat/auth/credentials`, {
+      method: 'POST',
+      body: JSON.stringify(credentials),
+    })
+  },
+
+  /**
+   * 验证认证信息
+   */
+  async verifyCredentials(): Promise<{ ok: boolean; data: { valid: boolean } }> {
+    return fetchApi(`${API_BASE}/wechat/auth/verify`, {
+      method: 'POST',
+    })
+  },
+
+  /**
+   * 搜索公众号
+   */
+  async search(query: string, limit?: number): Promise<WeChatSearchResult> {
+    const params = new URLSearchParams({ query })
+    if (limit) params.set('limit', String(limit))
+    return fetchApi(`${API_BASE}/wechat/search?${params}`)
+  },
+
+  /**
+   * 触发所有公众号采集
+   */
+  async collect(): Promise<WeChatCollectResult> {
+    return fetchApi(`${API_BASE}/wechat/collect`, {
+      method: 'POST',
+    })
+  },
+
+  /**
+   * 触发单个公众号采集
+   */
+  async collectSource(sourceId: number): Promise<{ ok: boolean; data?: { articlesCollected: number }; error?: string }> {
+    return fetchApi(`${API_BASE}/wechat/collect/${sourceId}`, {
+      method: 'POST',
+    })
+  },
+
+  /**
+   * 获取微信设置
+   */
+  async getSettings(): Promise<WeChatSettings> {
+    return fetchApi(`${API_BASE}/wechat/settings`)
+  },
+
+  /**
+   * 更新微信设置
+   */
+  async updateSettings(settings: {
+    gatherContent?: boolean
+    gatherModel?: 'web' | 'app' | 'api'
+    proxyEnabled?: boolean
+    proxyUrl?: string
+    denoProxyUrl?: string
+  }): Promise<{ ok: boolean; error?: string }> {
+    return fetchApi(`${API_BASE}/wechat/settings`, {
+      method: 'PATCH',
+      body: JSON.stringify(settings),
+    })
+  },
+}

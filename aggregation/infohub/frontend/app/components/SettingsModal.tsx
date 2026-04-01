@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import useSWR from 'swr'
 import { cn } from '../lib/utils'
-import { settingsApi, sourcesApi, tagsApi, cookieApi } from '../lib/api'
+import { settingsApi, sourcesApi, tagsApi, cookieApi, wechatApi } from '../lib/api'
 import { IntegrationSetting, PLATFORM_CONFIG, Source, Tag } from '../types'
 import { useTheme } from './ThemeProvider'
 
@@ -12,7 +12,7 @@ interface SettingsModalProps {
   onClose: () => void
 }
 
-type TabType = 'sources' | 'tags' | 'general' | 'about'
+type TabType = 'sources' | 'tags' | 'general' | 'about' | 'wechat'
 
 export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const [activeTab, setActiveTab] = useState<TabType>('sources')
@@ -134,6 +134,12 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 icon={<PanelIcon path="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />}
                 label="关于"
               />
+              <SidebarButton
+                active={activeTab === 'wechat'}
+                onClick={() => setActiveTab('wechat')}
+                icon={<PanelIcon path="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />}
+                label="微信"
+              />
             </nav>
 
             <div className="border-t border-border-color p-3">
@@ -163,6 +169,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             {activeTab === 'tags' && <TagsTab tags={tags} onMutate={mutateTags} />}
             {activeTab === 'general' && <GeneralTab />}
             {activeTab === 'about' && <AboutTab />}
+            {activeTab === 'wechat' && <WeChatTab />}
           </div>
         </div>
       </div>
@@ -721,6 +728,206 @@ function AboutTab() {
           ))}
         </div>
       </div>
+    </div>
+  )
+}
+
+function WeChatTab() {
+  const [status, setStatus] = useState<{
+    configured: boolean
+    cookieConfigured: boolean
+    tokenConfigured: boolean
+  } | null>(null)
+  const [cookie, setCookie] = useState('')
+  const [token, setToken] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
+  const [collecting, setCollecting] = useState(false)
+  const [collectResult, setCollectResult] = useState<string | null>(null)
+
+  useEffect(() => {
+    loadStatus()
+  }, [])
+
+  async function loadStatus() {
+    try {
+      const res = await wechatApi.getAuthStatus()
+      if (res.ok && res.data) {
+        setStatus(res.data)
+        setCookie(res.data.cookieConfigured ? '********' : '')
+        setToken(res.data.tokenConfigured ? '********' : '')
+      }
+    } catch {
+      setError('Failed to load status')
+    }
+  }
+
+  async function handleSave() {
+    if (!cookie || !token) {
+      setError('Cookie and Token are required')
+      return
+    }
+
+    if (cookie === '********' && token === '********') {
+      setSuccess('Settings unchanged')
+      return
+    }
+
+    setLoading(true)
+    setError(null)
+    setSuccess(null)
+
+    try {
+      const res = await wechatApi.setCredentials({ cookie, token })
+      if (res.ok) {
+        setSuccess('Credentials saved successfully')
+        await loadStatus()
+      } else {
+        setError(res.error || 'Failed to save')
+      }
+    } catch {
+      setError('Failed to save credentials')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function handleVerify() {
+    setLoading(true)
+    setError(null)
+    setSuccess(null)
+
+    try {
+      const res = await wechatApi.verifyCredentials()
+      if (res.ok && res.data?.valid) {
+        setSuccess('Credentials are valid!')
+      } else {
+        setError('Credentials are invalid')
+      }
+    } catch {
+      setError('Verification failed')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function handleCollect() {
+    setCollecting(true)
+    setCollectResult(null)
+    setError(null)
+
+    try {
+      const res = await wechatApi.collect()
+      if (res.ok && res.data) {
+        const total = Object.values(res.data.collected).reduce((sum, n) => sum + n, 0)
+        setCollectResult(`Collected ${total} articles from ${res.data.totalSources} sources`)
+        await loadStatus()
+      } else {
+        setError(res.error || 'Collection failed')
+      }
+    } catch {
+      setError('Collection failed')
+    } finally {
+      setCollecting(false)
+    }
+  }
+
+  return (
+    <div className="p-6">
+      <h3 className="mb-6 text-lg font-semibold text-text-primary">微信公众号设置</h3>
+
+      {/* Status */}
+      {status && (
+        <div className="mb-6 rounded-lg bg-bg-tertiary p-4">
+          <div className="flex items-center gap-2 text-sm">
+            <span className={`h-2 w-2 rounded-full ${status.configured ? 'bg-green-500' : 'bg-yellow-500'}`} />
+            <span className="text-text-secondary">
+              {status.configured ? '已配置认证信息' : '未配置认证信息'}
+            </span>
+          </div>
+          <div className="mt-2 flex gap-4 text-xs text-text-secondary">
+            <span>Cookie: {status.cookieConfigured ? '✓' : '✗'}</span>
+            <span>Token: {status.tokenConfigured ? '✓' : '✗'}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Error/Success */}
+      {error && (
+        <div className="mb-4 rounded-lg bg-red-500/10 p-3 text-sm text-red-500">{error}</div>
+      )}
+      {success && (
+        <div className="mb-4 rounded-lg bg-green-500/10 p-3 text-sm text-green-500">{success}</div>
+      )}
+
+      {/* Form */}
+      <div className="space-y-4">
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-text-primary">Cookie</label>
+          <input
+            type="password"
+            value={cookie}
+            onChange={(e) => setCookie(e.target.value)}
+            placeholder="wxuin..."
+            className="w-full rounded-lg border border-border bg-bg-secondary px-3 py-2 text-sm text-text-primary placeholder:text-text-tertiary focus:border-primary focus:outline-none"
+          />
+          <p className="mt-1 text-xs text-text-tertiary">
+            从微信公众平台获取，建议使用专门的账号
+          </p>
+        </div>
+
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-text-primary">Token</label>
+          <input
+            type="password"
+            value={token}
+            onChange={(e) => setToken(e.target.value)}
+            placeholder="1234567890"
+            className="w-full rounded-lg border border-border bg-bg-secondary px-3 py-2 text-sm text-text-primary placeholder:text-text-tertiary focus:border-primary focus:outline-none"
+          />
+          <p className="mt-1 text-xs text-text-tertiary">
+            微信公众平台的 token 值（纯数字）
+          </p>
+        </div>
+
+        <div className="flex gap-3 pt-2">
+          <button
+            onClick={handleSave}
+            disabled={loading}
+            className="flex-1 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-50"
+          >
+            {loading ? '保存中...' : '保存设置'}
+          </button>
+          <button
+            onClick={handleVerify}
+            disabled={loading || !status?.configured}
+            className="flex-1 rounded-lg border border-border bg-bg-secondary px-4 py-2 text-sm font-medium text-text-primary hover:bg-bg-tertiary disabled:opacity-50"
+          >
+            验证
+          </button>
+        </div>
+      </div>
+
+      {/* Collection */}
+      {status?.configured && (
+        <div className="mt-6 border-t border-border pt-6">
+          <h4 className="mb-3 text-sm font-medium text-text-primary">采集文章</h4>
+          <button
+            onClick={handleCollect}
+            disabled={collecting}
+            className="w-full rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50"
+          >
+            {collecting ? '采集中...' : '立即采集所有公众号'}
+          </button>
+          {collectResult && (
+            <p className="mt-2 text-sm text-green-500">{collectResult}</p>
+          )}
+          <p className="mt-2 text-xs text-text-tertiary">
+            采集可能需要几分钟，取决于公众号数量和网络状况
+          </p>
+        </div>
+      )}
     </div>
   )
 }
