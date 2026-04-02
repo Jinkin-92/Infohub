@@ -43,9 +43,19 @@ export class WeChatAuth {
   private cookie: string = '';
   private token: string = '';
   private userAgent: string = DEFAULT_USER_AGENTS[0];
+  private _loaded: boolean = false;
+  private _loading: Promise<void> | null = null;
 
   constructor() {
-    this.loadFromSettings();
+    // 延迟加载，不在构造函数中等待
+  }
+
+  private async ensureLoaded(): Promise<void> {
+    if (this._loaded) return;
+    if (this._loading) return this._loading;
+    this._loading = this.loadFromSettings();
+    await this._loading;
+    this._loaded = true;
   }
 
   /**
@@ -73,6 +83,7 @@ export class WeChatAuth {
    * 保存认证信息到数据库
    */
   async saveToSettings(credentials: Partial<WeChatCredentials>): Promise<void> {
+    await this.ensureLoaded();
     const updates: string[] = [];
     const values: (string | number)[] = [];
 
@@ -111,6 +122,7 @@ export class WeChatAuth {
    * 检查认证是否已配置
    */
   isConfigured(): boolean {
+    if (!this._loaded) return false; // 尚未加载完成
     return Boolean(this.cookie && this.token);
   }
 
@@ -122,6 +134,7 @@ export class WeChatAuth {
     cookieValid: boolean;
     tokenValid: boolean;
   }> {
+    await this.ensureLoaded();
     const configured = this.isConfigured();
 
     // 简单的有效性检查
@@ -136,6 +149,7 @@ export class WeChatAuth {
    * 通过调用微信用户管理接口检查
    */
   async verifyCredentials(): Promise<boolean> {
+    await this.ensureLoaded();
     if (!this.cookie || !this.token) {
       return false;
     }
@@ -163,6 +177,7 @@ export class WeChatAuth {
    * 对应 WeRss search_Biz()
    */
   async searchBiz(query: string, limit: number = 5): Promise<SearchResult> {
+    await this.ensureLoaded();
     if (!this.cookie || !this.token) {
       throw new Error('WeChat credentials not configured');
     }
@@ -219,14 +234,16 @@ export class WeChatAuth {
   /**
    * 获取 Token
    */
-  getToken(): string {
+  async getToken(): Promise<string> {
+    await this.ensureLoaded();
     return this.token;
   }
 
   /**
    * 获取请求头
    */
-  getHeaders(): Record<string, string> {
+  async getHeaders(): Promise<Record<string, string>> {
+    await this.ensureLoaded();
     return {
       Cookie: this.cookie,
       'User-Agent': this.userAgent,

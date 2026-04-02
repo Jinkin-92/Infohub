@@ -83,20 +83,25 @@ export class WeChatArticleCollector {
       throw new Error('WeChat credentials not configured');
     }
 
+    const [token, headers] = await Promise.all([
+      wechatAuth.getToken(),
+      wechatAuth.getHeaders(),
+    ]);
+
     const url = new URL('https://mp.weixin.qq.com/cgi-bin/appmsgpublish');
     url.searchParams.set('sub', 'list');
     url.searchParams.set('sub_action', 'list_ex');
     url.searchParams.set('begin', '0');
     url.searchParams.set('count', String(limit));
     url.searchParams.set('fakeid', fakerId);
-    url.searchParams.set('token', wechatAuth.getToken());
+    url.searchParams.set('token', token);
     url.searchParams.set('lang', 'zh_CN');
     url.searchParams.set('f', 'json');
     url.searchParams.set('ajax', '1');
 
     try {
       const response = await fetch(url.toString(), {
-        headers: wechatAuth.getHeaders(),
+        headers,
       });
 
       const data = await response.json() as {
@@ -119,7 +124,7 @@ export class WeChatArticleCollector {
 
           articles.push({
             id: extractArticleId(appmsgex.link || ''),
-            mp_id: `MP_WXS_${Buffer.from(fakerId).toString('base64')}`,
+            mp_id: `MP_WXS_${fakerId}`,
             title: appmsgex.title || '',
             cover: appmsgex.cover || appmsgex.cdn_url || '',
             link: appmsgex.link || '',
@@ -150,9 +155,10 @@ export class WeChatArticleCollector {
     }
 
     try {
+      const headers = await wechatAuth.getHeaders();
       const response = await fetch(url, {
         headers: {
-          ...wechatAuth.getHeaders(),
+          ...headers,
           Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
           'Accept-Language': 'zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7',
           Referer: 'https://mp.weixin.qq.com/',

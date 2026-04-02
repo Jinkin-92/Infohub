@@ -26,19 +26,25 @@ export interface RSSOptions {
 
 /**
  * 将 datetime 对象或字符串转换为 RFC 822 格式
+ * 数据库存储的是 CST (UTC+8) 时间，直接格式化为 +0800 时区
  */
 function toRFC822(dt: Date | string): string {
   const date = typeof dt === 'string' ? new Date(dt) : dt;
 
-  // 如果是 naive datetime，假设是 CST (UTC+8)
-  if (!date.getTimezoneOffset()) {
-    // 假设 CST
-    const cstOffset = 8 * 60; // minutes
-    const cstDate = new Date(date.getTime() - cstOffset * 60 * 1000);
-    return cstDate.toUTCString().replace('GMT', '+0000');
-  }
+  // 直接使用本地时间（CST）格式化
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const pad = (n: number) => String(n).padStart(2, '0');
 
-  return date.toUTCString().replace('GMT', '+0000');
+  const dayName = days[date.getDay()];
+  const day = date.getDate();
+  const month = months[date.getMonth()];
+  const year = date.getFullYear();
+  const hours = pad(date.getHours());
+  const minutes = pad(date.getMinutes());
+  const seconds = pad(date.getSeconds());
+
+  return `${dayName}, ${day} ${month} ${year} ${hours}:${minutes}:${seconds} +0800`;
 }
 
 /**
