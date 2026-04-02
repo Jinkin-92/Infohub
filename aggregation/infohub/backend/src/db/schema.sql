@@ -132,3 +132,68 @@ INSERT INTO tags (name, color, description, sort_order) VALUES
   ('产品', '#52C41A', '产品相关', 4),
   ('设计', '#722ED1', '设计相关', 5)
 ON CONFLICT DO NOTHING;
+
+-- ============================================
+-- 微信公众号扩展表 (Phase 4)
+-- ============================================
+
+-- 微信公众号账号表
+CREATE TABLE IF NOT EXISTS wechat_accounts (
+  id                    VARCHAR(50) PRIMARY KEY,       -- 公众号ID，如 MP_WXS_xxx
+  mp_name               VARCHAR(200) NOT NULL,         -- 公众号名称
+  mp_cover              TEXT,                          -- 头像URL
+  mp_intro             TEXT,                          -- 公众号简介
+  fakeid                VARCHAR(100),                  -- 微信内部 fakeid
+  alias                 VARCHAR(100),                  -- 公众号别名
+  status                VARCHAR(20) DEFAULT 'active',  -- 状态：active/disabled
+  sync_time            TIMESTAMPTZ,                  -- 上次同步时间
+  created_at            TIMESTAMPTZ DEFAULT NOW(),
+  updated_at            TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 订阅源微信扩展表 (关联 sources 表)
+CREATE TABLE IF NOT EXISTS sources_wechat_ext (
+  source_id             INT PRIMARY KEY REFERENCES sources(id) ON DELETE CASCADE,
+  faker_id              VARCHAR(100) NOT NULL,         -- 微信 fakeid
+  mp_name               VARCHAR(200),                  -- 公众号名称（冗余存储）
+  last_article_time     TIMESTAMPTZ,                  -- 最新文章时间
+  created_at            TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 微信文章扩展表 (关联 items 表)
+CREATE TABLE IF NOT EXISTS items_wechat_ext (
+  item_id               BIGINT PRIMARY KEY REFERENCES items(id) ON DELETE CASCADE,
+  content               TEXT,                          -- 完整文章内容 (HTML)
+  digest                TEXT,                          -- 文章摘要
+  content_hash          VARCHAR(64),                   -- 内容哈希 (去重)
+  is_full_text          BOOLEAN DEFAULT FALSE,         -- 是否抓取了全文
+  created_at            TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 微信设置表
+CREATE TABLE IF NOT EXISTS wechat_settings (
+  id                    INT PRIMARY KEY DEFAULT 1,
+  cookie                TEXT,                          -- 微信 cookie
+  token                 VARCHAR(50),                   -- 微信 token
+  user_agent            TEXT,                          -- User-Agent
+  gather_content        INT DEFAULT 0,                 -- 是否采集全文 (0/1)
+  gather_model          VARCHAR(20) DEFAULT 'web',    -- 采集模式：web/app/api
+  proxy_enabled         INT DEFAULT 0,                -- 是否启用代理
+  proxy_url             TEXT,                          -- 代理地址
+  deno_proxy_url        TEXT,                          -- Deno 代理地址
+  created_at            TIMESTAMPTZ DEFAULT NOW(),
+  updated_at            TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 初始化微信设置
+INSERT INTO wechat_settings (id) VALUES (1) ON CONFLICT DO NOTHING;
+
+-- 微信表索引
+CREATE INDEX IF NOT EXISTS idx_wechat_accounts_name ON wechat_accounts(mp_name);
+CREATE INDEX IF NOT EXISTS idx_sources_wechat_ext_faker ON sources_wechat_ext(faker_id);
+CREATE INDEX IF NOT EXISTS idx_items_wechat_ext_hash ON items_wechat_ext(content_hash);
+
+COMMENT ON TABLE wechat_accounts IS '微信公众号账号表';
+COMMENT ON TABLE sources_wechat_ext IS '订阅源微信扩展表';
+COMMENT ON TABLE items_wechat_ext IS '微信文章扩展表';
+COMMENT ON TABLE wechat_settings IS '微信设置表';
