@@ -19,6 +19,10 @@ const nextConfig = {
         source: '/api/:path*',
         destination: `${apiProxyTarget}/api/:path*`,
       },
+      {
+        source: '/static/:path*',
+        destination: `${apiProxyTarget}/static/:path*`,
+      },
     ]
   },
   async headers() {

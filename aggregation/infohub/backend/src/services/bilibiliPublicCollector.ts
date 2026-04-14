@@ -43,7 +43,7 @@ function parseBilibiliDate(label: string | null, now = new Date()): Date {
     return now;
   }
 
-  const text = label.trim();
+  const text = label.trim().replace(/^[·•\s]+/, '');
   const hoursAgo = text.match(/^(\d+)\s*小时前$/);
   if (hoursAgo) {
     return new Date(now.getTime() - Number.parseInt(hoursAgo[1], 10) * 60 * 60 * 1000);
@@ -136,7 +136,7 @@ async function runBilibiliScraper(uid: string): Promise<BilibiliCard[]> {
   });
 }
 
-export async function collectBilibiliPublicItems(source: Source): Promise<RSSItem[]> {
+export async function collectBilibiliPublicItems(source: Source): Promise<{ items: RSSItem[]; authorName: string | null }> {
   const uid = source.platform_id?.trim();
   if (!uid) {
     throw new Error('Bilibili source is missing platform_id.');
@@ -144,14 +144,16 @@ export async function collectBilibiliPublicItems(source: Source): Promise<RSSIte
 
   const cards = await runBilibiliScraper(uid);
   if (cards.length === 0) {
-    return [];
+    return { items: [], authorName: null };
   }
 
   if (cards.every((card) => card.empty)) {
-    return [];
+    return { items: [], authorName: null };
   }
 
-  return cards.map((card) => {
+  const authorName = cards.find((c) => c.author)?.author ?? null;
+
+  const items: RSSItem[] = cards.map((card) => {
     const link = normalizeBilibiliUrl(card.link);
     const guid = link.match(/\/video\/(BV[0-9A-Za-z]+)/)?.[1] ?? link;
     const publishedAt = parseBilibiliDate(card.publishedLabel).toISOString();
@@ -174,6 +176,8 @@ export async function collectBilibiliPublicItems(source: Source): Promise<RSSIte
         : undefined,
     };
   });
+
+  return { items, authorName };
 }
 
 export const bilibiliPublicCollector = {

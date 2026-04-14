@@ -1,314 +1,87 @@
-# 个人信息中枢 (InfoHub)
+# InfoHub
 
-> 多平台内容聚合系统
+InfoHub 是一个面向个人用户的本地内容订阅中心，聚合知乎、微信公众号、微博、X、小红书、B 站、YouTube 和公开 RSS。
 
-## 项目结构
+当前面向普通用户的推荐发布形态是：
+- Windows 10/11
+- SQLite 本地数据库
+- 项目自带 BAT 启动脚本
+- 默认优先使用项目内置的便携 Node.js 运行时
+- 浏览器优先使用本机 Chrome/Edge；若不存在，会在安装时自动下载本地浏览器运行时
 
-```
-infohub/
-├── docker-compose.yml          # Docker Compose编排
-├── .env.example                # 环境变量示例
-├── backend/                    # Hono后端服务 (Phase 0 ✅)
-│   ├── src/
-│   │   ├── index.ts            # 入口文件
-│   │   ├── config/
-│   │   │   └── env.ts          # 环境变量配置
-│   │   ├── db/
-│   │   │   ├── client.ts       # 数据库连接
-│   │   │   ├── queries.ts      # 数据库查询
-│   │   │   └── schema.sql      # 数据库Schema
-│   │   ├── middleware/
-│   │   │   ├── error.ts        # 统一错误处理
-│   │   │   ├── logger.ts       # 请求日志
-│   │   │   └── validation.ts   # 请求验证
-│   │   ├── routes/
-│   │   │   ├── feed.ts         # Feed API
-│   │   │   └── sources.ts      # Sources API
-│   │   ├── services/
-│   │   │   ├── collector.ts    # RSS采集器
-│   │   │   ├── cron.ts         # 定时任务
-│   │   │   ├── rsshubAdapter.ts # RSSHub适配器
-│   │   │   └── urlDetector.ts  # URL平台识别
-│   │   └── types/
-│   │       └── index.ts        # 类型定义
-│   ├── package.json
-│   ├── tsconfig.json
-│   └── Dockerfile
-│
-└── frontend/                   # Next.js前端 (Phase 1 ✅)
-    ├── app/
-    │   ├── components/
-    │   │   ├── TabBar.tsx      # 平台Tab导航
-    │   │   ├── FeedList.tsx    # 瀑布流列表
-    │   │   └── FeedItem.tsx    # 内容卡片
-    │   ├── lib/
-    │   │   ├── api.ts          # API客户端
-       │   └── utils.ts          # 工具函数
-    │   ├── types/
-    │   │   └── index.ts        # 类型定义
-    │   ├── globals.css         # 全局样式
-    │   ├── layout.tsx          # 根布局
-    │   └── page.tsx            # 主页面
-    ├── package.json
-    ├── tsconfig.json
-    ├── tailwind.config.js
-    └── Dockerfile
+普通用户不需要 Docker，也不需要额外配置 Python、AI 服务或独立的微信采集器。
 
-## 快速启动
+## 面向普通用户的使用方式
 
-### 环境要求
+### 1. 首次安装
 
-- Docker & Docker Compose
-- Node.js 20+ (本地开发)
+在项目根目录运行：
 
-本地运行说明:
-- 如果使用 `DB_TYPE=sqlite`，后端现在会在检测到 `Node 25+` 时自动使用 `Node 24` 兼容启动。
-- 如果使用 `DB_TYPE=postgresql`，则继续直接使用当前 Node 版本。
-
-### 1. 启动服务
-
-```bash
-# 进入项目目录
-cd infohub
-
-# 复制环境变量
-cp .env.example .env
-
-# 安装依赖
-cd backend && npm install && cd ..
-cd frontend && npm install && cd ..
-
-# 启动所有服务
-docker compose up -d
-
-# 等待服务启动（约30秒）
-docker compose logs -f backend
+```bat
+install.bat
 ```
 
-### 2. 验证服务
+这个脚本会自动：
+- 检查并准备可用的 Node.js 20/22/24 运行时
+- 自动下载项目内浏览器运行时，仅在本机没有 Chrome/Edge 时执行
+- 补齐 `backend/.env`
+- 安装前后端依赖
+- 构建前后端产物
 
-```bash
-# 健康检查
-curl http://localhost:3002/health
+### 2. 启动
 
-# 获取订阅源列表
-curl http://localhost:3002/api/sources
-
-# 获取Feed列表
-curl http://localhost:3002/api/feed
+```bat
+start.bat
 ```
 
-### 3. 添加订阅源
+启动成功后：
+- 前端：`http://localhost:3000`
+- 后端：`http://localhost:3002`
 
-```bash
-# 添加知乎订阅源
-curl -X POST http://localhost:3002/api/sources \
-  -H "Content-Type: application/json" \
-  -d '{"url": "https://zhihu.com/people/example"}'
+### 3. 停止
 
-# 添加RSS订阅源
-curl -X POST http://localhost:3002/api/sources \
-  -H "Content-Type: application/json" \
-  -d '{"url": "https://example.com/feed.xml"}'
+```bat
+stop.bat
 ```
 
-### 4. 手动触发采集
+### 4. 更新
 
-```bash
-# 替换{source_id}为实际的订阅源ID
-curl -X POST http://localhost:3002/api/sources/{source_id}/collect
+```bat
+update.bat
 ```
 
----
+推荐更新方式：
+1. 发布 ZIP 包，用户覆盖原目录后执行 `update.bat`
+2. 或者用户先 `git pull`，再执行 `update.bat`
 
-## Cookie 自动提取（可选功能）
+## 产品原则
 
-部分平台（知乎、微博、小红书等）需要登录态才能获取完整内容。InfoHub 支持从 Chrome 自动提取 Cookie，无需手动复制。
+- 默认本地运行，尽量减少外部环境依赖
+- 微信走项目内置采集链路，不再依赖 `we-mp-rss`
+- 内容刷新以用户主动触发为主，不做高频后台自动采集
+- RSSHub 作为本地基础服务被自动托管，但只管理 InfoHub 自己拉起的进程
 
-### 前置要求：开启 Chrome 远程调试
+## 当前脚本职责
 
-**步骤 1：打开 Chrome 远程调试端口**
+- `install.bat`
+  普通用户入口，调用安装脚本准备运行时、安装依赖、构建产物
+- `start.bat`
+  普通用户入口，启动前后端并等待就绪
+- `stop.bat`
+  普通用户入口，停止 InfoHub 自己的前后端进程
+- `update.bat`
+  普通用户入口，停止、更新依赖、重建并重启
+- `package-release.bat`
+  开发/打包入口，生成 Windows 测试分发 ZIP
 
-方式一：命令行启动 Chrome
+底层仍保留对应的 `.ps1` 脚本，便于维护和调试，但普通用户默认只需要使用 `.bat`。
 
-```bash
-# Windows
-chrome.exe --remote-debugging-port=18792
+## 发布说明
 
-# macOS
-/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=18792
+为了让普通用户部署尽量简单，建议对外发布：
+- ZIP 测试包
+- 五个 BAT 脚本：`install.bat / start.bat / stop.bat / update.bat / package-release.bat`
+- 一份简洁的 Windows 使用说明
 
-# Linux
-google-chrome --remote-debugging-port=18792
-```
-
-方式二：图形界面启用
-
-1. 在 Chrome 地址栏打开 `chrome://inspect/#remote-debugging`
-2. 勾选 **"Allow remote debugging for this browser instance"**
-3. 重启 Chrome（确保已登录要提取 Cookie 的网站）
-
-**步骤 2：验证 Chrome 连接状态**
-
-打开 `chrome://inspect/#remote-debugging`，你应该能在 "Remote Target" 列表中看到 Chrome 实例。
-
-**步骤 3：在 InfoHub 中获取 Cookie**
-
-1. 打开 InfoHub 首页
-2. 点击右上角**设置**按钮
-3. 进入**通用**标签页
-4. 找到**从 Chrome 获取 Cookie**区域
-5. 确保看到 "Chrome 已连接" 状态
-6. 点击**一键获取全部 Cookie**按钮
-
-### 支持的平台
-
-| 平台 | Cookie 关键字段 | 说明 |
-| --- | --- | --- |
-| 知乎 | `z_c0`, `d_c0`, `q_c1` | 需要登录才能查看完整回答 |
-| 微博 | `SUB`, `SUBP` | 需要登录才能查看全部内容 |
-| 小红书 | `a1`, `webId` | 需要登录才能查看笔记详情 |
-| 豆瓣 | `dbcl2`, `ck` | 需要登录才能查看豆列 |
-| X/Twitter | `auth_token` | 需要登录才能查看推文 |
-
-### 自定义 Chrome 调试端口
-
-如果 18792 端口被占用，可以在 `.env` 文件中配置：
-
-```bash
-# 后端
-echo "CHROME_DEBUG_PORT=18793" >> backend/.env
-```
-
-### 故障排除
-
-| 问题 | 解决方案 |
-| --- | --- |
-| 显示 "Chrome 未连接" | 确保用 `--remote-debugging-port` 启动 Chrome，或在 `chrome://inspect` 中勾选调试选项 |
-| Cookie 获取失败 | 确保在 Chrome 中已登录目标网站，然后重试 |
-| Cookie 过期 | 删除 `rsshub-local/.env` 中对应的 Cookie 行，重启 RSSHub 后重新获取 |
-
-## API文档
-
-### Feed API
-
-| 方法 | 路径 | 描述 |
-|------|------|------|
-| GET | /api/feed | 获取条目列表 |
-| GET | /api/feed/unread-count | 获取未读数量 |
-| POST | /api/feed/read | 标记已读 |
-| POST | /api/feed/read-all | 批量标记已读 |
-
-**GET /api/feed 参数：**
-- `platform`: 平台筛选 (zhihu, x, news, custom)
-- `limit`: 每页数量 (1-100, 默认20)
-- `offset`: 偏移量 (默认0)
-- `unread_only`: 仅未读 (true/false)
-
-### Sources API
-
-| 方法 | 路径 | 描述 |
-|------|------|------|
-| GET | /api/sources | 获取所有订阅源 |
-| GET | /api/sources/:id | 获取单个订阅源 |
-| POST | /api/sources | 创建订阅源 |
-| PATCH | /api/sources/:id | 更新订阅源 |
-| DELETE | /api/sources/:id | 删除订阅源 |
-| POST | /api/sources/:id/collect | 手动触发采集 |
-
-## 开发模式
-
-### 后端本地开发
-
-```bash
-cd backend
-
-# 安装依赖
-npm install
-
-# 复制环境变量
-cp .env.example .env
-
-# 开发模式（热重载）
-npm run dev
-```
-
-### 数据库连接
-
-```bash
-# 进入数据库容器
-docker compose exec postgres psql -U infohub -d infohub
-
-# 查看表结构
-\dt
-
-# 查看订阅源
-SELECT * FROM sources;
-
-# 查看内容条目
-SELECT * FROM items ORDER BY published_at DESC LIMIT 10;
-```
-
-## 定时任务
-
-- 每30分钟自动检查并采集需要更新的订阅源
-- 采集间隔可配置（默认新闻60分钟，其他360分钟）
-- 5分钟内不重复采集同一源
-
-## 技术栈
-
-### 后端
-- **框架**: Hono (Node.js)
-- **数据库**: PostgreSQL 16
-- **RSS适配**: RSSHub
-- **定时任务**: node-cron
-- **验证**: Zod
-- **部署**: Docker Compose
-
-### 前端
-- **框架**: Next.js 14 (App Router)
-- **样式**: Tailwind CSS
-- **状态管理**: SWR
-- **图标**: Lucide React
-- **日期**: date-fns
-
-## 开发阶段
-
-### Phase 0 - 后端核心 ✅
-- ✅ PostgreSQL Schema（含状态跟踪字段）
-- ✅ Hono后端框架
-- ✅ 统一错误处理（AppError）
-- ✅ Zod请求验证
-- ✅ RSSHub适配器层
-- ✅ URL平台识别器
-- ✅ RSS采集器（含时间窗口去重）
-- ✅ 数据库查询模块
-- ✅ Feed API路由
-- ✅ Sources API路由
-- ✅ 定时任务管理器
-- ✅ Docker Compose编排
-
-### Phase 1 - 前端基础 ✅
-- ✅ Next.js 14 + Tailwind CSS
-- ✅ 平台Tab导航（颜色圆点区分）
-- ✅ 瀑布流布局（响应式三列）
-- ✅ 内容卡片（标题+摘要+展开）
-- ✅ 已读状态显示
-- ✅ API客户端封装
-
-### Phase 2 - 交互完善 ✅
-- ✅ 添加订阅源弹窗
-- ✅ 设置页面（订阅源管理、通用设置、关于）
-- ✅ 已读状态同步优化（乐观更新 + 批量标记）
-- ✅ 性能优化（CSS Containment）
-- ✅ 暗黑模式（亮色/暗色/跟随系统）
-
-### Phase 3 - 功能扩展 ✅
-- ✅ YouTube/B站平台支持（Tab导航、URL检测、示例）
-- ✅ 内容搜索（标题、摘要、作者全文搜索，支持快捷键 Ctrl+K）
-- [ ] 标签管理（需要数据库 schema 变更）
-- [ ] 微信公众号集成
-
-## 许可证
-
-MIT
+更完整的本地部署说明见：
+- `docs/windows-local-setup.md`

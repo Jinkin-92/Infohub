@@ -177,7 +177,34 @@ function initSQLiteTables() {
     );
 
     INSERT OR IGNORE INTO wechat_settings (id) VALUES (1);
+
+    -- 收藏标签表（替代标签系统）
+    CREATE TABLE IF NOT EXISTS favorite_tags (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL UNIQUE,
+      sort_order INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS favorites (
+      item_id INTEGER NOT NULL REFERENCES items(id) ON DELETE CASCADE,
+      favorite_tag_id INTEGER NOT NULL REFERENCES favorite_tags(id) ON DELETE CASCADE,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (item_id)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_favorites_item ON favorites(item_id);
+    CREATE INDEX IF NOT EXISTS idx_favorites_tag ON favorites(favorite_tag_id);
   `);
+
+  // Seed default favorite tags
+  const defaultFavoriteTags = [
+    { name: '稍后阅读', sort_order: 1 },
+    { name: '重要', sort_order: 2 },
+  ];
+  for (const tag of defaultFavoriteTags) {
+    sqliteClient.exec(`INSERT OR IGNORE INTO favorite_tags (name, sort_order) VALUES ('${tag.name}', ${tag.sort_order})`);
+  }
 
   const defaultTags = [
     { name: '重要', color: '#EF4444' },

@@ -2,6 +2,8 @@
 import { serve } from '@hono/node-server';
 import { cors } from 'hono/cors';
 import { prettyJSON } from 'hono/pretty-json';
+import { existsSync, readFileSync } from 'fs';
+import { join } from 'path';
 import { env } from './config/env.js';
 import { checkConnection, closeConnection } from './db/client.js';
 import { formatError, getStatusCode } from './middleware/error.js';
@@ -13,6 +15,10 @@ import settingsRouter from './routes/settings.js';
 import tagsRouter from './routes/tags.js';
 import cookieRouter from './routes/cookie.js';
 import wechatRouter from './routes/wechat.js';
+import authRouter from './routes/auth.js';
+import publicSourcesRouter from './routes/publicSources.js';
+import favoritesRouter from './routes/favorites.js';
+import { localIntegrationsService } from './services/localIntegrations.js';
 
 function createApp(): Hono {
   const app = new Hono();
@@ -21,11 +27,33 @@ function createApp(): Hono {
   app.use(
     '*',
     cors({
-      origin: env.NODE_ENV === 'development' ? '*' : ['http://localhost:3000'],
+      origin:
+        env.NODE_ENV === 'development'
+          ? '*'
+          : ['http://localhost:3000', 'http://127.0.0.1:3000'],
       credentials: true,
     })
   );
   app.use('*', prettyJSON());
+
+  // 静态文件服务 - 二维码图片
+  app.use('/static/*', async (c) => {
+    const filePath = join('static', c.req.path.replace('/static/', ''));
+    if (existsSync(filePath)) {
+      const buffer = readFileSync(filePath);
+      const ext = filePath.split('.').pop()?.toLowerCase();
+      const contentTypes: Record<string, string> = {
+        png: 'image/png',
+        jpg: 'image/jpeg',
+        jpeg: 'image/jpeg',
+        gif: 'image/gif',
+        svg: 'image/svg+xml',
+      };
+      c.header('Content-Type', contentTypes[ext || ''] || 'application/octet-stream');
+      return c.body(buffer);
+    }
+    return c.text('Not Found', 404);
+  });
 
   app.get('/health', async (c) => {
     const dbHealthy = await checkConnection();
@@ -42,6 +70,9 @@ function createApp(): Hono {
   app.route('/api/tags', tagsRouter);
   app.route('/api/cookie', cookieRouter);
   app.route('/api/wechat', wechatRouter);
+  app.route('/api/auth', authRouter);
+  app.route('/api/public-sources', publicSourcesRouter);
+  app.route('/api/favorites', favoritesRouter);
 
   app.notFound(() => {
     return new Response(
@@ -83,6 +114,13 @@ async function startServer() {
     process.exit(1);
   }
 
+  try {
+    await localIntegrationsService.ensureRsshubRunning();
+  } catch (error) {
+    console.error('[Startup] Failed to ensure local RSSHub is running:', error);
+  }
+  localIntegrationsService.startWatchdog();
+
   const app = createApp();
 
   if (env.NODE_ENV !== 'test') {
@@ -105,6 +143,7 @@ async function startServer() {
   const shutdown = async (signal: string) => {
     console.log(`[Shutdown] Received ${signal}, shutting down...`);
     cronManager.stop();
+    localIntegrationsService.stopWatchdog();
     await closeConnection();
     process.exit(0);
   };

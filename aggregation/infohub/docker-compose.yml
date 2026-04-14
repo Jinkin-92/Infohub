@@ -31,7 +31,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3002
-      DATABASE_URL: sqlite:../data/infohub.db
+      SQLITE_PATH: ../data/infohub.db
       RSSHUB_URL: http://rsshub:1200
     volumes:
       - ./data:/app/data

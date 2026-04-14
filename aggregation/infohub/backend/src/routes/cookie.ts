@@ -1,16 +1,10 @@
-/**
- * Cookie API 路由
- *
- * 提供 Cookie 提取和状态查询接口
- */
-
 import { Hono } from 'hono';
 import { cookieExtractor, type ExtractResult } from '../services/cookieExtractor.js';
 import { localIntegrationsService } from '../services/localIntegrations.js';
+import { weiboLoginService } from '../services/weiboLogin.js';
 
 const cookieRouter = new Hono();
 
-// Cookie 平台状态
 interface PlatformStatus {
   platform: string;
   key: string;
@@ -19,27 +13,20 @@ interface PlatformStatus {
   loggedIn: boolean;
 }
 
-// GET /api/cookie/status - 获取各平台 Cookie 状态
 cookieRouter.get('/status', async (c) => {
   try {
-    // 获取当前 rsshub 配置
     const rsshubSettings = await localIntegrationsService.getRsshubSettings();
+    const diagnosis = await cookieExtractor.diagnose();
 
-    // 获取 Chrome 连接状态
-    const chromeStatus = await cookieExtractor.checkConnection();
-
-    // 平台列表
     const platforms: PlatformStatus[] = [
       { platform: '知乎', key: 'ZHIHU_COOKIES', url: 'https://www.zhihu.com/', configured: false, loggedIn: false },
       { platform: '微博', key: 'WEIBO_COOKIES', url: 'https://weibo.com/', configured: false, loggedIn: false },
       { platform: '小红书', key: 'XIAOHONGSHU_COOKIE', url: 'https://www.xiaohongshu.com/', configured: false, loggedIn: false },
-      { platform: '豆瓣', key: 'DOUBAN_COOKIE', url: 'https://www.douban.com/', configured: false, loggedIn: false },
       { platform: 'X/Twitter', key: 'TWITTER_AUTH_TOKEN', url: 'https://x.com/', configured: false, loggedIn: false },
     ];
 
-    // 检查配置状态
     for (const setting of rsshubSettings.settings) {
-      const platform = platforms.find((p) => p.key === setting.key);
+      const platform = platforms.find((item) => item.key === setting.key);
       if (platform) {
         platform.configured = setting.configured;
       }
@@ -48,14 +35,14 @@ cookieRouter.get('/status', async (c) => {
     return c.json({
       ok: true,
       data: {
-        chromeConnected: chromeStatus.connected,
-        chromePort: chromeStatus.port,
-        chromeError: chromeStatus.error,
+        chromeConnected: diagnosis.available,
+        chromeVersion: diagnosis.chromeVersion,
+        chromeError: diagnosis.error,
+        chromeHint: diagnosis.hint,
         platforms,
       },
     });
   } catch (error) {
-    console.error('[Cookie API] Status error:', error);
     return c.json(
       {
         ok: false,
@@ -66,28 +53,23 @@ cookieRouter.get('/status', async (c) => {
   }
 });
 
-// POST /api/cookie/extract - 提取并保存 Cookie
 cookieRouter.post('/extract', async (c) => {
   try {
-    // 检查 Chrome 连接
-    const chromeStatus = await cookieExtractor.checkConnection();
-    if (!chromeStatus.connected) {
+    const diagnosis = await cookieExtractor.diagnose();
+    if (!diagnosis.available) {
+      const errorMsg = diagnosis.hint ? `${diagnosis.error}\n\n提示: ${diagnosis.hint}` : diagnosis.error;
       return c.json(
         {
           ok: false,
-          error: `Chrome remote debugging not connected. Please enable remote debugging at chrome://inspect/#remote-debugging (currently trying port ${chromeStatus.port})`,
+          error: errorMsg,
           code: 'CHROME_NOT_CONNECTED',
         },
         400
       );
     }
 
-    // 执行提取
     const result: ExtractResult = await cookieExtractor.extractAll();
-
-    // 获取更新后的状态
     const rsshubSettings = await localIntegrationsService.getRsshubSettings();
-
     return c.json({
       ok: true,
       data: {
@@ -99,7 +81,6 @@ cookieRouter.post('/extract', async (c) => {
       },
     });
   } catch (error) {
-    console.error('[Cookie API] Extract error:', error);
     return c.json(
       {
         ok: false,
@@ -110,19 +91,73 @@ cookieRouter.post('/extract', async (c) => {
   }
 });
 
-// GET /api/cookie/chrome - 检查 Chrome 连接状态
 cookieRouter.get('/chrome', async (c) => {
   try {
-    const status = await cookieExtractor.checkConnection();
+    const diagnosis = await cookieExtractor.diagnose();
     return c.json({
       ok: true,
-      data: status,
+      data: diagnosis,
     });
   } catch (error) {
     return c.json(
       {
         ok: false,
         error: error instanceof Error ? error.message : 'Failed to check Chrome connection',
+      },
+      500
+    );
+  }
+});
+
+cookieRouter.post('/weibo/start', async (c) => {
+  try {
+    const body = await c.req.json().catch(() => ({}));
+    const targetUrl = typeof body?.targetUrl === 'string' ? body.targetUrl : undefined;
+    const session = await weiboLoginService.startSession(targetUrl);
+
+    return c.json({
+      ok: session.state !== 'failed',
+      data: session,
+      error: session.state === 'failed' ? session.error || session.message : undefined,
+    });
+  } catch (error) {
+    return c.json(
+      {
+        ok: false,
+        error: error instanceof Error ? error.message : 'Failed to start Weibo login',
+      },
+      500
+    );
+  }
+});
+
+cookieRouter.get('/weibo/:sessionId/status', async (c) => {
+  try {
+    const session = await weiboLoginService.getSession(c.req.param('sessionId'));
+    return c.json({
+      ok: true,
+      data: session,
+    });
+  } catch (error) {
+    return c.json(
+      {
+        ok: false,
+        error: error instanceof Error ? error.message : 'Failed to read Weibo login status',
+      },
+      404
+    );
+  }
+});
+
+cookieRouter.post('/weibo/:sessionId/cancel', async (c) => {
+  try {
+    await weiboLoginService.cancelSession(c.req.param('sessionId'));
+    return c.json({ ok: true });
+  } catch (error) {
+    return c.json(
+      {
+        ok: false,
+        error: error instanceof Error ? error.message : 'Failed to cancel Weibo login',
       },
       500
     );

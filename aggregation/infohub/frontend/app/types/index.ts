@@ -15,6 +15,9 @@ export interface Source {
   last_success_at?: string | null
   created_at: string
   updated_at?: string
+  is_public?: boolean
+  public_source_id?: number | null
+  category?: string
 }
 
 export interface Item {
@@ -28,7 +31,14 @@ export interface Item {
   platform: string
   published_at: string
   is_read?: boolean
-  tags?: Tag[]
+  favorite?: FavoriteTag | null
+}
+
+export interface FavoriteTag {
+  id: number
+  name: string
+  sort_order: number
+  created_at: string
 }
 
 export interface Tag {
@@ -55,6 +65,16 @@ export interface FeedListResponse {
     offset: number
     hasMore: boolean
   }
+}
+
+// Feed API 请求参数
+export interface FeedParams {
+  platform?: string
+  limit?: number
+  offset?: number
+  unread_only?: boolean
+  search?: string
+  is_public?: 'true' | 'false'
 }
 
 export interface UnreadBreakdownResponse {
@@ -88,6 +108,13 @@ export interface RsshubSettingsResponse {
     envPath: string
     settings: IntegrationSetting[]
   }
+  scheduler: {
+    enabled: boolean
+    isCollecting: boolean
+    lastRunAt: string | null
+    lastSuccessAt: string | null
+    lastError: string | null
+  }
   message?: string
 }
 
@@ -100,4 +127,35 @@ export const PLATFORM_CONFIG: Record<string, PlatformConfig> = {
   weibo: { id: 'weibo', name: '微博', color: '#E6162D', icon: 'weibo' },
   news: { id: 'news', name: '新闻', color: '#FF6B6B', icon: 'news' },
   custom: { id: 'custom', name: 'RSS', color: '#6B7280', icon: 'rss' },
+}
+
+export interface PublicSource {
+  id: number
+  name: string
+  url: string
+  rss_url: string
+  platform: string
+  category: string
+  description: string | null
+  enabled: boolean
+  subscribed_count: number
+  created_at: string
+}
+
+export interface PublicSourceCategory {
+  id: number
+  slug: string
+  name: string
+  sort_order: number
+  created_at: string
+}
+
+export const PUBLIC_CATEGORY_CONFIG: Record<string, PlatformConfig> = {
+  tech: { id: 'tech', name: '科技', color: '#6366F1', icon: 'tech' },
+  news: { id: 'news', name: '新闻', color: '#EF4444', icon: 'news' },
+  finance: { id: 'finance', name: '财经', color: '#F59E0B', icon: 'finance' },
+  life: { id: 'life', name: '生活', color: '#10B981', icon: 'life' },
+  design: { id: 'design', name: '设计', color: '#8B5CF6', icon: 'design' },
+  video: { id: 'video', name: '视频', color: '#EC4899', icon: 'video' },
+  aggregator: { id: 'aggregator', name: '聚合', color: '#6B7280', icon: 'aggregator' },
 }

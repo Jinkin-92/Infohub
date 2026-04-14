@@ -1,8 +1,12 @@
 ﻿import { Hono } from 'hono';
 import { z } from 'zod';
 import { sourcesQueries } from '../db/queries.js';
+import { sql } from '../db/client.js';
 import { collector } from '../services/collector.js';
+import { cronManager } from '../services/cron.js';
 import { urlDetector } from '../services/urlDetector.js';
+import { env } from '../config/env.js';
+import { resolveZhihuSourceName } from '../services/zhihuSourceName.js';
 import { getValidatedBody, validateBody } from '../middleware/validation.js';
 import { BadRequestError, ConflictError, NotFoundError } from '../middleware/error.js';
 import type { CreateSourceInput } from '../types/index.js';
@@ -30,9 +34,68 @@ function parseId(value: string | undefined): number {
   return id;
 }
 
+function normalizeWeChatFakeId(value: string | null | undefined): string | null {
+  if (!value) {
+    return null;
+  }
+
+  const trimmed = value.trim();
+  const prefixedMatch = trimmed.match(/MP_WXS_(\d+)/i);
+  if (prefixedMatch) {
+    return prefixedMatch[1];
+  }
+
+  if (/^\d+$/.test(trimmed)) {
+    return trimmed;
+  }
+
+  try {
+    const decoded = Buffer.from(trimmed, 'base64').toString('utf8').trim();
+    if (/^\d+$/.test(decoded)) {
+      return decoded;
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
 sourcesRouter.get('/', async (c) => {
   const sources = await sourcesQueries.getAll();
   return c.json({ ok: true, sources });
+});
+
+/**
+ * 预览订阅源检测结果
+ * POST /api/sources/detect
+ * 不创建源，只返回检测信息供前端预览
+ */
+sourcesRouter.post('/detect', validateBody(createSourceSchema), async (c) => {
+  const { url } = getValidatedBody<z.infer<typeof createSourceSchema>>(c);
+  const detected = await urlDetector.detect(url);
+
+  return c.json({
+    ok: true,
+    detected: {
+      platform: detected.platform,
+      platformId: detected.platformId,
+      rssUrl: detected.rssUrl,
+      displayName: detected.displayName,
+    },
+  });
+});
+
+sourcesRouter.post('/collect/all', async (c) => {
+  const refresh = await cronManager.startManualCollection(false);
+  return c.json({
+    ok: true,
+    refresh,
+    scheduler: cronManager.getStatus(),
+    message: refresh.alreadyRunning
+      ? 'A refresh is already running'
+      : 'Manual refresh started in the background',
+  }, refresh.alreadyRunning ? 200 : 202);
 });
 
 sourcesRouter.get('/:id', async (c) => {
@@ -48,7 +111,12 @@ sourcesRouter.post('/', validateBody(createSourceSchema), async (c) => {
   const detected = await urlDetector.detect(url);
 
   const existing = await sourcesQueries.getAll();
-  const duplicate = existing.find((source) => source.rss_url === detected.rssUrl);
+  const duplicate = detected.platform === 'wechat' && detected.platformId
+    ? existing.find((source) =>
+        source.platform === 'wechat' &&
+        normalizeWeChatFakeId(source.platform_id) === normalizeWeChatFakeId(detected.platformId)
+      )
+    : existing.find((source) => source.rss_url === detected.rssUrl);
   if (duplicate) {
     throw new ConflictError('Source already exists');
   }
@@ -64,11 +132,62 @@ sourcesRouter.post('/', validateBody(createSourceSchema), async (c) => {
   };
 
   const source = await sourcesQueries.create(input);
+  let finalSource = source;
+
+  // 知乎源：从 RSSHub feed 标题提取真实用户名
+  if (detected.platform === 'zhihu') {
+    try {
+      const displayName = await resolveZhihuSourceName(detected.rssUrl, detected.platformId);
+      if (displayName) {
+        await sourcesQueries.update(source.id, { name: displayName });
+      }
+    } catch (err) {
+      console.error('[Sources] Failed to fetch Zhihu username:', err);
+    }
+  }
+
+  // 为微信源创建 faker_id 条目
+  // platformId 此时已经是解码后的纯数字 fakeid（urlDetector 处理过）
+  if (detected.platform === 'wechat' && detected.platformId) {
+    try {
+      const localFeedUrl = `http://localhost:${env.PORT}/api/feed/wechat/${source.id}`;
+
+      await sql.execute(
+        `UPDATE sources
+         SET rss_url = ?, platform_id = ?, updated_at = CURRENT_TIMESTAMP
+         WHERE id = ?`,
+        [localFeedUrl, detected.platformId, source.id]
+      );
+
+      await sql.execute(
+        'INSERT INTO sources_wechat_ext (source_id, faker_id) VALUES (?, ?)',
+        [source.id, detected.platformId]
+      );
+
+      await sql.execute(
+        `INSERT OR IGNORE INTO wechat_accounts (id, mp_name, faker_id, status)
+         VALUES (?, ?, ?, 1)`,
+        [`MP_WXS_${detected.platformId}`, detected.displayName, detected.platformId]
+      );
+
+      await sql.execute(
+        `UPDATE wechat_accounts
+         SET mp_name = ?, faker_id = ?, updated_at = datetime('now')
+         WHERE id = ?`,
+        [detected.displayName, detected.platformId, `MP_WXS_${detected.platformId}`]
+      );
+
+      finalSource = (await sourcesQueries.getById(source.id)) ?? source;
+    } catch (err) {
+      console.error('[Sources] Failed to create wechat ext:', err);
+    }
+  }
+
   void collector.collectSource(source.id).catch((error) => {
     console.error('[Sources] Initial collection failed:', error);
   });
 
-  return c.json({ ok: true, source, detected }, 201);
+  return c.json({ ok: true, source: finalSource, detected }, 201);
 });
 
 sourcesRouter.patch('/:id', validateBody(updateSourceSchema), async (c) => {
@@ -100,7 +219,7 @@ sourcesRouter.post('/:id/collect', async (c) => {
     throw new NotFoundError('Source not found');
   }
 
-  const result = await collector.collectSource(id);
+  const result = await collector.collectSource(id, { force: true });
   return c.json({ ok: result.success, result });
 });
 

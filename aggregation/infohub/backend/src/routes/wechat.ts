@@ -4,10 +4,34 @@
 
 import { Hono } from 'hono';
 import { z } from 'zod';
-import { wechatAuth, weChatArticleCollector } from '../services/wechat/index.js';
+import { wechatAuth } from '../services/wechat/index.js';
+import { weChatQrLogin } from '../services/wechat/qrLogin.js';
 import { sql } from '../db/client.js';
+import { collector } from '../services/collector.js';
 
 const wechatRouter = new Hono();
+
+async function getLatestSourceItem(sourceId: number): Promise<{
+  id: number;
+  title: string;
+  published_at: string;
+  url: string;
+} | null> {
+  const row = await sql.get<{
+    id: number;
+    title: string;
+    published_at: string;
+    url: string;
+  }>(
+    `SELECT id, title, published_at, url
+     FROM items
+     WHERE source_id = ?
+     ORDER BY datetime(published_at) DESC, id DESC
+     LIMIT 1`,
+    [sourceId]
+  );
+  return row ?? null;
+}
 
 // Schema 验证
 const setCredentialsSchema = z.object({
@@ -93,6 +117,72 @@ wechatRouter.post('/auth/verify', async (c) => {
 
 // ============ 公众号搜索 ============
 
+// ============ 二维码登录 ============
+
+/**
+ * 获取登录二维码
+ */
+wechatRouter.get('/qrcode', async (c) => {
+  try {
+    const result = await weChatQrLogin.getQrCode();
+
+    return c.json({
+      ok: true,
+      data: {
+        uuid: result.uuid,
+        qrCodeUrl: result.qrCodePath,
+        expiresAt: result.expiresAt,
+      },
+    });
+  } catch (error) {
+    console.error('[WeChat API] qrcode error:', error);
+    const message = error instanceof Error ? error.message : 'Failed to get QR code';
+    return c.json({ ok: false, error: message }, 500);
+  }
+});
+
+/**
+ * 检查扫码状态
+ */
+wechatRouter.get('/qrcode/status', async (c) => {
+  try {
+    const uuid = c.req.query('uuid');
+
+    if (!uuid) {
+      return c.json({ ok: false, error: 'uuid is required' }, 400);
+    }
+
+    const status = await weChatQrLogin.checkLoginStatus(uuid);
+
+    // 如果登录已确认，获取凭证
+    if (status.status === 'confirmed') {
+      const credentials = await weChatQrLogin.handleLoginSuccess();
+      if (credentials) {
+        await weChatQrLogin.saveCredentials(credentials.cookie, credentials.token);
+        return c.json({
+          ok: true,
+          data: {
+            status: 'confirmed',
+            message: 'Login successful',
+            token: credentials.token,
+          },
+        });
+      }
+    }
+
+    return c.json({
+      ok: true,
+      data: status,
+    });
+  } catch (error) {
+    console.error('[WeChat API] qrcode/status error:', error);
+    const message = error instanceof Error ? error.message : 'Failed to check status';
+    return c.json({ ok: false, error: message }, 500);
+  }
+});
+
+// ============ 公众号搜索 ============
+
 /**
  * 搜索公众号
  */
@@ -138,11 +228,19 @@ wechatRouter.get('/search', async (c) => {
  */
 wechatRouter.post('/collect', async (c) => {
   try {
-    if (!wechatAuth.isConfigured()) {
+    if (!await wechatAuth.isConfigured()) {
       return c.json({ ok: false, error: 'WeChat credentials not configured' }, 400);
     }
 
-    const results = await weChatArticleCollector.collectAll();
+    const sources = await sql.query<{ id: number; name: string }>(
+      `SELECT id, name FROM sources WHERE platform = 'wechat' AND enabled = 1`
+    );
+    const results: Record<string, number> = {};
+
+    for (const source of sources) {
+      const result = await collector.collectSource(source.id, { force: true });
+      results[source.name] = result.success ? result.itemCount : -1;
+    }
 
     return c.json({
       ok: true,
@@ -165,25 +263,35 @@ wechatRouter.post('/collect/:sourceId', async (c) => {
   try {
     const sourceId = c.req.param('sourceId');
 
-    if (!wechatAuth.isConfigured()) {
+    if (!await wechatAuth.isConfigured()) {
       return c.json({ ok: false, error: 'WeChat credentials not configured' }, 400);
     }
 
     // 获取 faker_id
-    const wechatExt = await sql.get<{ faker_id: string }>(
-      'SELECT faker_id FROM sources_wechat_ext WHERE source_id = ?',
-      [Number(sourceId)]
+    const source = await sql.get<{ id: number }>(
+      'SELECT id FROM sources WHERE id = ? AND platform = ?',
+      [Number(sourceId), 'wechat']
     );
 
-    if (!wechatExt) {
+    if (!source) {
       return c.json({ ok: false, error: 'Source not found or not a WeChat source' }, 404);
     }
 
-    const count = await weChatArticleCollector.collectAndStore(wechatExt.faker_id, Number(sourceId));
+    const result = await collector.collectSource(Number(sourceId), { force: true });
+
+    if (!result.success) {
+      return c.json({ ok: false, error: result.error || 'Collection failed' }, 500);
+    }
+
+    const latestItem = await getLatestSourceItem(Number(sourceId));
 
     return c.json({
       ok: true,
-      data: { sourceId: Number(sourceId), articlesCollected: count },
+      data: {
+        sourceId: Number(sourceId),
+        articlesCollected: result.itemCount,
+        latestItem,
+      },
     });
   } catch (error) {
     console.error('[WeChat API] collect/:sourceId error:', error);

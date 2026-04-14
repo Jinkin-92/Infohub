@@ -22,7 +22,7 @@ const envSchema = z.object({
   SQLITE_PATH: z.string().default('./data/infohub.db'),
 
   // RSSHub配置
-  RSSHUB_URL: z.string().default('https://rsshub.app'),
+  RSSHUB_URL: z.string().default('http://localhost:1200'),
   CHROME_EXECUTABLE_PATH: z.string().optional(),
 
   // 可选：Cookie配置（用于需要登录的平台）

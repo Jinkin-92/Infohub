@@ -1,39 +1,109 @@
 'use client'
 
+import { useState, useRef, useEffect } from 'react'
 import { cn } from '../lib/utils'
-import { PLATFORM_CONFIG } from '../types'
+import { PLATFORM_CONFIG, PUBLIC_CATEGORY_CONFIG } from '../types'
+import type { TabState, SourceType, CustomPlatform, PublicCategory } from '../page'
 
 interface TabBarProps {
-  activeTab: string
-  onTabChange: (tab: string) => void
-  onAddClick?: () => void
+  activeTab: TabState
+  onTabChange: (tab: TabState) => void
   onSettingsClick?: () => void
   unreadCounts?: Record<string, number>
+}
+
+// 定制订阅源的子标签
+const customPlatforms: { id: CustomPlatform; name: string; color?: string }[] = [
+  { id: 'all', name: '全部' },
+  { id: 'zhihu', name: PLATFORM_CONFIG.zhihu.name, color: PLATFORM_CONFIG.zhihu.color },
+  { id: 'x', name: PLATFORM_CONFIG.x.name, color: PLATFORM_CONFIG.x.color },
+  { id: 'wechat', name: PLATFORM_CONFIG.wechat.name, color: PLATFORM_CONFIG.wechat.color },
+  { id: 'weibo', name: PLATFORM_CONFIG.weibo.name, color: PLATFORM_CONFIG.weibo.color },
+  { id: 'bilibili', name: PLATFORM_CONFIG.bilibili.name, color: PLATFORM_CONFIG.bilibili.color },
+  { id: 'youtube', name: PLATFORM_CONFIG.youtube.name, color: PLATFORM_CONFIG.youtube.color },
+]
+
+// 公开订阅源的子标签
+const publicCategories: { id: PublicCategory; name: string }[] = [
+  { id: 'all', name: '全部' },
+  { id: 'tech', name: '科技' },
+  { id: 'news', name: '新闻' },
+  { id: 'finance', name: '财经' },
+  { id: 'life', name: '生活' },
+  { id: 'design', name: '设计' },
+  { id: 'video', name: '视频' },
+  { id: 'aggregator', name: '聚合' },
+]
+
+// 平台颜色
+const platformColors: Record<string, string> = {
+  zhihu: PLATFORM_CONFIG.zhihu.color,
+  x: PLATFORM_CONFIG.x.color,
+  wechat: PLATFORM_CONFIG.wechat.color,
+  weibo: PLATFORM_CONFIG.weibo.color,
+  bilibili: PLATFORM_CONFIG.bilibili.color,
+  youtube: PLATFORM_CONFIG.youtube.color,
 }
 
 export function TabBar({
   activeTab,
   onTabChange,
-  onAddClick,
   onSettingsClick,
   unreadCounts = {},
 }: TabBarProps) {
-  const tabs = [
-    { id: 'all', name: '全部', color: '#4CA6E1' },
-    PLATFORM_CONFIG.zhihu,
-    PLATFORM_CONFIG.x,
-    PLATFORM_CONFIG.wechat,
-    PLATFORM_CONFIG.weibo,
-    PLATFORM_CONFIG.bilibili,
-    PLATFORM_CONFIG.youtube,
-    PLATFORM_CONFIG.news,
-    PLATFORM_CONFIG.custom,
-  ]
+  const [openDropdown, setOpenDropdown] = useState<SourceType | null>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  // 点击外部关闭下拉菜单
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setOpenDropdown(null)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const handleSourceTypeSelect = (sourceType: SourceType) => {
+    if (sourceType === 'custom') {
+      onTabChange({ sourceType: 'custom', platform: 'all' })
+    } else {
+      onTabChange({ sourceType: 'public', category: 'all' })
+    }
+    setOpenDropdown(null)
+  }
+
+  const handleCustomPlatformSelect = (platform: CustomPlatform) => {
+    onTabChange({ sourceType: 'custom', platform })
+    setOpenDropdown(null)
+  }
+
+  const handlePublicCategorySelect = (category: PublicCategory) => {
+    onTabChange({ sourceType: 'public', category })
+    setOpenDropdown(null)
+  }
+
+  const isCustomActive = activeTab.sourceType === 'custom'
+  const isPublicActive = activeTab.sourceType === 'public'
+
+  // 计算未读数显示
+  const getUnreadCount = () => {
+    if (activeTab.sourceType === 'public') {
+      // 公开订阅源的未读数暂不显示
+      return 0
+    }
+    const key = activeTab.platform || 'all'
+    return unreadCounts[key] || 0
+  }
+
+  const unreadCount = getUnreadCount()
 
   return (
     <div className="sticky top-0 z-40 border-b border-border-color bg-bg-secondary shadow-sm">
       <div className="mx-auto max-w-content px-4 sm:px-6 lg:px-8">
         <div className="flex h-14 items-center gap-1">
+          {/* Logo */}
           <div className="mr-4 flex items-center gap-2">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent">
               <svg
@@ -53,55 +123,135 @@ export function TabBar({
             <span className="hidden font-semibold text-text-primary sm:block">信息中枢</span>
           </div>
 
-          <nav className="flex flex-1 items-center gap-1 overflow-x-auto scrollbar-hide">
-            {tabs.map((tab) => {
-              const isActive = activeTab === tab.id
-              const unreadCount = unreadCounts[tab.id] || 0
-
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => onTabChange(tab.id)}
-                  className={cn(
-                    'relative whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150',
-                    'hover:bg-bg-tertiary',
-                    isActive ? 'bg-bg-tertiary text-text-primary' : 'text-text-secondary'
-                  )}
+          {/* 两级下拉导航 */}
+          <div className="relative flex flex-1 items-center gap-1" ref={dropdownRef}>
+            {/* 定制订阅源 下拉按钮 */}
+            <div className="relative">
+              <button
+                onClick={() => setOpenDropdown(openDropdown === 'custom' ? null : 'custom')}
+                className={cn(
+                  'flex items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150',
+                  isCustomActive ? 'bg-bg-tertiary text-text-primary' : 'text-text-secondary hover:bg-bg-tertiary hover:text-text-primary'
+                )}
+              >
+                <span>定制订阅源</span>
+                <svg
+                  className={cn('h-4 w-4 transition-transform', openDropdown === 'custom' && 'rotate-180')}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
                 >
-                  <div className="flex items-center gap-2">
-                    {tab.id !== 'all' && (
-                      <span
-                        className="h-2 w-2 rounded-full"
-                        style={{ backgroundColor: tab.color }}
-                      />
-                    )}
-                    <span>{tab.name}</span>
-                    {unreadCount > 0 && (
-                      <span className="ml-1 rounded-full bg-unread px-1.5 py-0.5 text-xs font-semibold text-white">
-                        {unreadCount > 99 ? '99+' : unreadCount}
-                      </span>
-                    )}
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {/* 定制订阅源下拉面板 */}
+              {openDropdown === 'custom' && (
+                <div className="absolute left-0 top-full mt-1 w-48 rounded-xl border border-border-color bg-bg-secondary shadow-lg animate-in fade-in slide-in-from-top-2 duration-150">
+                  <div className="p-1">
+                    {customPlatforms.map((platform) => {
+                      const isActive = isCustomActive && activeTab.platform === platform.id
+                      const color = platform.id !== 'all' ? platformColors[platform.id] : '#4CA6E1'
+                      return (
+                        <button
+                          key={platform.id}
+                          onClick={() => handleCustomPlatformSelect(platform.id)}
+                          className={cn(
+                            'w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-left transition-colors',
+                            isActive
+                              ? 'bg-accent/10 text-accent font-medium'
+                              : 'text-text-secondary hover:bg-bg-tertiary hover:text-text-primary'
+                          )}
+                        >
+                          {platform.id !== 'all' && (
+                            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: color }} />
+                          )}
+                          <span>{platform.name}</span>
+                          {isActive && (
+                            <svg className="ml-auto h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
+                        </button>
+                      )
+                    })}
                   </div>
+                </div>
+              )}
+            </div>
 
-                  {isActive && (
-                    <div className="absolute bottom-0 left-1/2 h-0.5 w-4 -translate-x-1/2 rounded-full bg-accent" />
-                  )}
-                </button>
-              )
-            })}
-          </nav>
+            {/* 公开订阅源 下拉按钮 */}
+            <div className="relative">
+              <button
+                onClick={() => setOpenDropdown(openDropdown === 'public' ? null : 'public')}
+                className={cn(
+                  'flex items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150',
+                  isPublicActive ? 'bg-bg-tertiary text-text-primary' : 'text-text-secondary hover:bg-bg-tertiary hover:text-text-primary'
+                )}
+              >
+                <span>公开订阅源</span>
+                <svg
+                  className={cn('h-4 w-4 transition-transform', openDropdown === 'public' && 'rotate-180')}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
 
+              {/* 公开订阅源下拉面板 */}
+              {openDropdown === 'public' && (
+                <div className="absolute left-0 top-full mt-1 w-40 rounded-xl border border-border-color bg-bg-secondary shadow-lg animate-in fade-in slide-in-from-top-2 duration-150">
+                  <div className="p-1">
+                    {publicCategories.map((category) => {
+                      const isActive = isPublicActive && activeTab.category === category.id
+                      const config = PUBLIC_CATEGORY_CONFIG[category.id]
+                      return (
+                        <button
+                          key={category.id}
+                          onClick={() => handlePublicCategorySelect(category.id)}
+                          className={cn(
+                            'w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-left transition-colors',
+                            isActive
+                              ? 'bg-accent/10 text-accent font-medium'
+                              : 'text-text-secondary hover:bg-bg-tertiary hover:text-text-primary'
+                          )}
+                        >
+                          {category.id !== 'all' && config && (
+                            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: config.color }} />
+                          )}
+                          <span>{category.name}</span>
+                          {isActive && (
+                            <svg className="ml-auto h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* 当前选中状态的标签（移动端） */}
+            <div className="ml-2 flex items-center gap-2 border-l border-border-color pl-2">
+              <span className="text-sm text-text-secondary">
+                {isCustomActive
+                  ? customPlatforms.find((p) => p.id === activeTab.platform)?.name
+                  : publicCategories.find((c) => c.id === activeTab.category)?.name}
+              </span>
+              {unreadCount > 0 && (
+                <span className="rounded-full bg-unread px-1.5 py-0.5 text-xs font-semibold text-white">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* 右侧设置按钮 */}
           <div className="ml-2 flex items-center gap-1 border-l border-border-color pl-2">
-            <button
-              onClick={onAddClick}
-              className="flex items-center gap-1.5 rounded-lg bg-accent px-3 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-accent-hover hover:shadow"
-            >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              <span className="hidden sm:inline">添加源</span>
-            </button>
-
             <button
               onClick={onSettingsClick}
               className="rounded-lg p-2 text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary"

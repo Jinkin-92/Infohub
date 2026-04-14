@@ -23,6 +23,82 @@ interface ArticleListItem {
 }
 
 /**
+ * 微信 API 返回的文章原始数据结构
+ */
+interface WeChatPublishPage {
+  total_count?: number;
+  publish_count?: number;
+  publish_list?: WeChatPublishItem[];
+}
+
+interface WeChatPublishItem {
+  publish_type?: number;
+  publish_info?: string | Record<string, unknown>;
+}
+
+interface WeChatAppMsgEx {
+  aid?: string;
+  title?: string;
+  cover?: string;
+  link?: string;
+  digest?: string;
+  update_time?: number;
+  create_time?: number;
+  cdn_url?: string;
+  cdn_url_back?: string;
+  author_name?: string;
+  appmsgid?: number;
+  itemidx?: number;
+  item_show_type?: number;
+}
+
+function toWechatApiFakeId(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return trimmed;
+  }
+
+  if (/^MP_WXS_(\d+)$/i.test(trimmed)) {
+    const digits = trimmed.replace(/^MP_WXS_/i, '');
+    return Buffer.from(digits, 'utf8').toString('base64');
+  }
+
+  if (/^\d+$/.test(trimmed)) {
+    return Buffer.from(trimmed, 'utf8').toString('base64');
+  }
+
+  try {
+    const decoded = Buffer.from(trimmed, 'base64').toString('utf8').trim();
+    if (/^\d+$/.test(decoded)) {
+      return trimmed;
+    }
+  } catch {
+    // Ignore invalid base64 and fall through.
+  }
+
+  return trimmed;
+}
+
+/**
+ * 安全解析 JSON 字符串
+ * @param str 可能为 JSON 字符串或已解析的对象
+ * @param fallback 解析失败时的默认值
+ */
+function safeJsonParse<T>(str: unknown, fallback: T): T {
+  if (typeof str === 'string') {
+    try {
+      return JSON.parse(str) as T;
+    } catch {
+      return fallback;
+    }
+  }
+  if (typeof str === 'object' && str !== null) {
+    return str as T;
+  }
+  return fallback;
+}
+
+/**
  * 从 URL 中提取文章 ID
  */
 function extractArticleId(url: string): string {
@@ -47,6 +123,68 @@ async function contentHash(content: string): Promise<string> {
   const hashBuffer = await crypto.subtle.digest('SHA-256', data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * 解析微信文章数据
+ * 微信 API 返回的数据结构：
+ * - publish_page: JSON 字符串，包含 publish_list
+ * - publish_list[].publish_info: JSON 字符串，包含 appmsgex 数组
+ * - appmsgex[0]: 实际的文章信息
+ *
+ * 参考 WeRss get_Articles() 和 get_list() 的解析逻辑
+ */
+function parseWeChatArticles(
+  rawData: Record<string, unknown>,
+  fakerId: string
+): ArticleListItem[] {
+  // 解析 publish_page（可能是字符串或对象）
+  const publishPage = safeJsonParse<WeChatPublishPage>(
+    rawData.publish_page,
+    { publish_list: [] }
+  );
+
+  const publishList = publishPage.publish_list || [];
+  if (publishList.length === 0) {
+    return [];
+  }
+
+  const articles: ArticleListItem[] = [];
+
+  for (const item of publishList) {
+    // 解析 publish_info（可能是字符串或对象）
+    const publishInfo = safeJsonParse<{
+      appmsgex?: WeChatAppMsgEx[] | WeChatAppMsgEx;
+    }>(item.publish_info, {});
+
+    // appmsgex 可能是数组或单个对象
+    let appMsgEx: WeChatAppMsgEx | undefined;
+    if (Array.isArray(publishInfo.appmsgex)) {
+      appMsgEx = publishInfo.appmsgex[0];
+    } else if (publishInfo.appmsgex) {
+      appMsgEx = publishInfo.appmsgex as WeChatAppMsgEx;
+    }
+
+    if (!appMsgEx || !appMsgEx.title) {
+      continue;
+    }
+
+    // 提取文章 ID
+    const articleId = extractArticleId(appMsgEx.link || '');
+
+    articles.push({
+      id: articleId,
+      mp_id: `MP_WXS_${fakerId}`,
+      title: appMsgEx.title || '',
+      cover: appMsgEx.cover || appMsgEx.cdn_url || '',
+      link: appMsgEx.link || '',
+      digest: appMsgEx.digest || '',
+      update_time: appMsgEx.update_time || 0,
+      create_time: appMsgEx.create_time || 0,
+    });
+  }
+
+  return articles;
 }
 
 export class WeChatArticleCollector {
@@ -79,10 +217,11 @@ export class WeChatArticleCollector {
    * 对应 WeRss get_Articles(faker_id)
    */
   async getArticles(fakerId: string, limit: number = 20): Promise<ArticleListItem[]> {
-    if (!wechatAuth.isConfigured()) {
+    if (!await wechatAuth.isConfigured()) {
       throw new Error('WeChat credentials not configured');
     }
 
+    const apiFakeId = toWechatApiFakeId(fakerId);
     const [token, headers] = await Promise.all([
       wechatAuth.getToken(),
       wechatAuth.getHeaders(),
@@ -93,7 +232,7 @@ export class WeChatArticleCollector {
     url.searchParams.set('sub_action', 'list_ex');
     url.searchParams.set('begin', '0');
     url.searchParams.set('count', String(limit));
-    url.searchParams.set('fakeid', fakerId);
+    url.searchParams.set('fakeid', apiFakeId);
     url.searchParams.set('token', token);
     url.searchParams.set('lang', 'zh_CN');
     url.searchParams.set('f', 'json');
@@ -104,40 +243,25 @@ export class WeChatArticleCollector {
         headers,
       });
 
-      const data = await response.json() as {
-        publish_page?: { publish_list?: string[] };
-        publish_info?: string;
-      };
+      const rawData = await response.json() as Record<string, unknown>;
+      const baseResp = rawData.base_resp as { ret?: number; err_msg?: string } | undefined;
 
-      if (!data.publish_page?.publish_list) {
-        return [];
-      }
-
-      const articles: ArticleListItem[] = [];
-
-      for (const item of data.publish_page.publish_list) {
-        try {
-          const parsed = JSON.parse(item);
-          const appmsgex = parsed.appmsgex?.[0] || parsed.appmsgex?.[0] || parsed;
-
-          if (!appmsgex.title) continue;
-
-          articles.push({
-            id: extractArticleId(appmsgex.link || ''),
-            mp_id: `MP_WXS_${fakerId}`,
-            title: appmsgex.title || '',
-            cover: appmsgex.cover || appmsgex.cdn_url || '',
-            link: appmsgex.link || '',
-            digest: appmsgex.digest || '',
-            update_time: appmsgex.update_time || 0,
-            create_time: appmsgex.create_time || 0,
-          });
-        } catch {
-          // 跳过解析失败的项
-          continue;
+      if (baseResp?.ret && baseResp.ret !== 0) {
+        if (baseResp.ret === 200003) {
+          throw new Error('WeChat credentials expired: invalid session');
         }
+
+        throw new Error(
+          `WeChat appmsgpublish failed: ret=${baseResp.ret}${baseResp.err_msg ? ` (${baseResp.err_msg})` : ''}`
+        );
       }
 
+      // 使用健壮的解析函数处理嵌套的 JSON 字符串
+      const articles = parseWeChatArticles(rawData, fakerId);
+
+      console.log(
+        `[WeChatCollector] Found ${articles.length} articles for fakerId ${fakerId} (apiFakeId=${apiFakeId})`
+      );
       return articles;
     } catch (error) {
       console.error('[WeChatCollector] getArticles failed:', error);
@@ -150,7 +274,7 @@ export class WeChatArticleCollector {
    * 对应 WeRss content_extract(url)
    */
   async extractContent(url: string): Promise<string> {
-    if (!wechatAuth.isConfigured()) {
+    if (!await wechatAuth.isConfigured()) {
       throw new Error('WeChat credentials not configured');
     }
 
@@ -266,7 +390,7 @@ export class WeChatArticleCollector {
   async collectAll(): Promise<Record<string, number>> {
     const results: Record<string, number> = {};
 
-    if (!wechatAuth.isConfigured()) {
+    if (!await wechatAuth.isConfigured()) {
       throw new Error('WeChat credentials not configured');
     }
 

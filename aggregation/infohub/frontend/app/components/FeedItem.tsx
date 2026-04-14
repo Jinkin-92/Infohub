@@ -3,22 +3,15 @@
 import { useState } from 'react'
 import { cn, formatDate, truncate } from '../lib/utils'
 import { Item, PLATFORM_CONFIG } from '../types'
-import { TagSelector } from './TagSelector'
 
 interface FeedItemProps {
   item: Item
-  availableTags?: import('../types').Tag[]
   onMarkAsRead?: (id: number) => void
-  onAddTag?: (itemId: number, tagId: number) => Promise<void>
-  onRemoveTag?: (itemId: number, tagId: number) => Promise<void>
 }
 
 export function FeedItem({
   item,
-  availableTags = [],
   onMarkAsRead,
-  onAddTag,
-  onRemoveTag,
 }: FeedItemProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [imageError, setImageError] = useState(false)
@@ -113,17 +106,6 @@ export function FeedItem({
       )}
 
       <div className="mt-4 flex items-center gap-4 border-t border-border-color pt-3">
-        {availableTags.length > 0 && onAddTag && onRemoveTag && (
-          <TagSelector
-            itemId={item.id}
-            tags={item.tags || []}
-            availableTags={availableTags}
-            onAddTag={onAddTag}
-            onRemoveTag={onRemoveTag}
-            className="flex-1"
-          />
-        )}
-
         <a
           href={item.url}
           target="_blank"

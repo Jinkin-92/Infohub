@@ -2,6 +2,18 @@ import { existsSync, readFileSync } from 'fs';
 import { resolve } from 'path';
 import { spawn } from 'child_process';
 
+function quoteCmdArg(value) {
+  if (value === '') {
+    return '""';
+  }
+
+  if (!/[\s"]/u.test(value)) {
+    return value;
+  }
+
+  return `"${value.replace(/"/g, '\\"')}"`;
+}
+
 function readEnvFile(envPath) {
   if (!existsSync(envPath)) {
     return {};
@@ -43,10 +55,14 @@ if (!target) {
 }
 
 const command = needsNode24Shim
-  ? (isWindows ? 'npx.cmd' : 'npx')
+  ? (isWindows ? process.env.ComSpec || 'C:\\Windows\\System32\\cmd.exe' : 'npx')
   : process.execPath;
 const commandArgs = needsNode24Shim
-  ? ['-y', 'node@24', target, ...args]
+  ? (
+      isWindows
+        ? ['/d', '/s', '/c', ['npx', '-y', 'node@24', target, ...args].map(quoteCmdArg).join(' ')]
+        : ['-y', 'node@24', target, ...args]
+    )
   : [target, ...args];
 
 if (needsNode24Shim) {

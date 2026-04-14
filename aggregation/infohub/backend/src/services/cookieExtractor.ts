@@ -51,12 +51,6 @@ const PLATFORMS: PlatformConfig[] = [
     cookieKeys: ['a1', 'webId'],
   },
   {
-    key: 'DOUBAN_COOKIE',
-    name: '豆瓣',
-    url: 'https://www.douban.com/',
-    cookieKeys: ['dbcl2', 'ck'],
-  },
-  {
     key: 'TWITTER_AUTH_TOKEN',
     name: 'X/Twitter',
     url: 'https://x.com/',
@@ -91,6 +85,7 @@ export class CookieExtractorService {
   private pendingRequests = new Map<number, { resolve: (value: unknown) => void; reject: (error: Error) => void }>();
   private chromePort: number;
   private chromeHost: string;
+  private sessionId: string | null = null;
 
   constructor(chromePort?: number, chromeHost = 'localhost') {
     // 默认端口，可通过构造函数或环境变量覆盖
@@ -99,49 +94,130 @@ export class CookieExtractorService {
   }
 
   /**
-   * 连接到 Chrome 远程调试
+   * 诊断 Chrome 远程调试是否真正可用
+   * 检查 /json/version、webSocketDebuggerUrl、Target.createTarget 是否可用
+   */
+  async diagnose(): Promise<{
+    available: boolean;
+    chromeVersion?: string;
+    websocketUrl?: string;
+    error?: string;
+    hint?: string;
+  }> {
+    try {
+      // 1. 检查 /json/version
+      const versionResp = await fetch(`http://${this.chromeHost}:${this.chromePort}/json/version`);
+      if (!versionResp.ok) {
+        return {
+          available: false,
+          error: `/json/version 返回 HTTP ${versionResp.status}`,
+          hint: 'Chrome 未启用远程调试，或 --remote-debugging-port 端口被占用',
+        };
+      }
+      const version = (await versionResp.json()) as {
+        Browser?: string;
+        'webSocketDebuggerUrl'?: string;
+      };
+
+      // 2. 检查 webSocketDebuggerUrl 是否可用
+      if (!version.webSocketDebuggerUrl) {
+        return {
+          available: false,
+          error: 'Chrome 136+ 需要非默认 --user-data-dir',
+          hint: '启动 Chrome 时必须指定 --user-data-dir=<非默认目录>',
+          chromeVersion: version.Browser,
+        };
+      }
+
+      // 3. 尝试连接 browser websocket
+      try {
+        const testWs = new WebSocket(version.webSocketDebuggerUrl);
+        await new Promise<void>((resolve, reject) => {
+          testWs.on('open', resolve);
+          testWs.on('error', reject);
+          setTimeout(() => reject(new Error('WebSocket 连接超时')), 5000);
+        });
+        testWs.close();
+      } catch {
+        return {
+          available: false,
+          error: '无法连接到 Chrome WebSocket',
+          hint: 'Chrome 136+ 对默认用户目录不接受 --remote-debugging-port，必须配合 --user-data-dir=<非默认目录>',
+          chromeVersion: version.Browser,
+          websocketUrl: version.webSocketDebuggerUrl,
+        };
+      }
+
+      return {
+        available: true,
+        chromeVersion: version.Browser,
+        websocketUrl: version.webSocketDebuggerUrl,
+      };
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      return {
+        available: false,
+        error: `连接失败: ${errorMessage}`,
+        hint: '请确认 Chrome 已启动并启用远程调试端口',
+      };
+    }
+  }
+
+  /**
+   * 连接到 Chrome 远程调试（browser 级 websocket）
    */
   private async connect(): Promise<void> {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       return;
     }
 
+    // 先获取 browser websocket URL
+    const versionResp = await fetch(`http://${this.chromeHost}:${this.chromePort}/json/version`);
+    if (!versionResp.ok) {
+      throw new Error(`无法连接到 Chrome: HTTP ${versionResp.status}`);
+    }
+    const version = (await versionResp.json()) as { webSocketDebuggerUrl?: string };
+    if (!version.webSocketDebuggerUrl) {
+      throw new Error('Chrome 136+ 需要非默认 --user-data-dir，请使用 --user-data-dir=<非默认目录> 启动 Chrome');
+    }
+
     return new Promise((resolve, reject) => {
-      try {
-        const wsUrl = `ws://${this.chromeHost}:${this.chromePort}`;
-        console.log(`[CookieExtractor] Connecting to Chrome at ${wsUrl}`);
-
-        this.ws = new WebSocket(wsUrl);
-
-        this.ws.on('open', () => {
-          console.log('[CookieExtractor] WebSocket connected');
-          resolve();
-        });
-
-        this.ws.on('message', (data) => {
-          try {
-            const message = JSON.parse(data.toString()) as CDPResponse;
-            this.handleMessage(message);
-          } catch {
-            // Ignore non-JSON messages
-          }
-        });
-
-        this.ws.on('error', (error) => {
-          console.error('[CookieExtractor] WebSocket error:', error.message);
-          reject(error);
-        });
-
-        this.ws.on('close', () => {
-          console.log('[CookieExtractor] WebSocket closed');
-          this.ws = null;
-        });
-
-        // Timeout after 10 seconds
-        setTimeout(() => reject(new Error('Connection timeout')), 10000);
-      } catch (error) {
-        reject(error);
+      const wsUrl = version.webSocketDebuggerUrl;
+      if (!wsUrl) {
+        reject(new Error('Chrome did not expose a browser websocket URL'));
+        return;
       }
+      console.log(`[CookieExtractor] Connecting to Chrome browser websocket`);
+
+      this.ws = new WebSocket(wsUrl);
+
+      this.ws.on('open', () => {
+        console.log('[CookieExtractor] Browser WebSocket connected');
+        resolve();
+      });
+
+      this.ws.on('message', (data) => {
+        try {
+          const message = JSON.parse(data.toString()) as CDPResponse;
+          this.handleMessage(message);
+        } catch {
+          // Ignore non-JSON messages
+        }
+      });
+
+      this.ws.on('error', (error) => {
+        console.error('[CookieExtractor] WebSocket error:', error.message);
+        reject(error);
+      });
+
+      this.ws.on('close', () => {
+        console.log('[CookieExtractor] WebSocket closed');
+        this.ws = null;
+        this.sessionId = null;
+      });
+
+      // Timeout after 10 seconds
+      setTimeout(() => reject(new Error('Connection timeout')), 10000);
     });
   }
 
@@ -184,8 +260,13 @@ export class CookieExtractorService {
 
       this.pendingRequests.set(id, { resolve, reject });
 
-      const message = JSON.stringify({ id, method, params });
-      this.ws.send(message);
+      // Chrome 136+ 需要通过 sessionId 发命令
+      const message: Record<string, unknown> = { id, method, params };
+      if (this.sessionId) {
+        message.sessionId = this.sessionId;
+      }
+
+      this.ws.send(JSON.stringify(message));
 
       // Timeout after 30 seconds
       setTimeout(() => {
@@ -198,10 +279,21 @@ export class CookieExtractorService {
   }
 
   /**
+   * 附加到目标并建立 session
+   */
+  private async attachToTarget(targetId: string): Promise<void> {
+    const result = (await this.sendCommand('Target.attachToTarget', {
+      targetId,
+      flatten: true,
+    })) as { sessionId?: string };
+    this.sessionId = result.sessionId || null;
+  }
+
+  /**
    * 启用页面调试
    */
   private async enablePage(targetId: string): Promise<void> {
-    await this.sendCommand('Target.activateTarget', { targetId });
+    await this.attachToTarget(targetId);
     await this.sendCommand('Page.enable', {});
   }
 
@@ -209,7 +301,8 @@ export class CookieExtractorService {
    * 导航到指定 URL
    */
   private async navigateTo(url: string, targetId: string): Promise<void> {
-    await this.sendCommand('Page.navigate', { url, targetId });
+    await this.attachToTarget(targetId);
+    await this.sendCommand('Page.navigate', { url });
     // Wait for page to load
     await delay(2000);
   }
@@ -351,18 +444,15 @@ export class CookieExtractorService {
 
   /**
    * 获取当前 Chrome 连接状态
+   * @deprecated 使用 diagnose() 获取更详细的诊断信息
    */
   async checkConnection(): Promise<{ connected: boolean; port: number; error?: string }> {
-    try {
-      const response = await fetch(`http://${this.chromeHost}:${this.chromePort}/json`);
-      if (response.ok) {
-        return { connected: true, port: this.chromePort };
-      }
-      return { connected: false, port: this.chromePort, error: `HTTP ${response.status}` };
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Connection failed';
-      return { connected: false, port: this.chromePort, error: errorMessage };
-    }
+    const diagnosis = await this.diagnose();
+    return {
+      connected: diagnosis.available,
+      port: this.chromePort,
+      error: diagnosis.error,
+    };
   }
 
   /**

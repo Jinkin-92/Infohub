@@ -1,9 +1,16 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { cn } from '../lib/utils'
 import { sourcesApi } from '../lib/api'
 import { PLATFORM_CONFIG } from '../types'
+
+interface DetectionResult {
+  platform: string
+  platformId: string
+  rssUrl: string
+  displayName: string
+}
 
 interface AddSourceModalProps {
   isOpen: boolean
@@ -17,15 +24,20 @@ interface AddSourceModalProps {
 export function AddSourceModal({ isOpen, onClose, onSuccess }: AddSourceModalProps) {
   const [url, setUrl] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [isDetecting, setIsDetecting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [detectedPlatform, setDetectedPlatform] = useState<string | null>(null)
+  const [detectedSource, setDetectedSource] = useState<DetectionResult | null>(null)
+  const detectTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // 重置状态
   const resetState = useCallback(() => {
     setUrl('')
     setError(null)
     setDetectedPlatform(null)
+    setDetectedSource(null)
     setIsLoading(false)
+    setIsDetecting(false)
   }, [])
 
   // 关闭弹窗
@@ -34,7 +46,7 @@ export function AddSourceModal({ isOpen, onClose, onSuccess }: AddSourceModalPro
     onClose()
   }, [resetState, onClose])
 
-  // 检测平台类型
+  // 检测平台类型 (快速本地检测)
   const detectPlatform = useCallback((input: string) => {
     if (!input) {
       setDetectedPlatform(null)
@@ -92,13 +104,56 @@ export function AddSourceModal({ isOpen, onClose, onSuccess }: AddSourceModalPro
     setDetectedPlatform(null)
   }, [])
 
-  // 处理输入变化
+  // 远程检测订阅源 (获取真实名称)
+  const detectSource = useCallback(async (inputUrl: string) => {
+    if (!inputUrl || !inputUrl.startsWith('http')) {
+      setDetectedSource(null)
+      return
+    }
+
+    setIsDetecting(true)
+    try {
+      const response = await sourcesApi.detect(inputUrl)
+      if (response.ok && response.detected) {
+        setDetectedSource(response.detected)
+        // 同时更新 platform 显示
+        setDetectedPlatform(response.detected.platform)
+      } else {
+        setDetectedSource(null)
+      }
+    } catch {
+      setDetectedSource(null)
+    } finally {
+      setIsDetecting(false)
+    }
+  }, [])
+
+  // 处理输入变化 - 防抖检测
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     setUrl(value)
     setError(null)
     detectPlatform(value)
-  }, [detectPlatform])
+
+    // 清除之前的定时器
+    if (detectTimeoutRef.current) {
+      clearTimeout(detectTimeoutRef.current)
+    }
+
+    // 防抖延迟检测
+    detectTimeoutRef.current = setTimeout(() => {
+      detectSource(value)
+    }, 800)
+  }, [detectPlatform, detectSource])
+
+  // 组件卸载时清理定时器
+  useEffect(() => {
+    return () => {
+      if (detectTimeoutRef.current) {
+        clearTimeout(detectTimeoutRef.current)
+      }
+    }
+  }, [])
 
   // 提交表单
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
@@ -233,6 +288,46 @@ export function AddSourceModal({ isOpen, onClose, onSuccess }: AddSourceModalPro
             )}
           </div>
 
+          {/* 检测结果预览 */}
+          {(detectedSource || isDetecting) && url.trim() && (
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-text-secondary">
+                识别结果
+              </label>
+              <div className="p-4 bg-bg-tertiary rounded-xl border border-border-color">
+                {isDetecting ? (
+                  <div className="flex items-center gap-3">
+                    <svg className="w-5 h-5 animate-spin text-accent" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    <span className="text-sm text-text-secondary">正在识别...</span>
+                  </div>
+                ) : detectedSource ? (
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-10 h-10 rounded-lg flex items-center justify-center"
+                      style={{ backgroundColor: PLATFORM_CONFIG[detectedSource.platform]?.color + '20' }}
+                    >
+                      <span
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: PLATFORM_CONFIG[detectedSource.platform]?.color }}
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-text-primary truncate">
+                        {detectedSource.displayName}
+                      </p>
+                      <p className="text-xs text-text-muted truncate">
+                        {PLATFORM_CONFIG[detectedSource.platform]?.name} · {detectedSource.rssUrl.length > 40 ? detectedSource.rssUrl.slice(0, 40) + '...' : detectedSource.rssUrl}
+                      </p>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            </div>
+          )}
+
           {/* 示例链接 */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-text-secondary">
@@ -285,7 +380,7 @@ export function AddSourceModal({ isOpen, onClose, onSuccess }: AddSourceModalPro
               </button>
               <button
                 type="button"
-                onClick={() => fillExample('https://mp.weixin.qq.com/s/example')}
+                onClick={() => fillExample('https://mp.weixin.qq.com/s/rkU039BJIpkGe0ntrOG76g')}
                 className="px-3 py-1.5 text-sm bg-bg-tertiary hover:bg-bg-primary text-text-secondary hover:text-text-primary rounded-lg transition-colors"
               >
                 <span

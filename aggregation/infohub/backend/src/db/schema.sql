@@ -134,6 +134,34 @@ INSERT INTO tags (name, color, description, sort_order) VALUES
 ON CONFLICT DO NOTHING;
 
 -- ============================================
+-- 收藏标签表 (替换标签系统)
+-- ============================================
+CREATE TABLE IF NOT EXISTS favorite_tags (
+  id                    SERIAL PRIMARY KEY,
+  name                  VARCHAR(50) NOT NULL UNIQUE,  -- 收藏标签名
+  sort_order            INT DEFAULT 0,                -- 排序权重
+  created_at            TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 收藏内容关联表（一个内容只能有一个收藏标签）
+CREATE TABLE IF NOT EXISTS favorites (
+  item_id               BIGINT REFERENCES items(id) ON DELETE CASCADE,
+  favorite_tag_id       INT REFERENCES favorite_tags(id) ON DELETE CASCADE,
+  created_at            TIMESTAMPTZ DEFAULT NOW(),
+  PRIMARY KEY (item_id)
+);
+
+-- 收藏索引
+CREATE INDEX IF NOT EXISTS idx_favorites_item_id ON favorites(item_id);
+CREATE INDEX IF NOT EXISTS idx_favorites_tag_id ON favorites(favorite_tag_id);
+
+-- 预设默认收藏标签
+INSERT INTO favorite_tags (name, sort_order) VALUES
+  ('稍后阅读', 1),
+  ('重要', 2)
+ON CONFLICT DO NOTHING;
+
+-- ============================================
 -- 微信公众号扩展表 (Phase 4)
 -- ============================================
 
@@ -197,3 +225,154 @@ COMMENT ON TABLE wechat_accounts IS '微信公众号账号表';
 COMMENT ON TABLE sources_wechat_ext IS '订阅源微信扩展表';
 COMMENT ON TABLE items_wechat_ext IS '微信文章扩展表';
 COMMENT ON TABLE wechat_settings IS '微信设置表';
+
+-- ============================================
+-- 平台统一认证（Phase 5 - 订阅源辅助登录）
+-- ============================================
+
+-- 平台凭证表（统一存储各平台认证信息）
+CREATE TABLE IF NOT EXISTS platform_credentials (
+  id                    SERIAL PRIMARY KEY,
+  platform             VARCHAR(30) UNIQUE NOT NULL,   -- wechat/weibo/x/xiaohongshu/zhihu
+  credential_type      VARCHAR(20) NOT NULL,            -- cookie/token
+  credential_value     TEXT NOT NULL,                   -- 加密后的凭证值
+  status               VARCHAR(20) DEFAULT 'active',    -- active/expired/invalid
+  verified_at          TIMESTAMPTZ,                     -- 最后验证时间
+  created_at          TIMESTAMPTZ DEFAULT NOW(),
+  updated_at          TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 平台登录会话表（扫码登录用）
+CREATE TABLE IF NOT EXISTS platform_login_sessions (
+  id                    VARCHAR(50) PRIMARY KEY,
+  platform             VARCHAR(30) NOT NULL,
+  state                VARCHAR(30) DEFAULT 'launching', -- launching/awaiting_login/login_detected/cookie_saved/failed/cancelled
+  target_url           TEXT,
+  cookie_configured    BOOLEAN DEFAULT FALSE,
+  error_message        TEXT,
+  created_at          TIMESTAMPTZ DEFAULT NOW(),
+  updated_at          TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 触发器
+DROP TRIGGER IF EXISTS update_platform_credentials_updated_at ON platform_credentials;
+CREATE TRIGGER update_platform_credentials_updated_at
+  BEFORE UPDATE ON platform_credentials
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_platform_login_sessions_updated_at ON platform_login_sessions;
+CREATE TRIGGER update_platform_login_sessions_updated_at
+  BEFORE UPDATE ON platform_login_sessions
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================
+-- 订阅源归类（Phase 5 - 订阅源中心）
+-- ============================================
+
+-- 订阅源栏目表
+CREATE TABLE IF NOT EXISTS source_columns (
+  id                    SERIAL PRIMARY KEY,
+  name                  VARCHAR(50) NOT NULL,
+  sort_order            INT DEFAULT 0,
+  created_at          TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 订阅源类别表
+CREATE TABLE IF NOT EXISTS source_categories (
+  id                    SERIAL PRIMARY KEY,
+  name                  VARCHAR(50) NOT NULL,
+  created_at          TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 扩展 sources 表
+ALTER TABLE sources ADD COLUMN IF NOT EXISTS column_id INT REFERENCES source_columns(id);
+ALTER TABLE sources ADD COLUMN IF NOT EXISTS category_id INT REFERENCES source_categories(id);
+ALTER TABLE sources ADD COLUMN IF NOT EXISTS pinned BOOLEAN DEFAULT FALSE;
+ALTER TABLE sources ADD COLUMN IF NOT EXISTS card_title VARCHAR(100);
+ALTER TABLE sources ADD COLUMN IF NOT EXISTS card_subtitle VARCHAR(200);
+ALTER TABLE sources ADD COLUMN IF NOT EXISTS description TEXT;
+
+-- 预设默认栏目
+INSERT INTO source_columns (name, sort_order) VALUES
+  ('核心关注', 1),
+  ('高频更新', 2),
+  ('深度阅读', 3),
+  ('观察中', 4)
+ON CONFLICT DO NOTHING;
+
+-- 预设默认类别
+INSERT INTO source_categories (name) VALUES
+  ('AI'),
+  ('科技'),
+  ('财经'),
+  ('商业'),
+  ('宏观'),
+  ('其他')
+ON CONFLICT DO NOTHING;
+
+COMMENT ON TABLE platform_credentials IS '平台统一凭证表';
+COMMENT ON TABLE platform_login_sessions IS '平台登录会话表';
+COMMENT ON TABLE source_columns IS '订阅源栏目表';
+COMMENT ON TABLE source_categories IS '订阅源类别表';
+
+-- ============================================
+-- 公开订阅源（公开 RSS 池）
+-- ============================================
+
+-- 公开订阅源表（预配置的优质 RSS 源）
+CREATE TABLE IF NOT EXISTS public_sources (
+  id                    SERIAL PRIMARY KEY,
+  name                  VARCHAR(100) NOT NULL,
+  url                   TEXT NOT NULL,
+  rss_url               TEXT NOT NULL,
+  platform              VARCHAR(30) NOT NULL DEFAULT 'news',
+  category              VARCHAR(50) NOT NULL,
+  description            TEXT,
+  enabled               BOOLEAN DEFAULT TRUE,
+  subscribed_count      INT DEFAULT 0,
+  created_at            TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 公开订阅源分类表
+CREATE TABLE IF NOT EXISTS public_source_categories (
+  id                    SERIAL PRIMARY KEY,
+  slug                  VARCHAR(50) UNIQUE NOT NULL,
+  name                  VARCHAR(50) NOT NULL,
+  sort_order            INT DEFAULT 0,
+  created_at            TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 用户公开源订阅关系表
+CREATE TABLE IF NOT EXISTS public_source_subscriptions (
+  user_id               INT DEFAULT 1,
+  source_id             INT REFERENCES public_sources(id) ON DELETE CASCADE,
+  subscribed_at          TIMESTAMPTZ DEFAULT NOW(),
+  PRIMARY KEY (user_id, source_id)
+);
+
+-- 修改 sources 表添加公开源标识
+ALTER TABLE sources ADD COLUMN IF NOT EXISTS is_public BOOLEAN DEFAULT FALSE;
+ALTER TABLE sources ADD COLUMN IF NOT EXISTS public_source_id INT REFERENCES public_sources(id);
+
+-- 索引
+CREATE INDEX IF NOT EXISTS idx_public_sources_category ON public_sources(category);
+CREATE INDEX IF NOT EXISTS idx_public_source_subscriptions_user ON public_source_subscriptions(user_id);
+
+-- 预设公开源分类
+INSERT INTO public_source_categories (slug, name, sort_order) VALUES
+  ('tech', '科技', 1),
+  ('news', '新闻', 2),
+  ('finance', '财经', 3),
+  ('life', '生活', 4),
+  ('design', '设计', 5),
+  ('video', '视频', 6),
+  ('aggregator', '聚合', 7)
+ON CONFLICT DO NOTHING;
+
+COMMENT ON TABLE public_sources IS '公开订阅源表（预配置优质RSS源）';
+COMMENT ON TABLE public_source_categories IS '公开订阅源分类表';
+COMMENT ON TABLE public_source_subscriptions IS '用户公开源订阅关系表';
+COMMENT ON COLUMN sources.is_public IS '是否公开订阅源（从公开池订阅的）';
+COMMENT ON COLUMN sources.public_source_id IS '关联的公开源ID';

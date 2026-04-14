@@ -1,7 +1,16 @@
-import { mkdirSync, openSync, readFileSync, existsSync, writeFileSync } from 'node:fs';
-import { resolve } from 'node:path';
-import { spawn } from 'node:child_process';
+import {
+  closeSync,
+  existsSync,
+  mkdirSync,
+  openSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
+import { execFileSync, spawn } from 'node:child_process';
+import { join, resolve } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
+import { fileURLToPath } from 'node:url';
 
 type IntegrationField = {
   key: string;
@@ -16,36 +25,33 @@ export type IntegrationSetting = IntegrationField & {
 };
 
 const RSSHUB_PORT = 1200;
+const SERVICE_ROOT = resolve(fileURLToPath(new URL('../../..', import.meta.url)));
+const RSSHUB_ROOT = resolve(SERVICE_ROOT, 'rsshub-local');
+const IS_WINDOWS = process.platform === 'win32';
 
 const RSSHUB_FIELDS: IntegrationField[] = [
   {
     key: 'ZHIHU_COOKIES',
-    label: '知乎 Cookie',
-    description: '登录知乎后复制完整 Cookie，至少需要包含 z_c0。',
+    label: 'Zhihu Cookie',
+    description: 'Used by RSSHub routes that require a logged-in Zhihu session.',
     placeholder: 'z_c0=...; d_c0=...; q_c1=...;',
   },
   {
     key: 'WEIBO_COOKIES',
-    label: '微博 Cookie',
-    description: '微博相关路由需要登录态时使用。',
+    label: 'Weibo Cookie',
+    description: 'Used by RSSHub routes that require a logged-in Weibo session.',
     placeholder: 'SUB=...; SUBP=...;',
   },
   {
     key: 'XIAOHONGSHU_COOKIE',
-    label: '小红书 Cookie',
-    description: '小红书相关路由需要登录态时使用。',
+    label: 'Xiaohongshu Cookie',
+    description: 'Used by RSSHub routes that require a logged-in Xiaohongshu session.',
     placeholder: 'a1=...; webId=...;',
-  },
-  {
-    key: 'DOUBAN_COOKIE',
-    label: '豆瓣 Cookie',
-    description: '豆瓣相关路由需要登录态时使用。',
-    placeholder: 'dbcl2=...; ck=...;',
   },
   {
     key: 'TWITTER_AUTH_TOKEN',
     label: 'X / Twitter Auth Token',
-    description: 'X/Twitter 相关路由可使用 auth_token。',
+    description: 'Used by RSSHub routes that require an X auth token.',
     placeholder: 'auth_token=...',
   },
 ];
@@ -78,7 +84,13 @@ function readEnvMap(envPath: string): Record<string, string> {
 }
 
 function writeEnvMap(envPath: string, envMap: Record<string, string>): void {
-  const orderedKeys = ['PORT', 'NODE_ENV', 'LISTEN_INADDR_ANY', 'CACHE_TYPE', ...RSSHUB_FIELDS.map((field) => field.key)];
+  const orderedKeys = [
+    'PORT',
+    'NODE_ENV',
+    'LISTEN_INADDR_ANY',
+    'CACHE_TYPE',
+    ...RSSHUB_FIELDS.map((field) => field.key),
+  ];
   const mergedKeys = Array.from(new Set([...orderedKeys, ...Object.keys(envMap)]));
   const lines = mergedKeys.map((key) => `${key}=${envMap[key] ?? ''}`);
   writeFileSync(envPath, `${lines.join('\n')}\n`, 'utf8');
@@ -98,13 +110,134 @@ async function isPortReachable(port: number): Promise<boolean> {
   }
 }
 
+function parseListeningPids(netstatOutput: string, port: number): number[] {
+  const pids = new Set<number>();
+  const portMarker = `:${port}`;
+
+  for (const rawLine of netstatOutput.split(/\r?\n/)) {
+    const line = rawLine.trim();
+    if (!line || !line.includes(portMarker) || !line.includes('LISTENING')) {
+      continue;
+    }
+
+    const parts = line.split(/\s+/);
+    const pid = Number.parseInt(parts[parts.length - 1] ?? '', 10);
+    if (!Number.isNaN(pid)) {
+      pids.add(pid);
+    }
+  }
+
+  return [...pids];
+}
+
+function findListeningPids(port: number): number[] {
+  try {
+    const output = execFileSync('netstat', ['-ano', '-p', 'tcp'], {
+      encoding: 'utf8',
+      windowsHide: true,
+      stdio: ['ignore', 'pipe', 'ignore'],
+    });
+    return parseListeningPids(output, port);
+  } catch {
+    return [];
+  }
+}
+
+function readProcessCommandLine(pid: number): string {
+  if (!IS_WINDOWS) {
+    return '';
+  }
+
+  try {
+    return execFileSync(
+      'powershell',
+      [
+        '-NoProfile',
+        '-Command',
+        `(Get-CimInstance Win32_Process -Filter "ProcessId = ${pid}").CommandLine`,
+      ],
+      {
+        encoding: 'utf8',
+        windowsHide: true,
+        stdio: ['ignore', 'pipe', 'ignore'],
+      }
+    ).trim();
+  } catch {
+    return '';
+  }
+}
+
+function isManagedRsshubPid(pid: number): boolean {
+  const commandLine = readProcessCommandLine(pid);
+  return commandLine.includes('rsshub-local') || commandLine.includes('start-rsshub.mjs');
+}
+
+async function waitForPortState(
+  port: number,
+  reachable: boolean,
+  attempts: number,
+  delayMs: number
+): Promise<boolean> {
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    if ((await isPortReachable(port)) === reachable) {
+      return true;
+    }
+    await delay(delayMs);
+  }
+
+  return false;
+}
+
+function buildRsshubLaunchCommand(): { command: string; args: string[] } {
+  const currentMajor = Number.parseInt(process.versions.node.split('.')[0] ?? '', 10);
+  const needsNode24Shim = Number.isFinite(currentMajor) && currentMajor >= 25;
+
+  if (!needsNode24Shim) {
+    return {
+      command: process.execPath,
+      args: [join(RSSHUB_ROOT, 'scripts', 'start-rsshub.mjs')],
+    };
+  }
+
+  if (IS_WINDOWS) {
+    return {
+      command: process.env.ComSpec || 'C:\\Windows\\System32\\cmd.exe',
+      args: ['/d', '/s', '/c', 'npx -y node@24 scripts/start-rsshub.mjs'],
+    };
+  }
+
+  return {
+    command: 'npx',
+    args: ['-y', 'node@24', 'scripts/start-rsshub.mjs'],
+  };
+}
+
+function buildRsshubChildEnv(envPath: string): NodeJS.ProcessEnv {
+  const envMap = readEnvMap(envPath);
+
+  return {
+    ...process.env,
+    PORT: envMap.PORT || String(RSSHUB_PORT),
+    NODE_ENV: envMap.NODE_ENV || 'production',
+    LISTEN_INADDR_ANY: envMap.LISTEN_INADDR_ANY || 'true',
+    CACHE_TYPE: envMap.CACHE_TYPE || 'memory',
+    ZHIHU_COOKIES: envMap.ZHIHU_COOKIES || '',
+    WEIBO_COOKIES: envMap.WEIBO_COOKIES || '',
+    XIAOHONGSHU_COOKIE: envMap.XIAOHONGSHU_COOKIE || '',
+    TWITTER_AUTH_TOKEN: envMap.TWITTER_AUTH_TOKEN || '',
+  };
+}
+
 export class LocalIntegrationsService {
-  private readonly rsshubRoot = resolve(process.cwd(), '..', 'rsshub-local');
+  private readonly rsshubRoot = RSSHUB_ROOT;
   private readonly rsshubEnvPath = resolve(this.rsshubRoot, '.env');
   private readonly rsshubTmpDir = resolve(this.rsshubRoot, '.tmp');
   private readonly rsshubPidPath = resolve(this.rsshubTmpDir, 'rsshub.pid');
   private readonly rsshubStdoutPath = resolve(this.rsshubTmpDir, 'rsshub.stdout.log');
   private readonly rsshubStderrPath = resolve(this.rsshubTmpDir, 'rsshub.stderr.log');
+  private readonly watchdogIntervalMs = 2 * 60 * 1000;
+  private restartPromise: Promise<void> | null = null;
+  private watchdogTimer: NodeJS.Timeout | null = null;
 
   async getRsshubSettings(): Promise<{
     running: boolean;
@@ -151,51 +284,142 @@ export class LocalIntegrationsService {
     return this.getRsshubSettings();
   }
 
+  async ensureRsshubRunning(): Promise<void> {
+    if (await isPortReachable(RSSHUB_PORT)) {
+      return;
+    }
+
+    await this.performRestart(false);
+  }
+
   async restartRsshub(): Promise<void> {
+    await this.performRestart(true);
+  }
+
+  startWatchdog(): void {
+    if (this.watchdogTimer) {
+      return;
+    }
+
+    this.watchdogTimer = setInterval(() => {
+      void this.ensureRsshubRunning().catch((error) => {
+        console.error('[RSSHub] Watchdog failed to recover local RSSHub:', error);
+      });
+    }, this.watchdogIntervalMs);
+
+    this.watchdogTimer.unref?.();
+  }
+
+  stopWatchdog(): void {
+    if (!this.watchdogTimer) {
+      return;
+    }
+
+    clearInterval(this.watchdogTimer);
+    this.watchdogTimer = null;
+  }
+
+  private async performRestart(force: boolean): Promise<void> {
+    if (this.restartPromise) {
+      return this.restartPromise;
+    }
+
+    this.restartPromise = this.restartRsshubInternal(force).finally(() => {
+      this.restartPromise = null;
+    });
+
+    return this.restartPromise;
+  }
+
+  private async restartRsshubInternal(force: boolean): Promise<void> {
+    if (!force && (await isPortReachable(RSSHUB_PORT))) {
+      return;
+    }
+
     mkdirSync(this.rsshubTmpDir, { recursive: true });
     await this.stopRsshub();
 
+    const blockingPids = findListeningPids(RSSHUB_PORT).filter((pid) => !isManagedRsshubPid(pid));
+    if (blockingPids.length > 0) {
+      throw new Error(
+        `Port ${RSSHUB_PORT} is occupied by another application (${blockingPids.join(', ')}). Close that app before starting InfoHub.`
+      );
+    }
+
     const stdoutFd = openSync(this.rsshubStdoutPath, 'a');
     const stderrFd = openSync(this.rsshubStderrPath, 'a');
-    const command = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+    const launch = buildRsshubLaunchCommand();
+    const childEnv = buildRsshubChildEnv(this.rsshubEnvPath);
 
-    const child = spawn(command, ['run', 'start'], {
+    const child = spawn(launch.command, launch.args, {
       cwd: this.rsshubRoot,
       detached: true,
       stdio: ['ignore', stdoutFd, stderrFd],
       windowsHide: true,
+      shell: false,
+      env: childEnv,
     });
 
     child.unref();
+    closeSync(stdoutFd);
+    closeSync(stderrFd);
 
-    for (let attempt = 0; attempt < 15; attempt += 1) {
-      if (await isPortReachable(RSSHUB_PORT)) {
-        return;
-      }
-      await delay(1000);
+    if (await waitForPortState(RSSHUB_PORT, true, 40, 1000)) {
+      return;
     }
 
     throw new Error('RSSHub local service did not become healthy after restart');
   }
 
   private async stopRsshub(): Promise<void> {
+    const pidsToStop = new Set<number>();
+
     if (existsSync(this.rsshubPidPath)) {
       const pid = Number.parseInt(readFileSync(this.rsshubPidPath, 'utf8').trim(), 10);
       if (!Number.isNaN(pid)) {
+        pidsToStop.add(pid);
+      }
+    }
+
+    for (const pid of findListeningPids(RSSHUB_PORT)) {
+      if (isManagedRsshubPid(pid)) {
+        pidsToStop.add(pid);
+      }
+    }
+
+    for (const pid of pidsToStop) {
+      try {
+        process.kill(pid, 'SIGTERM');
+      } catch {
+        // Ignore stale pid files and already-exited processes.
+      }
+    }
+
+    if (await waitForPortState(RSSHUB_PORT, false, 10, 500)) {
+      rmSync(this.rsshubPidPath, { force: true });
+      return;
+    }
+
+    for (const pid of findListeningPids(RSSHUB_PORT)) {
+      if (!isManagedRsshubPid(pid)) {
+        continue;
+      }
+      try {
+        execFileSync('taskkill', ['/F', '/T', '/PID', String(pid)], {
+          windowsHide: true,
+          stdio: 'ignore',
+        });
+      } catch {
         try {
-          process.kill(pid);
+          process.kill(pid, 'SIGKILL');
         } catch {
-          // Ignore stale pid files.
+          // Ignore if force kill fails.
         }
       }
     }
 
-    for (let attempt = 0; attempt < 10; attempt += 1) {
-      if (!(await isPortReachable(RSSHUB_PORT))) {
-        return;
-      }
-      await delay(500);
-    }
+    await waitForPortState(RSSHUB_PORT, false, 10, 500);
+    rmSync(this.rsshubPidPath, { force: true });
   }
 }
 

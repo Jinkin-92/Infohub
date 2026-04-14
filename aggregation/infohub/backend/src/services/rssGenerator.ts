@@ -26,23 +26,32 @@ export interface RSSOptions {
 
 /**
  * 将 datetime 对象或字符串转换为 RFC 822 格式
- * 数据库存储的是 CST (UTC+8) 时间，直接格式化为 +0800 时区
+ * 输入可能是：
+ *   - Date 对象（本地时间）
+ *   - ISO 8601 UTC 字符串（来自 articleCollector.toISOString()）
+ * 统一输出为 RFC 822，标注 +0800（微信公众平台使用东八区时间）
  */
 function toRFC822(dt: Date | string): string {
-  const date = typeof dt === 'string' ? new Date(dt) : dt;
+  let date: Date;
+  if (typeof dt === 'string') {
+    // ISO 字符串（UTC）-> 转为东八区时间
+    const utc = new Date(dt);
+    date = new Date(utc.getTime() + 8 * 60 * 60 * 1000);
+  } else {
+    date = dt;
+  }
 
-  // 直接使用本地时间（CST）格式化
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const pad = (n: number) => String(n).padStart(2, '0');
 
-  const dayName = days[date.getDay()];
-  const day = date.getDate();
-  const month = months[date.getMonth()];
-  const year = date.getFullYear();
-  const hours = pad(date.getHours());
-  const minutes = pad(date.getMinutes());
-  const seconds = pad(date.getSeconds());
+  const dayName = days[date.getUTCDay()];
+  const day = date.getUTCDate();
+  const month = months[date.getUTCMonth()];
+  const year = date.getUTCFullYear();
+  const hours = pad(date.getUTCHours());
+  const minutes = pad(date.getUTCMinutes());
+  const seconds = pad(date.getUTCSeconds());
 
   return `${dayName}, ${day} ${month} ${year} ${hours}:${minutes}:${seconds} +0800`;
 }

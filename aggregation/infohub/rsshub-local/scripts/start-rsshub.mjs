@@ -10,7 +10,7 @@ const envPath = path.join(rootDir, '.env');
 const tmpDir = path.join(rootDir, '.tmp');
 const pidPath = path.join(tmpDir, 'rsshub.pid');
 
-dotenv.config({ path: envPath });
+dotenv.config({ path: envPath, override: true });
 fs.mkdirSync(tmpDir, { recursive: true });
 fs.writeFileSync(pidPath, `${process.pid}\n`, 'utf8');
 
@@ -37,6 +37,9 @@ await init({
   LISTEN_INADDR_ANY: process.env.LISTEN_INADDR_ANY || 'true',
   CACHE_TYPE: process.env.CACHE_TYPE || 'memory',
   ZHIHU_COOKIES: process.env.ZHIHU_COOKIES,
+  WEIBO_COOKIES: process.env.WEIBO_COOKIES,
+  XIAOHONGSHU_COOKIE: process.env.XIAOHONGSHU_COOKIE,
+  TWITTER_AUTH_TOKEN: process.env.TWITTER_AUTH_TOKEN,
 });
 
 // Force the local wrapper to behave like the normal RSSHub server so routes

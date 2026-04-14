@@ -2,12 +2,14 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import useSWR from 'swr'
-import { feedApi, itemTagsApi, sourcesApi, tagsApi } from '../lib/api'
-import { Item, Source, Tag, PLATFORM_CONFIG } from '../types'
-import { cn, formatDate } from '../lib/utils'
+import { feedApi, favoritesApi, sourcesApi } from '../lib/api'
+import { Item, Source, FavoriteTag } from '../types'
+import { cn, formatDate, getSourceColor, getSourceTone } from '../lib/utils'
 
 interface FeedListProps {
   platform?: string
+  isPublic?: boolean
+  category?: string
   searchQuery?: string
   tagId?: number | null
   refreshTrigger?: number
@@ -29,7 +31,7 @@ interface DateSection {
   groups: SourceCardGroup[]
 }
 
-const PAGE_SIZE = 20
+const PAGE_SIZE = 300
 const CARD_HEIGHT = 420
 
 function getDateKey(value: string): string {
@@ -76,17 +78,6 @@ function getFallbackSourceLabel(source: Source): string {
   return source.name || source.platform_id || source.platform
 }
 
-function getSourceTone(source: Source, sourceId: number): { header: string; body: string; border: string } {
-  const baseColor = PLATFORM_CONFIG[source.platform]?.color ?? '#6B7280'
-  const seed = (sourceId * 37) % 100
-  const alpha = 0.12 + (seed % 4) * 0.03
-  return {
-    header: `linear-gradient(135deg, ${baseColor}${Math.round(alpha * 255).toString(16).padStart(2, '0')}, ${baseColor}22)`,
-    body: `${baseColor}08`,
-    border: `${baseColor}33`,
-  }
-}
-
 function buildSections(items: Item[], sources: Source[]): DateSection[] {
   const sourceMap = new Map(sources.map((source) => [source.id, source]))
   const sourcePrimaryAuthor = new Map<number, string>()
@@ -119,7 +110,7 @@ function buildSections(items: Item[], sources: Source[]): DateSection[] {
 
         return {
           source,
-          title: sourcePrimaryAuthor.get(sourceId) || getFallbackSourceLabel(source),
+          title: source.name || sourcePrimaryAuthor.get(sourceId) || getFallbackSourceLabel(source),
           items: groupedItems.sort(
             (left, right) => new Date(right.published_at).getTime() - new Date(left.published_at).getTime()
           ),
@@ -138,6 +129,8 @@ function buildSections(items: Item[], sources: Source[]): DateSection[] {
 
 export function FeedList({
   platform,
+  isPublic = false,
+  category,
   searchQuery,
   tagId,
   refreshTrigger,
@@ -147,11 +140,16 @@ export function FeedList({
 }: FeedListProps) {
   const [items, setItems] = useState<Item[]>([])
   const [offset, setOffset] = useState(0)
-  const [hasMore, setHasMore] = useState(true)
+  const [hasMore, setHasMore] = useState(false) // 默认不显示加载更多
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [isTabSwitching, setIsTabSwitching] = useState(false)
+  const [activeSourceId, setActiveSourceId] = useState<number | undefined>(undefined)
+  // dayWindow: 当前加载的天数窗口（3天起步，每次+3，直到30天）
+  const [dayWindow, setDayWindow] = useState(3)
+  // 是否在扩展窗口模式（窗口扩展阶段不用offset，每次从最新开始）
+  const [isExpanding, setIsExpanding] = useState(true)
 
-  const { data: tagsData } = useSWR('tags', () => tagsApi.getAll(), {
+  const { data: tagsData } = useSWR('favorites', () => favoritesApi.getTags(), {
     revalidateOnFocus: false,
     dedupingInterval: 60000,
   })
@@ -165,7 +163,15 @@ export function FeedList({
     }
   )
   const sources = (sourcesData?.sources || []).filter(
-    (source) => source.enabled && (!platform || source.platform === platform)
+    (source) => source.enabled && (!platform || source.platform === platform) && (!activeSourceId || source.id === activeSourceId)
+  )
+
+  // 所有当前栏目下的订阅源（用于下拉选择器）
+  // 定制源：按 platform 过滤；公开源：按 category 过滤
+  const allSourcesForTab = (sourcesData?.sources || []).filter(
+    (source) => source.enabled &&
+      (!platform || source.platform === platform) &&
+      (isPublic ? source.is_public && (!category || source.category === category) : !source.is_public)
   )
 
   // Only show error if the current platform's sources are ALL in error state
@@ -174,17 +180,28 @@ export function FeedList({
   const erroredSources = allSourcesErrored ? sources : []
 
   const { data, error, isLoading, mutate } = useSWR(
-    ['feed', platform, searchQuery, tagId, offset, tabVersion],
+    ['feed', platform, isPublic, category, activeSourceId, searchQuery, tagId, offset, dayWindow, isExpanding, tabVersion, refreshTrigger],
     () => {
       if (tagId) {
-        return tagsApi.getItems(tagId, { limit: PAGE_SIZE, offset })
+        return favoritesApi.getItemsByTag(tagId, {
+          limit: PAGE_SIZE,
+          offset,
+        })
       }
+
+      // 扩展模式(isExpanding=true): dayWindow不断扩大, offset=0
+      // 翻页模式(isExpanding=false): dayWindow固定30, offset递增
+      const days = isExpanding ? dayWindow : 30
 
       return feedApi.getFeed({
         platform,
+        sourceId: activeSourceId,
+        is_public: isPublic ? 'true' : 'false',
+        category: isPublic ? (category ?? undefined) : undefined,
         search: searchQuery,
         limit: PAGE_SIZE,
-        offset,
+        offset: isExpanding ? 0 : offset,
+        days,
       })
     },
     {
@@ -200,29 +217,40 @@ export function FeedList({
     }
 
     if (offset === 0) {
-      setItems(data.items)
+      setItems(data.items as Item[])
     } else {
       setItems((prev) => {
         const existingIds = new Set(prev.map((item) => item.id))
-        const newItems = data.items.filter((item) => !existingIds.has(item.id))
+        const newItems = (data.items as Item[]).filter((item: Item) => !existingIds.has(item.id))
         return [...prev, ...newItems]
       })
     }
 
-    setHasMore(data.pagination.hasMore)
-  }, [data, offset])
+    // 扩展模式：用户点击"加载更多"后扩大窗口（由 loadMore 处理）
+    // 翻页模式：继续翻页
+    // 只有当内容不足一页时才结束
+    if (tagId) {
+      setHasMore(Boolean(data.pagination?.hasMore))
+    } else if (isExpanding) {
+      setHasMore(dayWindow < 30)
+    } else {
+      setHasMore(Boolean(data.pagination?.hasMore))
+    }
+  }, [data, offset, dayWindow, isExpanding, tagId])
 
   useEffect(() => {
     setItems([])
     setOffset(0)
-    setHasMore(true)
+    setHasMore(false)
+    setDayWindow(3) // 重置为初始 3 天窗口
+    setIsExpanding(true) // 重置为扩展模式
     setIsTabSwitching(true)
-    // Use mutate with revalidate: true to force fresh fetch instead of cached data
-    const cacheKey = ['feed', platform, searchQuery, tagId, 0, tabVersion]
-    void mutate(cacheKey, undefined, { revalidate: true })
-      .catch(() => {}) // Ignore errors, they'll be handled by SWR's error state
-      .finally(() => setIsTabSwitching(false))
-  }, [platform, searchQuery, tagId, tabVersion, mutate])
+    setActiveSourceId(undefined) // 切换 tab 时重置源筛选
+    // State changes will trigger useSWR to re-fetch with new offset=0
+    // Just need to wait for the fetch to complete
+    const timer = setTimeout(() => setIsTabSwitching(false), 1000)
+    return () => clearTimeout(timer)
+  }, [platform, category, searchQuery, tagId, tabVersion])
 
   useEffect(() => {
     if (!refreshTrigger || refreshTrigger <= 0) {
@@ -241,9 +269,24 @@ export function FeedList({
     }
 
     setIsLoadingMore(true)
-    setOffset((prev) => prev + PAGE_SIZE)
+
+    if (isExpanding) {
+      // 扩展模式：扩大天数窗口
+      setDayWindow((prev) => {
+        const next = prev + 3
+        if (next >= 30) {
+          setIsExpanding(false) // 达到30天，切到翻页模式
+          return 30
+        }
+        return next
+      })
+    } else {
+      // 翻页模式：增加 offset
+      setOffset((prev) => prev + PAGE_SIZE)
+    }
+
     setIsLoadingMore(false)
-  }, [hasMore, isLoadingMore])
+  }, [hasMore, isLoadingMore, isExpanding])
 
   const handleMarkAsRead = useCallback(
     async (id: number) => {
@@ -290,71 +333,44 @@ export function FeedList({
     }
   }, [items, mutate, onCountsChange, platform])
 
-  const handleAddTag = useCallback(
-    async (itemId: number, targetTagId: number) => {
-      const tag = availableTags.find((candidate) => candidate.id === targetTagId)
-      if (!tag) {
-        return
-      }
-
-      setItems((prev) =>
-        prev.map((item) => {
-          if (item.id !== itemId) {
-            return item
-          }
-
-          const currentTags = item.tags || []
-          if (currentTags.some((candidate) => candidate.id === targetTagId)) {
-            return item
-          }
-
-          return { ...item, tags: [...currentTags, tag] }
-        })
-      )
-
-      try {
-        await itemTagsApi.addTag(itemId, targetTagId)
-      } catch (tagError) {
-        console.error('Failed to add tag:', tagError)
+  const handleToggleFavorite = useCallback(
+    async (item: Item, tagId?: number) => {
+      if (item.favorite) {
+        // 取消收藏
         setItems((prev) =>
-          prev.map((item) =>
-            item.id === itemId
-              ? {
-                  ...item,
-                  tags: (item.tags || []).filter((candidate) => candidate.id !== targetTagId),
-                }
-              : item
-          )
+          prev.map((i) => (i.id === item.id ? { ...i, favorite: undefined } : i))
         )
+        try {
+          await favoritesApi.removeFavorite(item.id)
+        } catch (err) {
+          console.error('Failed to remove favorite:', err)
+          setItems((prev) =>
+            prev.map((i) => (i.id === item.id ? { ...i, favorite: item.favorite } : i))
+          )
+        }
+      } else {
+        // 添加收藏（默认"稍后阅读"）
+        const targetTagId = tagId ?? availableTags.find((t) => t.name === '稍后阅读')?.id
+        if (!targetTagId) return
+
+        const tag = availableTags.find((t) => t.id === targetTagId)
+        if (!tag) return
+
+        setItems((prev) =>
+          prev.map((i) => (i.id === item.id ? { ...i, favorite: tag } : i))
+        )
+        try {
+          await favoritesApi.setFavorite(item.id, targetTagId)
+        } catch (err) {
+          console.error('Failed to add favorite:', err)
+          setItems((prev) =>
+            prev.map((i) => (i.id === item.id ? { ...i, favorite: undefined } : i))
+          )
+        }
       }
     },
     [availableTags]
   )
-
-  const handleRemoveTag = useCallback(async (itemId: number, targetTagId: number) => {
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === itemId
-          ? { ...item, tags: (item.tags || []).filter((candidate) => candidate.id !== targetTagId) }
-          : item
-      )
-    )
-
-    try {
-      await itemTagsApi.removeTag(itemId, targetTagId)
-    } catch (tagError) {
-      console.error('Failed to remove tag:', tagError)
-
-      try {
-        const response = await itemTagsApi.getTags(itemId)
-        setItems((prev) =>
-          prev.map((item) => (item.id === itemId ? { ...item, tags: response.tags } : item))
-        )
-      } catch {
-        // Ignore rollback failures.
-      }
-    }
-  }, [])
 
   if ((isLoading || isTabSwitching) && items.length === 0) {
     return (
@@ -362,12 +378,12 @@ export function FeedList({
         {Array.from({ length: 6 }).map((_, index) => (
           <div
             key={index}
-            className="h-[420px] animate-pulse rounded-2xl bg-white p-4 shadow-card"
+            className="h-[420px] animate-pulse rounded-2xl bg-bg-secondary p-4 shadow-card"
           >
-            <div className="mb-4 h-12 rounded-xl bg-gray-200" />
+            <div className="mb-4 h-12 rounded-xl bg-bg-tertiary" />
             <div className="space-y-3">
               {Array.from({ length: 4 }).map((__, childIndex) => (
-                <div key={childIndex} className="h-20 rounded-xl bg-gray-200" />
+                <div key={childIndex} className="h-20 rounded-xl bg-bg-tertiary" />
               ))}
             </div>
           </div>
@@ -379,7 +395,7 @@ export function FeedList({
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <div className="mb-4 h-16 w-16 text-gray-300">
+        <div className="mb-4 h-16 w-16 text-text-muted">
           <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
               strokeLinecap="round"
@@ -390,7 +406,12 @@ export function FeedList({
           </svg>
         </div>
         <h3 className="mb-2 text-lg font-medium text-text-primary">加载失败</h3>
-        <p className="mb-4 text-text-secondary">请检查网络连接后重试</p>
+        <p className="mb-2 text-center text-text-secondary">
+          {error instanceof Error ? error.message : '本地服务暂时不可用，请稍后重试。'}
+        </p>
+        <p className="mb-4 text-center text-sm text-text-muted">
+          可先检查后端健康页：http://127.0.0.1:3002/health
+        </p>
         <button
           onClick={() => void mutate()}
           className="rounded-lg bg-accent px-4 py-2 text-white transition-colors hover:bg-accent-hover"
@@ -438,6 +459,41 @@ export function FeedList({
 
   return (
     <div className="space-y-8">
+      {/* 订阅源选择器 */}
+      {allSourcesForTab.length > 0 && (
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+          <button
+            onClick={() => setActiveSourceId(undefined)}
+            className={cn(
+              'flex-shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-all',
+              activeSourceId === undefined
+                ? 'bg-accent text-white shadow-sm'
+                : 'bg-bg-tertiary text-text-secondary hover:bg-bg-secondary hover:text-text-primary'
+            )}
+          >
+            全部
+          </button>
+          {allSourcesForTab.map((src) => {
+            const color = getSourceColor(src)
+            return (
+              <button
+                key={src.id}
+                onClick={() => setActiveSourceId(src.id)}
+                className={cn(
+                  'flex-shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-all',
+                  activeSourceId === src.id
+                    ? 'text-white shadow-sm'
+                    : 'text-text-secondary hover:bg-bg-secondary hover:text-text-primary'
+                )}
+                style={activeSourceId !== src.id ? { backgroundColor: color + '15', color } : { backgroundColor: color }}
+              >
+                {src.name}
+              </button>
+            )
+          })}
+        </div>
+      )}
+
       <div className="flex flex-col gap-3 py-2 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="text-sm text-text-secondary">
@@ -507,7 +563,7 @@ export function FeedList({
                       <h3 className="text-base font-semibold text-text-primary">{group.title}</h3>
                       <p className="mt-1 text-xs text-text-secondary">{group.source.platform}</p>
                     </div>
-                    <span className="rounded-full bg-white/75 px-2 py-1 text-xs font-semibold text-text-primary">
+                    <span className="rounded-full bg-bg-primary/75 px-2 py-1 text-xs font-semibold text-text-primary">
                       {group.items.length} 条
                     </span>
                   </header>
@@ -523,7 +579,7 @@ export function FeedList({
                         <div
                           key={item.id}
                           className={cn(
-                            'rounded-xl border bg-white/85 p-3 transition-all',
+                            'rounded-xl border border-border-color bg-bg-secondary/85 p-3 transition-all',
                             !item.is_read && 'border-accent/30 shadow-sm',
                             item.is_read && 'opacity-70'
                           )}
@@ -547,58 +603,71 @@ export function FeedList({
                           <div className="mt-3 flex items-center justify-between gap-3">
                             <span className="text-xs text-text-muted">{formatDate(item.published_at)}</span>
                             <div className="flex items-center gap-2">
-                              {availableTags.length > 0 && (
-                                <select
-                                  className="rounded-lg border border-border-color bg-white px-2 py-1 text-xs text-text-secondary"
-                                  defaultValue=""
-                                  onChange={(event) => {
-                                    const value = Number(event.target.value)
-                                    if (value) {
-                                      void handleAddTag(item.id, value)
-                                      event.target.value = ''
-                                    }
-                                  }}
+                              {/* 收藏按钮 */}
+                              <div className="relative">
+                                <button
+                                  onClick={() => void handleToggleFavorite(item)}
+                                  className={cn(
+                                    'flex items-center gap-1 rounded-lg px-2 py-1 text-xs transition-colors',
+                                    item.favorite
+                                      ? 'text-red-500 hover:text-red-600'
+                                      : 'text-text-muted hover:text-red-500'
+                                  )}
+                                  title={item.favorite ? item.favorite.name : '添加收藏'}
                                 >
-                                  <option value="">加标签</option>
-                                  {availableTags
-                                    .filter(
-                                      (tag: Tag) => !(item.tags || []).some((current) => current.id === tag.id)
-                                    )
-                                    .map((tag: Tag) => (
-                                      <option key={tag.id} value={tag.id}>
-                                        {tag.name}
-                                      </option>
-                                    ))}
-                                </select>
-                              )}
+                                  <svg
+                                    className="h-4 w-4"
+                                    fill={item.favorite ? 'currentColor' : 'none'}
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    strokeWidth={2}
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                                    />
+                                  </svg>
+                                  {item.favorite && (
+                                    <span className="font-medium">{item.favorite.name}</span>
+                                  )}
+                                </button>
+                                {/* 收藏下拉 */}
+                                {item.favorite && availableTags.length > 1 && (
+                                  <div className="absolute right-0 top-full mt-1 z-10 w-32 rounded-lg border border-border-color bg-bg-secondary shadow-lg">
+                                    <div className="p-1">
+                                      {availableTags
+                                        .filter((t) => t.id !== item.favorite?.id)
+                                        .map((tag) => (
+                                          <button
+                                            key={tag.id}
+                                            onClick={() => void handleToggleFavorite(item, tag.id)}
+                                            className="w-full rounded-md px-3 py-1.5 text-left text-xs text-text-secondary hover:bg-bg-tertiary"
+                                          >
+                                            改为{tag.name}
+                                          </button>
+                                        ))}
+                                      <button
+                                        onClick={() => void handleToggleFavorite(item)}
+                                        className="w-full rounded-md px-3 py-1.5 text-left text-xs text-red-500 hover:bg-red-50"
+                                      >
+                                        取消收藏
+                                      </button>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
                               <a
                                 href={item.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
+                                onClick={() => void handleMarkAsRead(item.id)}
                                 className="text-xs font-medium text-accent transition-colors hover:text-accent-hover"
                               >
                                 查看原文
                               </a>
                             </div>
                           </div>
-
-                          {(item.tags || []).length > 0 && (
-                            <div className="mt-3 flex flex-wrap gap-2">
-                              {(item.tags || []).map((tag) => (
-                                <button
-                                  key={tag.id}
-                                  onClick={() => void handleRemoveTag(item.id, tag.id)}
-                                  className="rounded-full px-2 py-1 text-xs font-medium"
-                                  style={{
-                                    backgroundColor: `${tag.color}20`,
-                                    color: tag.color,
-                                  }}
-                                >
-                                  {tag.name}
-                                </button>
-                              ))}
-                            </div>
-                          )}
                         </div>
                       ))}
                     </div>
@@ -616,7 +685,7 @@ export function FeedList({
             onClick={loadMore}
             disabled={isLoadingMore}
             className={cn(
-              'rounded-lg border border-gray-200 bg-white px-6 py-3 font-medium text-text-secondary shadow-card transition-all hover:border-gray-300 hover:shadow-card-hover',
+              'rounded-lg border border-border-color bg-bg-secondary px-6 py-3 font-medium text-text-secondary shadow-card transition-all hover:border-accent/30 hover:shadow-card-hover',
               'disabled:cursor-not-allowed disabled:opacity-50'
             )}
           >

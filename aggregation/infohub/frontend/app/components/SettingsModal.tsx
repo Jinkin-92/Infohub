@@ -2,19 +2,21 @@
 
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import useSWR from 'swr'
-import { cn } from '../lib/utils'
-import { settingsApi, sourcesApi, tagsApi, cookieApi, wechatApi } from '../lib/api'
-import { IntegrationSetting, PLATFORM_CONFIG, Source, Tag } from '../types'
+import { cn, getSourceColor } from '../lib/utils'
+import { settingsApi, sourcesApi, favoritesApi, wechatApi } from '../lib/api'
+import { PlatformConnectionsPanel } from './PlatformConnectionsPanel'
+import { IntegrationSetting, PLATFORM_CONFIG, PUBLIC_CATEGORY_CONFIG, Source, FavoriteTag } from '../types'
 import { useTheme } from './ThemeProvider'
 
 interface SettingsModalProps {
   isOpen: boolean
   onClose: () => void
+  onDataChange?: () => void
 }
 
-type TabType = 'sources' | 'tags' | 'general' | 'about' | 'wechat'
+type TabType = 'sources' | 'favorites' | 'general' | 'connections' | 'about'
 
-export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
+export function SettingsModal({ isOpen, onClose, onDataChange }: SettingsModalProps) {
   const [activeTab, setActiveTab] = useState<TabType>('sources')
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null)
   const [collectingSource, setCollectingSource] = useState<number | null>(null)
@@ -26,8 +28,8 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     { revalidateOnFocus: false }
   )
   const { data: tagsData, mutate: mutateTags } = useSWR(
-    isOpen ? 'tags' : null,
-    () => tagsApi.getAll(),
+    isOpen ? 'favorites' : null,
+    () => favoritesApi.getTags(),
     { revalidateOnFocus: false }
   )
 
@@ -49,31 +51,67 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         setConfirmDelete(null)
         setSourceNotice('订阅源已删除。')
         await mutateSources()
+        onDataChange?.()
       } catch (error) {
         setSourceNotice(error instanceof Error ? error.message : '删除订阅源失败。')
       }
     },
-    [mutateSources]
+    [mutateSources, onDataChange]
   )
 
   const handleCollect = useCallback(
-    async (id: number) => {
-      setCollectingSource(id)
+    async (source: Source) => {
+      setCollectingSource(source.id)
       try {
-        const response = await sourcesApi.collect(id)
+        if (source.platform === 'wechat') {
+          const response = await wechatApi.collectSource(source.id)
+          const count = response.data?.articlesCollected ?? 0
+          const latestItem = response.data?.latestItem
+          const latestPublished = latestItem?.published_at
+            ? new Date(latestItem.published_at).toLocaleString('zh-CN', { hour12: false })
+            : null
+          {
+            const message = !response.ok
+              ? response.error || '微信采集失败，请稍后重试。'
+              : count > 0
+                ? latestItem
+                  ? `微信采集完成，新增 ${count} 条内容。最近一条：${latestItem.title}（${latestPublished}）`
+                  : `微信采集完成，新增 ${count} 条内容。`
+                : latestItem
+                  ? `微信已是最新，最近一条：${latestItem.title}（${latestPublished}）`
+                  : '微信采集完成，本次没有新增内容。'
+            setSourceNotice(message)
+            await mutateSources()
+            onDataChange?.()
+            return
+          }
+          setSourceNotice(
+            response.ok
+              ? count > 0
+                ? `微信采集完成，新增 ${count} 条内容。`
+                : '微信采集完成，本次没有新增内容。'
+              : response.error || '微信采集失败，请稍后重试。'
+          )
+          await mutateSources()
+          onDataChange?.()
+          return
+        }
+
+        const response = await sourcesApi.collect(source.id)
         setSourceNotice(
           response.ok
             ? `采集完成，新增 ${response.result.itemCount} 条内容。`
             : response.result.error || '采集失败，请稍后重试。'
         )
         await mutateSources()
+        onDataChange?.()
       } catch (error) {
         setSourceNotice(error instanceof Error ? error.message : '采集失败，请稍后重试。')
       } finally {
         setCollectingSource(null)
       }
     },
-    [mutateSources]
+    [mutateSources, onDataChange]
   )
 
   const handleToggleEnabled = useCallback(
@@ -82,11 +120,12 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         await sourcesApi.update(source.id, { enabled: !source.enabled })
         setSourceNotice(source.enabled ? '订阅源已停用。' : '订阅源已启用。')
         await mutateSources()
+        onDataChange?.()
       } catch (error) {
         setSourceNotice(error instanceof Error ? error.message : '更新订阅源失败。')
       }
     },
-    [mutateSources]
+    [mutateSources, onDataChange]
   )
 
   if (!isOpen) {
@@ -116,10 +155,10 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 badge={sources.length}
               />
               <SidebarButton
-                active={activeTab === 'tags'}
-                onClick={() => setActiveTab('tags')}
-                icon={<PanelIcon path="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />}
-                label="标签"
+                active={activeTab === 'favorites'}
+                onClick={() => setActiveTab('favorites')}
+                icon={<PanelIcon path="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />}
+                label="收藏"
                 badge={tags.length}
               />
               <SidebarButton
@@ -135,10 +174,10 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 label="关于"
               />
               <SidebarButton
-                active={activeTab === 'wechat'}
-                onClick={() => setActiveTab('wechat')}
+                active={activeTab === 'connections'}
+                onClick={() => setActiveTab('connections')}
                 icon={<PanelIcon path="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />}
-                label="微信"
+                label="平台连接"
               />
             </nav>
 
@@ -166,10 +205,14 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 onDelete={handleDelete}
               />
             )}
-            {activeTab === 'tags' && <TagsTab tags={tags} onMutate={mutateTags} />}
+            {activeTab === 'favorites' && <TagsTab tags={tags} onMutate={mutateTags} />}
             {activeTab === 'general' && <GeneralTab />}
             {activeTab === 'about' && <AboutTab />}
-            {activeTab === 'wechat' && <WeChatTab />}
+            {activeTab === 'connections' && (
+              <PlatformConnectionsPanel
+                onMessage={(msg) => setSourceNotice(msg)}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -223,7 +266,7 @@ interface SourcesTabProps {
   setConfirmDelete: (id: number | null) => void
   collectingSource: number | null
   onToggleEnabled: (source: Source) => void
-  onCollect: (id: number) => void
+  onCollect: (source: Source) => void
   onDelete: (id: number) => void
 }
 
@@ -238,12 +281,35 @@ function SourcesTab({
   onCollect,
   onDelete,
 }: SourcesTabProps) {
+  const [sourceType, setSourceType] = useState<'custom' | 'public'>('custom')
+  const [platformFilter, setPlatformFilter] = useState<string>('all')
+
+  const customSources = sources.filter(s => !s.is_public)
+  const publicSources = sources.filter(s => s.is_public)
+
+  const filteredSources = sourceType === 'custom'
+    ? customSources.filter(s => platformFilter === 'all' || s.platform === platformFilter)
+    : publicSources.filter(s => !s.category || platformFilter === 'all' || s.category === platformFilter)
+
+  const platforms = sourceType === 'custom'
+    ? ['all', 'zhihu', 'x', 'wechat', 'weibo', 'bilibili', 'youtube', 'news', 'custom']
+    : ['all', 'tech', 'news', 'finance', 'life', 'design', 'video', 'aggregator']
+
+  const platformName = (p: string) => {
+    if (p === 'all') return '全部'
+    if (sourceType === 'custom') {
+      return PLATFORM_CONFIG[p]?.name || p
+    }
+    const names: Record<string, string> = { tech: '科技', news: '新闻', finance: '财经', life: '生活', design: '设计', video: '视频', aggregator: '聚合' }
+    return names[p] || p
+  }
+
   return (
     <div className="p-6">
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold text-text-primary">订阅源管理</h3>
-          <p className="text-sm text-text-secondary">共 {sources.length} 个订阅源</p>
+          <p className="text-sm text-text-secondary">共 {sourceType === 'custom' ? customSources.length : publicSources.length} 个订阅源</p>
         </div>
       </div>
 
@@ -253,27 +319,67 @@ function SourcesTab({
         </div>
       )}
 
+      {/* 两级目录切换 */}
+      <div className="mb-4 space-y-3">
+        <div className="flex gap-2">
+          <button
+            onClick={() => { setSourceType('custom'); setPlatformFilter('all') }}
+            className={cn(
+              'rounded-lg px-4 py-2 text-sm font-medium transition-colors',
+              sourceType === 'custom' ? 'bg-accent text-white' : 'bg-bg-tertiary text-text-secondary hover:bg-bg-secondary'
+            )}
+          >
+            定制订阅源
+          </button>
+          <button
+            onClick={() => { setSourceType('public'); setPlatformFilter('all') }}
+            className={cn(
+              'rounded-lg px-4 py-2 text-sm font-medium transition-colors',
+              sourceType === 'public' ? 'bg-accent text-white' : 'bg-bg-tertiary text-text-secondary hover:bg-bg-secondary'
+            )}
+          >
+            公开订阅源
+          </button>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {platforms.map(p => (
+            <button
+              key={p}
+              onClick={() => setPlatformFilter(p)}
+              className={cn(
+                'rounded-full px-3 py-1 text-xs font-medium transition-colors',
+                platformFilter === p
+                  ? 'bg-accent text-white'
+                  : 'bg-bg-tertiary text-text-secondary hover:bg-bg-secondary'
+              )}
+            >
+              {platformName(p)}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 3 }).map((_, index) => (
             <div key={index} className="h-20 animate-pulse rounded-xl bg-bg-tertiary" />
           ))}
         </div>
-      ) : sources.length === 0 ? (
+      ) : filteredSources.length === 0 ? (
         <EmptyState
           title="暂无订阅源"
           description="先从顶部加号添加一个订阅源，系统就会开始采集内容。"
         />
       ) : (
         <div className="space-y-3">
-          {sources.map((source) => (
+          {filteredSources.map((source) => (
             <SourceItem
               key={source.id}
               source={source}
               isConfirmingDelete={confirmDelete === source.id}
               isCollecting={collectingSource === source.id}
               onToggleEnabled={() => onToggleEnabled(source)}
-              onCollect={() => onCollect(source.id)}
+              onCollect={() => onCollect(source)}
               onDelete={() => setConfirmDelete(source.id)}
               onCancelDelete={() => setConfirmDelete(null)}
               onConfirmDelete={() => onDelete(source.id)}
@@ -306,7 +412,10 @@ function SourceItem({
   onCancelDelete,
   onConfirmDelete,
 }: SourceItemProps) {
-  const platform = PLATFORM_CONFIG[source.platform] || PLATFORM_CONFIG.custom
+  const color = getSourceColor(source)
+  const displayName = source.is_public && source.category
+    ? PUBLIC_CATEGORY_CONFIG[source.category]?.name || source.category
+    : (PLATFORM_CONFIG[source.platform]?.name || source.platform)
 
   return (
     <div
@@ -318,16 +427,16 @@ function SourceItem({
       <div className="flex items-start gap-4">
         <div
           className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl"
-          style={{ backgroundColor: `${platform.color}15` }}
+          style={{ backgroundColor: `${color}15` }}
         >
-          <span className="h-3 w-3 rounded-full" style={{ backgroundColor: platform.color }} />
+          <span className="h-3 w-3 rounded-full" style={{ backgroundColor: color }} />
         </div>
 
         <div className="min-w-0 flex-1">
           <div className="mb-1 flex flex-wrap items-center gap-2">
             <h4 className="truncate font-medium text-text-primary">{source.name}</h4>
             <span className="rounded bg-bg-tertiary px-1.5 py-0.5 text-xs text-text-secondary">
-              {platform.name}
+              {displayName}
             </span>
             {source.error_count > 0 && (
               <span className="rounded bg-red-100 px-1.5 py-0.5 text-xs text-red-600">
@@ -443,14 +552,9 @@ function GeneralTab() {
   const { data, mutate, isLoading } = useSWR('settings-integrations', () => settingsApi.getIntegrations(), {
     revalidateOnFocus: false,
   })
-  const { data: cookieStatus } = useSWR('cookie-status', () => cookieApi.getStatus(), {
-    revalidateOnFocus: false,
-  })
   const [values, setValues] = useState<Record<string, string>>({})
   const [notice, setNotice] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
-  const [isExtracting, setIsExtracting] = useState(false)
-  const [extractNotice, setExtractNotice] = useState<string | null>(null)
 
   useEffect(() => {
     if (!data?.rsshub.settings) {
@@ -487,38 +591,6 @@ function GeneralTab() {
     }
   }, [mutate, values])
 
-  const handleExtractCookies = useCallback(async () => {
-    setIsExtracting(true)
-    setExtractNotice(null)
-
-    try {
-      const response = await cookieApi.extract()
-      if (response.ok && response.data) {
-        const { success, failed, results } = response.data
-        const successPlatforms = results.filter((r) => r.success).map((r) => r.platform)
-        if (successPlatforms.length > 0) {
-          setExtractNotice(`成功从 ${successPlatforms.join('、')} 获取 Cookie`)
-        } else {
-          setExtractNotice('未能获取任何平台的 Cookie，请确保已在 Chrome 中登录相关网站')
-        }
-        if (failed > 0) {
-          const failedPlatforms = results.filter((r) => !r.success).map((r) => r.platform)
-          setExtractNotice((prev) => `${prev || ''}（${failedPlatforms.join('、')} 失败）`)
-        }
-        // Refresh settings
-        await mutate()
-      } else if (response.code === 'CHROME_NOT_CONNECTED') {
-        setExtractNotice('Chrome 远程调试未连接。请在 chrome://inspect/#remote-debugging 中开启调试选项')
-      } else {
-        setExtractNotice(response.error || '获取 Cookie 失败')
-      }
-    } catch (error) {
-      setExtractNotice(error instanceof Error ? error.message : '获取 Cookie 失败')
-    } finally {
-      setIsExtracting(false)
-    }
-  }, [mutate])
-
   return (
     <div className="p-6">
       <h3 className="mb-6 text-lg font-semibold text-text-primary">通用设置</h3>
@@ -537,7 +609,7 @@ function GeneralTab() {
         <div className="rounded-xl border border-border-color bg-bg-primary p-4">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h4 className="font-medium text-text-primary">本地集成</h4>
+              <h4 className="font-medium text-text-primary">本地 RSSHub</h4>
               <p className="text-sm text-text-secondary">
                 直接把登录态写入本地 RSSHub 配置文件，保存后会自动重启服务。
               </p>
@@ -567,60 +639,6 @@ function GeneralTab() {
               <div className="rounded-lg border border-border-color bg-bg-secondary px-4 py-3 text-sm text-text-secondary">
                 <p>配置文件：{data?.rsshub.envPath}</p>
                 <p>服务地址：http://localhost:{data?.rsshub.port ?? 1200}</p>
-              </div>
-
-              {/* Chrome Cookie 提取区域 */}
-              <div className="rounded-xl border border-accent/30 bg-accent/5 p-4">
-                <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <h5 className="font-medium text-text-primary">从 Chrome 获取 Cookie</h5>
-                    <p className="text-xs text-text-secondary mt-1">
-                      自动从已登录的 Chrome 中提取 Cookie（需要开启远程调试）
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={cn(
-                        'h-2 w-2 rounded-full',
-                        cookieStatus?.data?.chromeConnected ? 'bg-green-500' : 'bg-red-500'
-                      )}
-                    />
-                    <span className="text-xs text-text-secondary">
-                      Chrome {cookieStatus?.data?.chromeConnected ? '已连接' : '未连接'}
-                      {cookieStatus?.data?.chromePort ? ` (端口 ${cookieStatus.data.chromePort})` : ''}
-                    </span>
-                  </div>
-                </div>
-
-                {extractNotice && (
-                  <div className="mb-3 rounded-lg border border-border-color bg-bg-secondary px-4 py-3 text-sm text-text-secondary">
-                    {extractNotice}
-                  </div>
-                )}
-
-                <button
-                  onClick={handleExtractCookies}
-                  disabled={isExtracting || !cookieStatus?.data?.chromeConnected}
-                  className="rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {isExtracting ? (
-                    <span className="flex items-center gap-2">
-                      <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                      </svg>
-                      提取中...
-                    </span>
-                  ) : (
-                    '一键获取全部 Cookie'
-                  )}
-                </button>
-
-                {!cookieStatus?.data?.chromeConnected && (
-                  <p className="mt-2 text-xs text-text-muted">
-                    如需启用，请前往 chrome://inspect/#remote-debugging 勾选 "Allow remote debugging"
-                  </p>
-                )}
               </div>
 
               {data?.rsshub.settings.map((setting) => (
@@ -732,206 +750,6 @@ function AboutTab() {
   )
 }
 
-function WeChatTab() {
-  const [status, setStatus] = useState<{
-    configured: boolean
-    cookieConfigured: boolean
-    tokenConfigured: boolean
-  } | null>(null)
-  const [cookie, setCookie] = useState('')
-  const [token, setToken] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
-  const [collecting, setCollecting] = useState(false)
-  const [collectResult, setCollectResult] = useState<string | null>(null)
-
-  useEffect(() => {
-    loadStatus()
-  }, [])
-
-  async function loadStatus() {
-    try {
-      const res = await wechatApi.getAuthStatus()
-      if (res.ok && res.data) {
-        setStatus(res.data)
-        setCookie(res.data.cookieConfigured ? '********' : '')
-        setToken(res.data.tokenConfigured ? '********' : '')
-      }
-    } catch {
-      setError('Failed to load status')
-    }
-  }
-
-  async function handleSave() {
-    if (!cookie || !token) {
-      setError('Cookie and Token are required')
-      return
-    }
-
-    if (cookie === '********' && token === '********') {
-      setSuccess('Settings unchanged')
-      return
-    }
-
-    setLoading(true)
-    setError(null)
-    setSuccess(null)
-
-    try {
-      const res = await wechatApi.setCredentials({ cookie, token })
-      if (res.ok) {
-        setSuccess('Credentials saved successfully')
-        await loadStatus()
-      } else {
-        setError(res.error || 'Failed to save')
-      }
-    } catch {
-      setError('Failed to save credentials')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  async function handleVerify() {
-    setLoading(true)
-    setError(null)
-    setSuccess(null)
-
-    try {
-      const res = await wechatApi.verifyCredentials()
-      if (res.ok && res.data?.valid) {
-        setSuccess('Credentials are valid!')
-      } else {
-        setError('Credentials are invalid')
-      }
-    } catch {
-      setError('Verification failed')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  async function handleCollect() {
-    setCollecting(true)
-    setCollectResult(null)
-    setError(null)
-
-    try {
-      const res = await wechatApi.collect()
-      if (res.ok && res.data) {
-        const total = Object.values(res.data.collected).reduce((sum, n) => sum + n, 0)
-        setCollectResult(`Collected ${total} articles from ${res.data.totalSources} sources`)
-        await loadStatus()
-      } else {
-        setError(res.error || 'Collection failed')
-      }
-    } catch {
-      setError('Collection failed')
-    } finally {
-      setCollecting(false)
-    }
-  }
-
-  return (
-    <div className="p-6">
-      <h3 className="mb-6 text-lg font-semibold text-text-primary">微信公众号设置</h3>
-
-      {/* Status */}
-      {status && (
-        <div className="mb-6 rounded-lg bg-bg-tertiary p-4">
-          <div className="flex items-center gap-2 text-sm">
-            <span className={`h-2 w-2 rounded-full ${status.configured ? 'bg-green-500' : 'bg-yellow-500'}`} />
-            <span className="text-text-secondary">
-              {status.configured ? '已配置认证信息' : '未配置认证信息'}
-            </span>
-          </div>
-          <div className="mt-2 flex gap-4 text-xs text-text-secondary">
-            <span>Cookie: {status.cookieConfigured ? '✓' : '✗'}</span>
-            <span>Token: {status.tokenConfigured ? '✓' : '✗'}</span>
-          </div>
-        </div>
-      )}
-
-      {/* Error/Success */}
-      {error && (
-        <div className="mb-4 rounded-lg bg-red-500/10 p-3 text-sm text-red-500">{error}</div>
-      )}
-      {success && (
-        <div className="mb-4 rounded-lg bg-green-500/10 p-3 text-sm text-green-500">{success}</div>
-      )}
-
-      {/* Form */}
-      <div className="space-y-4">
-        <div>
-          <label className="mb-1.5 block text-sm font-medium text-text-primary">Cookie</label>
-          <input
-            type="password"
-            value={cookie}
-            onChange={(e) => setCookie(e.target.value)}
-            placeholder="wxuin..."
-            className="w-full rounded-lg border border-border bg-bg-secondary px-3 py-2 text-sm text-text-primary placeholder:text-text-tertiary focus:border-primary focus:outline-none"
-          />
-          <p className="mt-1 text-xs text-text-tertiary">
-            从微信公众平台获取，建议使用专门的账号
-          </p>
-        </div>
-
-        <div>
-          <label className="mb-1.5 block text-sm font-medium text-text-primary">Token</label>
-          <input
-            type="password"
-            value={token}
-            onChange={(e) => setToken(e.target.value)}
-            placeholder="1234567890"
-            className="w-full rounded-lg border border-border bg-bg-secondary px-3 py-2 text-sm text-text-primary placeholder:text-text-tertiary focus:border-primary focus:outline-none"
-          />
-          <p className="mt-1 text-xs text-text-tertiary">
-            微信公众平台的 token 值（纯数字）
-          </p>
-        </div>
-
-        <div className="flex gap-3 pt-2">
-          <button
-            onClick={handleSave}
-            disabled={loading}
-            className="flex-1 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-50"
-          >
-            {loading ? '保存中...' : '保存设置'}
-          </button>
-          <button
-            onClick={handleVerify}
-            disabled={loading || !status?.configured}
-            className="flex-1 rounded-lg border border-border bg-bg-secondary px-4 py-2 text-sm font-medium text-text-primary hover:bg-bg-tertiary disabled:opacity-50"
-          >
-            验证
-          </button>
-        </div>
-      </div>
-
-      {/* Collection */}
-      {status?.configured && (
-        <div className="mt-6 border-t border-border pt-6">
-          <h4 className="mb-3 text-sm font-medium text-text-primary">采集文章</h4>
-          <button
-            onClick={handleCollect}
-            disabled={collecting}
-            className="w-full rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50"
-          >
-            {collecting ? '采集中...' : '立即采集所有公众号'}
-          </button>
-          {collectResult && (
-            <p className="mt-2 text-sm text-green-500">{collectResult}</p>
-          )}
-          <p className="mt-2 text-xs text-text-tertiary">
-            采集可能需要几分钟，取决于公众号数量和网络状况
-          </p>
-        </div>
-      )}
-    </div>
-  )
-}
-
 function EmptyState({ title, description }: { title: string; description: string }) {
   return (
     <div className="py-12 text-center">
@@ -946,44 +764,22 @@ function EmptyState({ title, description }: { title: string; description: string
   )
 }
 
-function TagsTab({ tags, onMutate }: { tags: Tag[]; onMutate: () => void }) {
+function TagsTab({ tags, onMutate }: { tags: FavoriteTag[]; onMutate: () => void }) {
   const [isCreating, setIsCreating] = useState(false)
-  const [editingTag, setEditingTag] = useState<Tag | null>(null)
-  const [formData, setFormData] = useState({ name: '', color: '#4CA6E1', description: '' })
+  const [formData, setFormData] = useState({ name: '' })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null)
 
-  const presetColors = ['#4CA6E1', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#6B7280', '#14B8A6']
-
   const resetForm = () => {
-    setFormData({ name: '', color: '#4CA6E1', description: '' })
+    setFormData({ name: '' })
     setIsCreating(false)
-    setEditingTag(null)
   }
 
   const handleCreate = async () => {
-    if (!formData.name.trim()) {
-      return
-    }
-
+    if (!formData.name.trim()) return
     setIsSubmitting(true)
     try {
-      await tagsApi.create(formData)
-      onMutate()
-      resetForm()
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  const handleUpdate = async () => {
-    if (!editingTag || !formData.name.trim()) {
-      return
-    }
-
-    setIsSubmitting(true)
-    try {
-      await tagsApi.update(editingTag.id, formData)
+      await favoritesApi.createTag(formData)
       onMutate()
       resetForm()
     } finally {
@@ -992,67 +788,37 @@ function TagsTab({ tags, onMutate }: { tags: Tag[]; onMutate: () => void }) {
   }
 
   const handleDelete = async (id: number) => {
-    await tagsApi.delete(id)
+    await favoritesApi.deleteTag(id)
     setConfirmDelete(null)
     onMutate()
-  }
-
-  const startEdit = (tag: Tag) => {
-    setEditingTag(tag)
-    setFormData({
-      name: tag.name,
-      color: tag.color,
-      description: tag.description || '',
-    })
-    setIsCreating(false)
   }
 
   return (
     <div className="p-6">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-text-primary">标签管理</h3>
-          <p className="text-sm text-text-secondary">共 {tags.length} 个标签</p>
+          <h3 className="text-lg font-semibold text-text-primary">收藏管理</h3>
+          <p className="text-sm text-text-secondary">共 {tags.length} 个收藏标签</p>
         </div>
-        {!isCreating && !editingTag && (
+        {!isCreating && (
           <button
             onClick={() => setIsCreating(true)}
             className="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-accent-hover"
           >
-            新建标签
+            新建收藏标签
           </button>
         )}
       </div>
 
-      {(isCreating || editingTag) && (
+      {isCreating && (
         <div className="mb-6 rounded-xl border border-border-color bg-bg-primary p-4">
-          <h4 className="mb-4 font-medium text-text-primary">{editingTag ? '编辑标签' : '新建标签'}</h4>
+          <h4 className="mb-4 font-medium text-text-primary">新建收藏标签</h4>
           <div className="space-y-4">
             <input
               type="text"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              placeholder="标签名称"
-              className="w-full rounded-lg border border-border-color bg-bg-secondary px-3 py-2 text-text-primary placeholder:text-text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
-            />
-            <div className="flex flex-wrap gap-2">
-              {presetColors.map((color) => (
-                <button
-                  key={color}
-                  onClick={() => setFormData({ ...formData, color })}
-                  className={cn(
-                    'h-8 w-8 rounded-lg transition-all',
-                    formData.color === color ? 'scale-110 ring-2 ring-accent ring-offset-2' : 'hover:scale-105'
-                  )}
-                  style={{ backgroundColor: color }}
-                />
-              ))}
-            </div>
-            <input
-              type="text"
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="描述（可选）"
+              onChange={(e) => setFormData({ name: e.target.value })}
+              placeholder="标签名称，如：重要、稍后阅读"
               className="w-full rounded-lg border border-border-color bg-bg-secondary px-3 py-2 text-text-primary placeholder:text-text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
             />
             <div className="flex justify-end gap-2">
@@ -1063,7 +829,7 @@ function TagsTab({ tags, onMutate }: { tags: Tag[]; onMutate: () => void }) {
                 取消
               </button>
               <button
-                onClick={editingTag ? handleUpdate : handleCreate}
+                onClick={handleCreate}
                 disabled={isSubmitting || !formData.name.trim()}
                 className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
               >
@@ -1075,7 +841,7 @@ function TagsTab({ tags, onMutate }: { tags: Tag[]; onMutate: () => void }) {
       )}
 
       {tags.length === 0 ? (
-        <EmptyState title="暂无标签" description="创建标签后，可以给内容打标和筛选。" />
+        <EmptyState title="暂无收藏标签" description="创建收藏标签后，可以给内容打上红心标记。" />
       ) : (
         <div className="space-y-2">
           {tags.map((tag) => (
@@ -1084,11 +850,10 @@ function TagsTab({ tags, onMutate }: { tags: Tag[]; onMutate: () => void }) {
               className="flex items-center justify-between rounded-xl border border-border-color bg-bg-secondary p-3"
             >
               <div className="flex items-center gap-3">
-                <span className="h-4 w-4 rounded-full" style={{ backgroundColor: tag.color }} />
-                <div>
-                  <span className="font-medium text-text-primary">{tag.name}</span>
-                  {tag.description && <p className="text-xs text-text-muted">{tag.description}</p>}
-                </div>
+                <svg className="h-4 w-4 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+                <span className="font-medium text-text-primary">{tag.name}</span>
               </div>
 
               {confirmDelete === tag.id ? (
@@ -1108,18 +873,11 @@ function TagsTab({ tags, onMutate }: { tags: Tag[]; onMutate: () => void }) {
                   </button>
                 </div>
               ) : (
-                <div className="flex items-center gap-1">
-                  <IconButton title="编辑" onClick={() => startEdit(tag)}>
-                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                  </IconButton>
-                  <IconButton title="删除" danger onClick={() => setConfirmDelete(tag.id)}>
-                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </IconButton>
-                </div>
+                <IconButton title="删除" danger onClick={() => setConfirmDelete(tag.id)}>
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </IconButton>
               )}
             </div>
           ))}

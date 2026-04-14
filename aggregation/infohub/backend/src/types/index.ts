@@ -15,6 +15,9 @@
   last_success_at: string | null;
   created_at: string;
   updated_at: string;
+  is_public: boolean;
+  public_source_id: number | null;
+  category?: string;
 }
 
 export interface CreateSourceInput {
@@ -56,7 +59,14 @@ export interface Item {
   fetched_at: string;
   raw_json: unknown;
   is_read?: boolean;
-  tags?: Tag[];
+  favorite?: FavoriteTag | null;
+}
+
+export interface FavoriteTag {
+  id: number;
+  name: string;
+  sort_order: number;
+  created_at: string;
 }
 
 export interface ReadStatus {
@@ -99,6 +109,7 @@ export interface CollectionResult {
   sourceId: number;
   success: boolean;
   itemCount: number;
+  skipped?: boolean;
   error?: string;
 }
 
@@ -126,4 +137,35 @@ export interface UpdateTagInput {
   color?: string;
   description?: string;
   sort_order?: number;
+}
+
+// 公开订阅源
+export interface PublicSource {
+  id: number;
+  name: string;
+  url: string;
+  rss_url: string;
+  platform: string;
+  category: string;
+  description: string | null;
+  enabled: boolean;
+  subscribed_count: number;
+  created_at: string;
+}
+
+export interface PublicSourceCategory {
+  id: number;
+  slug: string;
+  name: string;
+  sort_order: number;
+  created_at: string;
+}
+
+export interface CreatePublicSourceInput {
+  name: string;
+  url: string;
+  rss_url: string;
+  platform?: string;
+  category: string;
+  description?: string;
 }

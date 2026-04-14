@@ -1,8 +1,11 @@
 ﻿import { dbType, sql } from './client.js';
 import type {
+  CreatePublicSourceInput,
   CreateSourceInput,
   CreateTagInput,
   Item,
+  PublicSource,
+  PublicSourceCategory,
   Source,
   Tag,
   UnreadBreakdown,
@@ -31,15 +34,12 @@ function appendVisibilityConditions(
   params.push('zhihu', '%赞同了回答%');
 }
 
-type TaggedRow = {
-  item_id: number;
+interface FavoriteTagForAttach {
   id: number;
   name: string;
-  color: string;
-  description: string | null;
   sort_order: number;
   created_at: string;
-};
+}
 
 async function attachTags(items: Item[]): Promise<Item[]> {
   if (items.length === 0) {
@@ -47,52 +47,51 @@ async function attachTags(items: Item[]): Promise<Item[]> {
   }
 
   const itemIds = items.map((item) => item.id);
-  const taggedRows = await sql.query<TaggedRow>(
-    `
-      SELECT
-        it.item_id,
-        t.id,
-        t.name,
-        t.color,
-        t.description,
-        t.sort_order,
-        t.created_at
-      FROM item_tags it
-      JOIN tags t ON t.id = it.tag_id
-      WHERE it.item_id IN (${buildInClause(itemIds.length)})
-      ORDER BY t.sort_order ASC, t.name ASC
-    `,
+
+  // 获取收藏标签
+  const favoriteRows = await sql.query<{ item_id: number; id: number; name: string; sort_order: number; created_at: string }>(
+    `SELECT f.item_id, ft.id, ft.name, ft.sort_order, ft.created_at
+     FROM favorites f
+     JOIN favorite_tags ft ON ft.id = f.favorite_tag_id
+     WHERE f.item_id IN (${buildInClause(itemIds.length)})`,
     itemIds
   );
 
-  const tagMap = new Map<number, Tag[]>();
-  for (const row of taggedRows) {
-    const tags = tagMap.get(row.item_id) ?? [];
-    tags.push({
+  const favoriteMap = new Map<number, FavoriteTagForAttach>();
+  for (const row of favoriteRows) {
+    favoriteMap.set(row.item_id, {
       id: row.id,
       name: row.name,
-      color: row.color,
-      description: row.description,
       sort_order: row.sort_order,
       created_at: row.created_at,
     });
-    tagMap.set(row.item_id, tags);
   }
 
   return items.map((item) => ({
     ...item,
     is_read: Boolean(item.is_read),
-    tags: tagMap.get(item.id) ?? [],
+    favorite: favoriteMap.get(item.id) ?? null,
   }));
 }
 
 export const sourcesQueries = {
   async getAll(): Promise<Source[]> {
-    return sql.query<Source>('SELECT * FROM sources ORDER BY created_at DESC');
+    return sql.query<Source>(
+      `SELECT s.*, ps.category
+       FROM sources s
+       LEFT JOIN public_sources ps ON ps.id = s.public_source_id
+       ORDER BY s.created_at DESC`
+    );
   },
 
   async getById(id: number): Promise<Source | null> {
-    return (await sql.get<Source>('SELECT * FROM sources WHERE id = ?', [id])) ?? null;
+    return (await sql.get<Source>(
+      `SELECT s.*, ps.category
+       FROM sources s
+       LEFT JOIN public_sources ps ON ps.id = s.public_source_id
+       WHERE s.id = ?`,
+      [id]
+    )) ?? null;
   },
 
   async create(input: CreateSourceInput): Promise<Source> {
@@ -262,10 +261,14 @@ export const itemsQueries = {
 
   async getList(options: {
     platform?: string;
+    sourceId?: number;
     limit?: number;
     offset?: number;
     unreadOnly?: boolean;
     search?: string;
+    isPublic?: boolean;
+    category?: string;
+    days?: number;
   }): Promise<Item[]> {
     const params: Array<string | number> = [];
     const conditions = ['1=1'];
@@ -275,8 +278,33 @@ export const itemsQueries = {
       params.push(options.platform);
     }
 
+    if (options.sourceId !== undefined) {
+      conditions.push('i.source_id = ?');
+      params.push(options.sourceId);
+    }
+
+    // 时间范围过滤（默认 3 天）
+    if (options.days !== undefined && options.days > 0) {
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - options.days);
+      conditions.push('i.published_at >= ?');
+      params.push(cutoff.toISOString());
+    }
+
     if (options.unreadOnly) {
       conditions.push('r.item_id IS NULL');
+    }
+
+    // 公开/定制源过滤
+    if (options.isPublic !== undefined) {
+      conditions.push('s.is_public = ?');
+      params.push(options.isPublic ? 1 : 0);
+    }
+
+    // 公开源分类过滤
+    if (options.isPublic && options.category) {
+      conditions.push('ps.category = ?');
+      params.push(options.category);
     }
 
     appendVisibilityConditions(conditions, params);
@@ -295,6 +323,8 @@ export const itemsQueries = {
         SELECT i.*, CASE WHEN r.item_id IS NOT NULL THEN 1 ELSE 0 END AS is_read
         FROM items i
         LEFT JOIN read_status r ON r.item_id = i.id
+        LEFT JOIN sources s ON s.id = i.source_id
+        LEFT JOIN public_sources ps ON ps.id = s.public_source_id
         WHERE ${conditions.join(' AND ')}
         ORDER BY i.published_at DESC
         LIMIT ? OFFSET ?
@@ -624,5 +654,294 @@ export const tagsQueries = {
     );
 
     return attachTags(items);
+  },
+};
+
+// ============================================
+// 收藏标签查询（替代标签系统）
+// ============================================
+export interface FavoriteTag {
+  id: number;
+  name: string;
+  sort_order: number;
+  created_at: string;
+}
+
+export interface CreateFavoriteTagInput {
+  name: string;
+  sort_order?: number;
+}
+
+export interface Favorite {
+  item_id: number;
+  favorite_tag_id: number;
+  favorite_tag_name?: string;
+  created_at: string;
+}
+
+export const favoriteTagsQueries = {
+  async getAll(): Promise<FavoriteTag[]> {
+    return sql.query<FavoriteTag>('SELECT * FROM favorite_tags ORDER BY sort_order ASC, name ASC');
+  },
+
+  async getById(id: number): Promise<FavoriteTag | null> {
+    return (await sql.get<FavoriteTag>('SELECT * FROM favorite_tags WHERE id = ?', [id])) ?? null;
+  },
+
+  async create(input: CreateFavoriteTagInput): Promise<FavoriteTag> {
+    if (dbType === 'postgresql') {
+      const rows = await sql.query<FavoriteTag>(
+        'INSERT INTO favorite_tags (name, sort_order) VALUES (?, ?) RETURNING *',
+        [input.name, input.sort_order ?? 0]
+      );
+      return rows[0];
+    }
+
+    await sql.execute(
+      'INSERT INTO favorite_tags (name, sort_order) VALUES (?, ?)',
+      [input.name, input.sort_order ?? 0]
+    );
+
+    const created = await sql.get<FavoriteTag>('SELECT * FROM favorite_tags WHERE id = last_insert_rowid()');
+    if (!created) {
+      throw new Error('Failed to create favorite tag');
+    }
+    return created;
+  },
+
+  async delete(id: number): Promise<boolean> {
+    const existing = await this.getById(id);
+    if (!existing) {
+      return false;
+    }
+    await sql.execute('DELETE FROM favorite_tags WHERE id = ?', [id]);
+    return true;
+  },
+};
+
+export const favoritesQueries = {
+  // 获取内容对应的收藏标签
+  async getForItem(itemId: number): Promise<FavoriteTag | null> {
+    const row = await sql.get<Favorite & FavoriteTag>(
+      `SELECT f.*, ft.name as favorite_tag_name, ft.sort_order
+       FROM favorites f
+       JOIN favorite_tags ft ON ft.id = f.favorite_tag_id
+       WHERE f.item_id = ?`,
+      [itemId]
+    );
+    if (!row) return null;
+    return { id: row.favorite_tag_id, name: row.favorite_tag_name!, sort_order: row.sort_order, created_at: row.created_at };
+  },
+
+  // 获取多个内容的收藏状态
+  async getForItems(itemIds: number[]): Promise<Map<number, FavoriteTag>> {
+    if (itemIds.length === 0) return new Map();
+    const placeholders = itemIds.map(() => '?').join(',');
+    const rows = await sql.query<Favorite & FavoriteTag>(
+      `SELECT f.item_id, ft.id, ft.name, ft.sort_order, f.created_at
+       FROM favorites f
+       JOIN favorite_tags ft ON ft.id = f.favorite_tag_id
+       WHERE f.item_id IN (${placeholders})`,
+      itemIds
+    );
+    const map = new Map<number, FavoriteTag>();
+    for (const row of rows) {
+      map.set(row.item_id, { id: row.favorite_tag_id, name: row.favorite_tag_name!, sort_order: row.sort_order, created_at: row.created_at });
+    }
+    return map;
+  },
+
+  // 添加/更新收藏（如果已收藏则更新标签）
+  async set(itemId: number, favoriteTagId: number): Promise<void> {
+    await sql.execute(
+      'INSERT OR REPLACE INTO favorites (item_id, favorite_tag_id, created_at) VALUES (?, ?, CURRENT_TIMESTAMP)',
+      [itemId, favoriteTagId]
+    );
+  },
+
+  // 取消收藏
+  async remove(itemId: number): Promise<void> {
+    await sql.execute('DELETE FROM favorites WHERE item_id = ?', [itemId]);
+  },
+
+  // 获取某个收藏标签下的所有内容
+  async getItemsByTag(favoriteTagId: number, options: { limit?: number; offset?: number } = {}): Promise<Item[]> {
+    const items = await sql.query<Item>(
+      `SELECT i.*, CASE WHEN r.item_id IS NOT NULL THEN 1 ELSE 0 END AS is_read
+       FROM items i
+       JOIN favorites f ON f.item_id = i.id
+       LEFT JOIN read_status r ON r.item_id = i.id
+       WHERE f.favorite_tag_id = ?
+       ORDER BY i.published_at DESC
+       LIMIT ? OFFSET ?`,
+      [favoriteTagId, options.limit ?? 20, options.offset ?? 0]
+    );
+    return items;
+  },
+};
+
+export const publicSourcesQueries = {
+  async getAll(category?: string): Promise<PublicSource[]> {
+    if (category) {
+      return sql.query<PublicSource>(
+        'SELECT * FROM public_sources WHERE enabled = 1 AND category = ? ORDER BY subscribed_count DESC, name ASC',
+        [category]
+      );
+    }
+    return sql.query<PublicSource>(
+      'SELECT * FROM public_sources WHERE enabled = 1 ORDER BY subscribed_count DESC, name ASC'
+    );
+  },
+
+  async getById(id: number): Promise<PublicSource | null> {
+    return (await sql.get<PublicSource>('SELECT * FROM public_sources WHERE id = ?', [id])) ?? null;
+  },
+
+  async getCategories(): Promise<PublicSourceCategory[]> {
+    return sql.query<PublicSourceCategory>(
+      'SELECT * FROM public_source_categories ORDER BY sort_order ASC, name ASC'
+    );
+  },
+
+  async getSubscribedIds(userId: number = 1): Promise<number[]> {
+    const rows = await sql.query<{ source_id: number }>(
+      'SELECT source_id FROM public_source_subscriptions WHERE user_id = ?',
+      [userId]
+    );
+    return rows.map((r) => r.source_id);
+  },
+
+  async subscribe(userId: number, sourceIds: number[]): Promise<{ subscribed: number; failed: number; sourceIds: number[] }> {
+    let subscribed = 0;
+    let failed = 0;
+    const createdSourceIds: number[] = [];
+
+    for (const sourceId of sourceIds) {
+      try {
+        // 获取公开源详情
+        const publicSource = await this.getById(sourceId);
+        if (!publicSource) {
+          failed++;
+          continue;
+        }
+
+        // 检查是否已订阅
+        const existing = await sql.get<{ user_id: number }>(
+          'SELECT user_id FROM public_source_subscriptions WHERE user_id = ? AND source_id = ?',
+          [userId, sourceId]
+        );
+
+        if (!existing) {
+          // 记录订阅关系
+          if (dbType === 'postgresql') {
+            await sql.execute(
+              'INSERT INTO public_source_subscriptions (user_id, source_id) VALUES (?, ?)',
+              [userId, sourceId]
+            );
+          } else {
+            await sql.execute(
+              'INSERT OR IGNORE INTO public_source_subscriptions (user_id, source_id) VALUES (?, ?)',
+              [userId, sourceId]
+            );
+          }
+
+          // 在 sources 表中创建或更新对应的订阅记录
+          // 如果同 rss_url 的源已存在（用户手动添加的），则标记为公开源
+          const existingSource = await sql.get<{ id: number }>(
+            'SELECT id FROM sources WHERE rss_url = ?',
+            [publicSource.rss_url]
+          );
+
+          if (existingSource) {
+            await sql.execute(
+              'UPDATE sources SET is_public = 1, public_source_id = ?, enabled = 1, status = ? WHERE id = ?',
+              [sourceId, 'active', existingSource.id]
+            );
+            createdSourceIds.push(existingSource.id);
+          } else {
+            await sql.execute(
+              `INSERT INTO sources (name, platform, input_url, rss_url, is_public, public_source_id, enabled, status)
+               VALUES (?, ?, ?, ?, 1, ?, 1, 'active')`,
+              [publicSource.name, publicSource.platform, publicSource.url, publicSource.rss_url, sourceId]
+            );
+            // SQLite: last_insert_rowid(), PostgreSQL: use RETURNING
+            const inserted = await sql.get<{ id: number }>('SELECT last_insert_rowid() as id');
+            if (inserted) createdSourceIds.push(inserted.id);
+          }
+
+          // 更新订阅计数
+          await sql.execute(
+            'UPDATE public_sources SET subscribed_count = subscribed_count + 1 WHERE id = ?',
+            [sourceId]
+          );
+
+          subscribed++;
+        }
+      } catch (err) {
+        console.error('Subscribe error:', err);
+        failed++;
+      }
+    }
+
+    return { subscribed, failed, sourceIds: createdSourceIds };
+  },
+
+  async unsubscribe(userId: number, sourceIds: number[]): Promise<{ unsubscribed: number }> {
+    for (const sourceId of sourceIds) {
+      await sql.execute(
+        'DELETE FROM public_source_subscriptions WHERE user_id = ? AND source_id = ?',
+        [userId, sourceId]
+      );
+      // 删除 sources 表中的对应记录
+      await sql.execute(
+        'DELETE FROM sources WHERE public_source_id = ? AND is_public = 1',
+        [sourceId]
+      );
+      await sql.execute(
+        'UPDATE public_sources SET subscribed_count = MAX(0, subscribed_count - 1) WHERE id = ?',
+        [sourceId]
+      );
+    }
+    return { unsubscribed: sourceIds.length };
+  },
+
+  async create(input: CreatePublicSourceInput): Promise<PublicSource> {
+    if (dbType === 'postgresql') {
+      const rows = await sql.query<PublicSource>(
+        `
+          INSERT INTO public_sources (name, url, rss_url, platform, category, description)
+          VALUES (?, ?, ?, ?, ?, ?)
+          RETURNING *
+        `,
+        [
+          input.name,
+          input.url,
+          input.rss_url,
+          input.platform ?? 'news',
+          input.category,
+          input.description ?? null,
+        ]
+      );
+      return rows[0];
+    }
+
+    await sql.execute(
+      `INSERT INTO public_sources (name, url, rss_url, platform, category, description)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [
+        input.name,
+        input.url,
+        input.rss_url,
+        input.platform ?? 'news',
+        input.category,
+        input.description ?? null,
+      ]
+    );
+
+    const created = await sql.get<PublicSource>('SELECT * FROM public_sources WHERE id = last_insert_rowid()');
+    if (!created) {
+      throw new Error('Failed to create public source');
+    }
+    return created;
   },
 };

@@ -10,10 +10,14 @@ const feedRouter = new Hono();
 
 const getItemsSchema = z.object({
   platform: z.enum(['zhihu', 'x', 'news', 'custom', 'bilibili', 'youtube', 'wechat', 'weibo']).optional(),
-  limit: z.coerce.number().min(1).max(100).default(20),
+  sourceId: z.coerce.number().int().positive().optional(),
+  category: z.string().max(100).optional(),
+  limit: z.coerce.number().min(1).max(500).default(100),
   offset: z.coerce.number().min(0).default(0),
   unread_only: z.enum(['true', 'false']).optional(),
   search: z.string().max(100).optional(),
+  is_public: z.enum(['true', 'false']).optional(),
+  days: z.coerce.number().min(1).max(90).default(3),
 });
 
 const markAsReadSchema = z.object({
@@ -28,10 +32,14 @@ feedRouter.get('/', validateQuery(getItemsSchema), async (c) => {
   const query = getValidatedQuery<z.infer<typeof getItemsSchema>>(c);
   const items = await itemsQueries.getList({
     platform: query.platform,
+    sourceId: query.sourceId,
     limit: query.limit,
     offset: query.offset,
     unreadOnly: query.unread_only === 'true',
     search: query.search,
+    isPublic: query.is_public === 'true' ? true : query.is_public === 'false' ? false : undefined,
+    category: query.category,
+    days: query.days,
   });
 
   return c.json({
@@ -85,57 +93,6 @@ feedRouter.post('/read-all', async (c) => {
 const wechatFeedSchema = z.object({
   limit: z.coerce.number().min(1).max(100).default(30),
   offset: z.coerce.number().min(0).default(0),
-});
-
-/**
- * 获取指定公众号的 RSS
- * GET /api/feed/wechat/:feedId.rss
- */
-feedRouter.get('/wechat/:feedId', validateQuery(wechatFeedSchema), async (c) => {
-  const feedId = c.req.param('feedId');
-  const query = getValidatedQuery<z.infer<typeof wechatFeedSchema>>(c);
-
-  // 获取公众号信息
-  const account = await sql.get<{
-    mp_name: string;
-    mp_cover: string | null;
-    mp_intro: string | null;
-  }>('SELECT mp_name, mp_cover, mp_intro FROM wechat_accounts WHERE id = ?', [feedId]);
-
-  if (!account) {
-    throw new NotFoundError(`WeChat account not found: ${feedId}`);
-  }
-
-  // 获取文章列表
-  const items = await itemsQueries.getList({
-    platform: 'wechat',
-    limit: query.limit,
-    offset: query.offset,
-  });
-
-  // 过滤出属于该公众号的文章 (通过 author 字段匹配 feedId)
-  const rssItems = items
-    .filter((item) => item.author != null && item.author === feedId)
-    .map((item) => ({
-      id: item.guid,
-      title: item.title,
-      link: item.url,
-      description: item.summary || '',
-      image: item.cover_url || undefined,
-      updated: new Date(item.published_at),
-      mp_name: account.mp_name,
-    }));
-
-  const rssXml = rssGenerator.generateRSS(rssItems, {
-    title: `${account.mp_name} - InfoHub`,
-    link: `http://localhost:3000/feed/wechat/${feedId}`,
-    description: account.mp_intro || `${account.mp_name} 的文章`,
-    imageUrl: account.mp_cover || undefined,
-  });
-
-  return c.newResponse(rssXml, 200, {
-    'Content-Type': 'application/rss+xml; charset=utf-8',
-  });
 });
 
 /**
@@ -194,6 +151,53 @@ feedRouter.get('/wechat/all', validateQuery(wechatFeedSchema), async (c) => {
     title: 'InfoHub - 所有微信公众号',
     link: 'http://localhost:3000',
     description: `共 ${wechatSources.length} 个订阅源`,
+  });
+
+  return c.newResponse(rssXml, 200, {
+    'Content-Type': 'application/rss+xml; charset=utf-8',
+  });
+});
+
+/**
+ * 获取指定公众号的 RSS
+ * GET /api/feed/wechat/:feedId.rss
+ *
+ * feedId 是 sources.id，从 sources_wechat_ext 获取 faker_id 用于过滤
+ */
+feedRouter.get('/wechat/:feedId', validateQuery(wechatFeedSchema), async (c) => {
+  const feedId = c.req.param('feedId');
+  const query = getValidatedQuery<z.infer<typeof wechatFeedSchema>>(c);
+
+  const source = await sql.get<{
+    id: number;
+    name: string;
+  }>('SELECT id, name FROM sources WHERE id = ? AND platform = ?', [feedId, 'wechat']);
+
+  if (!source) {
+    throw new NotFoundError(`WeChat source not found: ${feedId}`);
+  }
+
+  const items = await itemsQueries.getList({
+    platform: 'wechat',
+    sourceId: Number(feedId),
+    limit: query.limit,
+    offset: query.offset,
+  });
+
+  const rssItems = items.map((item) => ({
+    id: item.guid,
+    title: item.title,
+    link: item.url,
+    description: item.summary || '',
+    image: item.cover_url || undefined,
+    updated: new Date(item.published_at),
+    mp_name: source.name,
+  }));
+
+  const rssXml = rssGenerator.generateRSS(rssItems, {
+    title: `${source.name} - InfoHub`,
+    link: `http://localhost:3000/feed/wechat/${feedId}`,
+    description: `${source.name} 的微信文章`,
   });
 
   return c.newResponse(rssXml, 200, {
