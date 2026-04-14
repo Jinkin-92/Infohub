@@ -152,7 +152,7 @@ export function PlatformConnectionsPanel({ onMessage }: Props) {
 
   return (
     <>
-      <div className="space-y-3">
+      <div className="space-y-3" data-testid="platform-connections-panel">
         <p className="mb-4 text-sm text-gray-500">连接需要登录的平台后，相关订阅源才可稳定采集。</p>
         {testStatusText && <p className="text-xs text-blue-600">{testStatusText}</p>}
 
@@ -211,7 +211,10 @@ function PlatformCard({ platform, isTesting, onQrLogin, onManualLogin, onDelete,
         : 'text-gray-500'
 
   return (
-    <div className={`rounded-lg border border-gray-200 p-4 dark:border-gray-700 ${statusBg}`}>
+    <div
+      className={`rounded-lg border border-gray-200 p-4 dark:border-gray-700 ${statusBg}`}
+      data-testid={`platform-card-${platform.platform}`}
+    >
       <div className="mb-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-xl">{platform.icon}</span>
@@ -238,6 +241,7 @@ function PlatformCard({ platform, isTesting, onQrLogin, onManualLogin, onDelete,
         {platform.capability.qrLogin && (
           <button
             onClick={onQrLogin}
+            data-testid={`connect-platform-${platform.platform}`}
             className="rounded-lg bg-blue-500 px-3 py-1.5 text-sm text-white transition-colors hover:bg-blue-600"
           >
             连接{platform.displayName}
@@ -246,6 +250,7 @@ function PlatformCard({ platform, isTesting, onQrLogin, onManualLogin, onDelete,
         {platform.capability.manualCredential && (
           <button
             onClick={onManualLogin}
+            data-testid={`manual-platform-${platform.platform}`}
             className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm transition-colors hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700"
           >
             手动填写{platform.capability.qrLogin ? '凭证' : 'Cookie'}
@@ -254,6 +259,7 @@ function PlatformCard({ platform, isTesting, onQrLogin, onManualLogin, onDelete,
         <button
           onClick={onTest}
           disabled={isTesting}
+          data-testid={`test-platform-${platform.platform}`}
           className="rounded-lg border border-indigo-300 px-3 py-1.5 text-sm text-indigo-700 transition-colors hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-indigo-700 dark:text-indigo-300 dark:hover:bg-indigo-950"
         >
           {isTesting ? '测试中...' : '测试连接'}
@@ -261,6 +267,7 @@ function PlatformCard({ platform, isTesting, onQrLogin, onManualLogin, onDelete,
         {isConnected && (
           <button
             onClick={onDelete}
+            data-testid={`disconnect-platform-${platform.platform}`}
             className="rounded-lg border border-red-200 px-3 py-1.5 text-sm text-red-500 transition-colors hover:text-red-600 dark:border-red-800"
           >
             断开

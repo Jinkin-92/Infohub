@@ -129,6 +129,7 @@ export function TabBar({
             <div className="relative">
               <button
                 onClick={() => setOpenDropdown(openDropdown === 'custom' ? null : 'custom')}
+                data-testid="tab-custom-sources"
                 className={cn(
                   'flex items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150',
                   isCustomActive ? 'bg-bg-tertiary text-text-primary' : 'text-text-secondary hover:bg-bg-tertiary hover:text-text-primary'
@@ -156,6 +157,7 @@ export function TabBar({
                         <button
                           key={platform.id}
                           onClick={() => handleCustomPlatformSelect(platform.id)}
+                          data-testid={`custom-platform-${platform.id}`}
                           className={cn(
                             'w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-left transition-colors',
                             isActive
@@ -184,6 +186,7 @@ export function TabBar({
             <div className="relative">
               <button
                 onClick={() => setOpenDropdown(openDropdown === 'public' ? null : 'public')}
+                data-testid="tab-public-sources"
                 className={cn(
                   'flex items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150',
                   isPublicActive ? 'bg-bg-tertiary text-text-primary' : 'text-text-secondary hover:bg-bg-tertiary hover:text-text-primary'
@@ -211,6 +214,7 @@ export function TabBar({
                         <button
                           key={category.id}
                           onClick={() => handlePublicCategorySelect(category.id)}
+                          data-testid={`public-category-${category.id}`}
                           className={cn(
                             'w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-left transition-colors',
                             isActive
@@ -254,6 +258,7 @@ export function TabBar({
           <div className="ml-2 flex items-center gap-1 border-l border-border-color pl-2">
             <button
               onClick={onSettingsClick}
+              data-testid="open-settings-modal"
               className="rounded-lg p-2 text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary"
               aria-label="设置"
             >

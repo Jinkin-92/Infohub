@@ -139,6 +139,7 @@ export function SettingsModal({ isOpen, onClose, onDataChange }: SettingsModalPr
       <div
         className="relative w-full max-w-4xl overflow-hidden rounded-2xl bg-bg-secondary shadow-2xl"
         style={{ maxHeight: '85vh' }}
+        data-testid="settings-modal"
       >
         <div className="flex h-[75vh]">
           <div className="flex w-56 flex-col border-r border-border-color bg-bg-primary">
@@ -150,6 +151,7 @@ export function SettingsModal({ isOpen, onClose, onDataChange }: SettingsModalPr
               <SidebarButton
                 active={activeTab === 'sources'}
                 onClick={() => setActiveTab('sources')}
+                testId="settings-tab-sources"
                 icon={<PanelIcon path="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />}
                 label="订阅源"
                 badge={sources.length}
@@ -157,6 +159,7 @@ export function SettingsModal({ isOpen, onClose, onDataChange }: SettingsModalPr
               <SidebarButton
                 active={activeTab === 'favorites'}
                 onClick={() => setActiveTab('favorites')}
+                testId="settings-tab-favorites"
                 icon={<PanelIcon path="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />}
                 label="收藏"
                 badge={tags.length}
@@ -164,18 +167,21 @@ export function SettingsModal({ isOpen, onClose, onDataChange }: SettingsModalPr
               <SidebarButton
                 active={activeTab === 'general'}
                 onClick={() => setActiveTab('general')}
+                testId="settings-tab-general"
                 icon={<PanelIcon path="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z" />}
                 label="通用"
               />
               <SidebarButton
                 active={activeTab === 'about'}
                 onClick={() => setActiveTab('about')}
+                testId="settings-tab-about"
                 icon={<PanelIcon path="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />}
                 label="关于"
               />
               <SidebarButton
                 active={activeTab === 'connections'}
                 onClick={() => setActiveTab('connections')}
+                testId="settings-tab-connections"
                 icon={<PanelIcon path="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />}
                 label="平台连接"
               />
@@ -184,6 +190,7 @@ export function SettingsModal({ isOpen, onClose, onDataChange }: SettingsModalPr
             <div className="border-t border-border-color p-3">
               <button
                 onClick={handleClose}
+                data-testid="close-settings-modal"
                 className="w-full rounded-lg px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary"
               >
                 关闭
@@ -234,12 +241,14 @@ interface SidebarButtonProps {
   icon: ReactNode
   label: string
   badge?: number
+  testId?: string
 }
 
-function SidebarButton({ active, onClick, icon, label, badge }: SidebarButtonProps) {
+function SidebarButton({ active, onClick, icon, label, badge, testId }: SidebarButtonProps) {
   return (
     <button
       onClick={onClick}
+      data-testid={testId}
       className={cn(
         'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150',
         active
@@ -305,7 +314,7 @@ function SourcesTab({
   }
 
   return (
-    <div className="p-6">
+    <div className="p-6" data-testid="settings-sources-tab">
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold text-text-primary">订阅源管理</h3>
@@ -419,6 +428,7 @@ function SourceItem({
 
   return (
     <div
+      data-testid={`source-item-${source.id}`}
       className={cn(
         'rounded-xl border p-4 transition-all duration-150',
         source.enabled ? 'border-border-color bg-bg-secondary' : 'border-transparent bg-bg-tertiary opacity-70'
@@ -475,6 +485,7 @@ function SourceItem({
                 title="手动采集"
                 disabled={isCollecting || !source.enabled}
                 onClick={onCollect}
+                testId={`collect-source-${source.id}`}
               >
                 {isCollecting ? (
                   <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -523,18 +534,21 @@ function IconButton({
   disabled,
   onClick,
   danger = false,
+  testId,
 }: {
   children: ReactNode
   title: string
   disabled?: boolean
   onClick: () => void
   danger?: boolean
+  testId?: string
 }) {
   return (
     <button
       onClick={onClick}
       disabled={disabled}
       title={title}
+      data-testid={testId}
       className={cn(
         'rounded-lg p-2 transition-colors disabled:cursor-not-allowed disabled:opacity-50',
         danger
@@ -592,7 +606,7 @@ function GeneralTab() {
   }, [mutate, values])
 
   return (
-    <div className="p-6">
+    <div className="p-6" data-testid="settings-general-tab">
       <h3 className="mb-6 text-lg font-semibold text-text-primary">通用设置</h3>
 
       <div className="space-y-6">
@@ -654,6 +668,7 @@ function GeneralTab() {
                 <button
                   onClick={handleSave}
                   disabled={isSaving}
+                  data-testid="save-rsshub-settings"
                   className="rounded-xl bg-accent px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {isSaving ? '保存中...' : '保存并重启 RSSHub'}

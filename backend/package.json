@@ -8,6 +8,7 @@
     "build": "tsc",
     "start": "node ./scripts/run-with-compatible-node.mjs ./dist/index.js",
     "test": "vitest",
+    "test:run": "vitest run",
     "test:coverage": "vitest --coverage",
     "db:migrate": "node-pg-migrate up",
     "db:create": "node-pg-migrate create",

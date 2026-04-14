@@ -151,7 +151,10 @@ export function PublicSourcesPanel({ isOpen, onClose, onRefresh }: PublicSources
       />
 
       {/* 面板 */}
-      <div className="fixed inset-y-0 right-0 z-50 w-full max-w-xl bg-bg-secondary shadow-2xl animate-in slide-in-from-right duration-200">
+      <div
+        className="fixed inset-y-0 right-0 z-50 w-full max-w-xl bg-bg-secondary shadow-2xl animate-in slide-in-from-right duration-200"
+        data-testid="public-sources-panel"
+      >
         {/* 头部 */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border-color">
           <div>
@@ -160,6 +163,7 @@ export function PublicSourcesPanel({ isOpen, onClose, onRefresh }: PublicSources
           </div>
           <button
             onClick={onClose}
+            data-testid="close-public-sources-panel"
             className="p-2 rounded-lg text-text-secondary hover:bg-bg-tertiary hover:text-text-primary transition-colors"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

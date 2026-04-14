@@ -172,7 +172,7 @@ export default function Home() {
       : null
 
   return (
-    <main className="min-h-screen bg-bg-primary">
+    <main className="min-h-screen bg-bg-primary" data-testid="home-root">
       <TabBar
         activeTab={activeTab}
         onTabChange={(tab) => {
@@ -236,6 +236,7 @@ export default function Home() {
           <div className="flex items-center justify-end mb-4">
             <button
               onClick={() => setIsAddModalOpen(true)}
+              data-testid="open-add-source-modal"
               className="flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-accent-hover"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -273,6 +274,7 @@ export default function Home() {
             </div>
             <button
               onClick={() => setIsPublicSourcesOpen(true)}
+              data-testid="open-public-sources-panel"
               className="flex-shrink-0 flex items-center gap-1.5 rounded-lg bg-accent px-3 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-accent-hover"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

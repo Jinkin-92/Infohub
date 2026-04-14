@@ -19,6 +19,14 @@ type XTimelineCard = {
   rawText: string;
 };
 
+function normalizeHandle(handle: string | null | undefined): string | null {
+  if (!handle) {
+    return null;
+  }
+
+  return handle.replace(/^@/, '').trim().toLowerCase() || null;
+}
+
 function resolveXHandle(source: Source | string): string {
   if (typeof source === 'string') {
     const match = source.match(/(?:x|twitter)\.com\/([A-Za-z0-9_]{1,15})/i);
@@ -128,6 +136,21 @@ function extractPrimaryText(card: XTimelineCard): string {
   }
 
   return extractFallbackText(card.rawText, card.handle);
+}
+
+function isLikedTimelineCard(card: XTimelineCard): boolean {
+  const socialContext = normalizeWhitespace(card.socialContext || '').toLowerCase();
+  return socialContext.includes(' liked') || socialContext.endsWith('liked') || socialContext.includes('点赞了');
+}
+
+function matchesTargetHandle(card: XTimelineCard, handle: string): boolean {
+  return normalizeHandle(card.handle) === normalizeHandle(handle);
+}
+
+function filterCardsForProfileTimeline(cards: XTimelineCard[], handle: string): XTimelineCard[] {
+  return cards
+    .filter((card) => !isLikedTimelineCard(card))
+    .filter((card) => matchesTargetHandle(card, handle));
 }
 
 function cardToItem(card: XTimelineCard, sourceName: string): RSSItem | null {
@@ -264,13 +287,19 @@ async function scrapeXTimeline(handle: string): Promise<{
     const cards = Array.from(collected.values())
       .filter((card) => card.publishedAt)
       .filter((card) => card.socialContext !== 'Pinned')
+      .filter((card) => !isLikedTimelineCard(card))
       .sort((a, b) => (new Date(b.publishedAt || 0).getTime() - new Date(a.publishedAt || 0).getTime()));
 
-    const displayName = cards.find((card) => card.displayName)?.displayName
+    const ownCards = filterCardsForProfileTimeline(cards, handle);
+    const displayName = ownCards.find((card) => card.displayName)?.displayName
       || pageText.match(/See new posts\s+([^\n]+)\s+@/u)?.[1]
       || null;
 
-    return { cards, pageText, displayName };
+    return {
+      cards: ownCards.length > 0 ? ownCards : cards,
+      pageText,
+      displayName,
+    };
   } finally {
     await browser.close().catch(() => undefined);
   }
@@ -318,4 +347,10 @@ export async function verifyXBrowserConnection(testUrl: string): Promise<{
 export const xBrowserCollector = {
   collectItems: collectXBrowserItems,
   verifyConnection: verifyXBrowserConnection,
+};
+
+export const xBrowserCollectorInternals = {
+  filterCardsForProfileTimeline,
+  isLikedTimelineCard,
+  matchesTargetHandle,
 };

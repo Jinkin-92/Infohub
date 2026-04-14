@@ -31,12 +31,21 @@ yarn-error.log*
 tmp/
 temp/
 *.tmp
+.tmp/
+.runtime/
 
 # Local data
 postgres_data/
 backend/data/
 rsshub-local/.tmp/
 rsshub-local/logs/
+frontend/test-results/
+backend/scripts/__pycache__/
+backend/static/wx_qrcode.png
+backend/*.log
+backend/.tmp*
+backend/test_puppeteer.mjs
+backend/=
 
 # IDE
 .idea/

@@ -53,13 +53,15 @@ function Get-NodeRuntime {
   param([string]$Root)
 
   $portableNodeExe = Get-PortableNodeExe -Root $Root
-  if (Test-Path $portableNodeExe) {
+  $portableNpmCmd = Get-PortableNpmCmd -Root $Root
+  $portableNpxCmd = Get-PortableNpxCmd -Root $Root
+  if ((Test-Path $portableNodeExe) -and (Test-Path $portableNpmCmd) -and (Test-Path $portableNpxCmd)) {
     $version = (& $portableNodeExe -p "process.versions.node").Trim()
     if (Test-SupportedNodeVersion -Version $version) {
       return @{
         NodeExe = $portableNodeExe
-        NpmCmd = Get-PortableNpmCmd -Root $Root
-        NpxCmd = Get-PortableNpxCmd -Root $Root
+        NpmCmd = $portableNpmCmd
+        NpxCmd = $portableNpxCmd
         Version = $version
         Source = 'portable'
       }
@@ -98,18 +100,41 @@ function Ensure-NodeRuntime {
   $portableRoot = Get-PortableNodeRoot -Root $Root
   $downloadDir = Join-Path $Root '.tmp\downloads'
   $zipPath = Join-Path $downloadDir "$($script:InfoHubNodeFolderName).zip"
+  $extractRoot = Join-Path $downloadDir 'node-extract'
   $url = "https://nodejs.org/dist/v$($script:InfoHubNodeVersion)/$($script:InfoHubNodeFolderName).zip"
 
   Write-Host "Downloading portable Node.js v$($script:InfoHubNodeVersion) ..."
   New-Item -ItemType Directory -Force -Path $runtimeRoot | Out-Null
   New-Item -ItemType Directory -Force -Path $downloadDir | Out-Null
 
+  $mergedExistingRuntime = $false
   if (Test-Path $portableRoot) {
-    Remove-Item -LiteralPath $portableRoot -Recurse -Force -ErrorAction SilentlyContinue
+    try {
+      Remove-Item -LiteralPath $portableRoot -Recurse -Force -ErrorAction Stop
+    } catch {
+      $mergedExistingRuntime = $true
+    }
   }
 
   Invoke-WebRequest -Uri $url -OutFile $zipPath
-  Expand-Archive -LiteralPath $zipPath -DestinationPath $runtimeRoot -Force
+  if ($mergedExistingRuntime) {
+    if (Test-Path $extractRoot) {
+      Remove-Item -LiteralPath $extractRoot -Recurse -Force -ErrorAction SilentlyContinue
+    }
+
+    Expand-Archive -LiteralPath $zipPath -DestinationPath $extractRoot -Force
+
+    $extractedPortableRoot = Join-Path $extractRoot $script:InfoHubNodeFolderName
+    Get-ChildItem -LiteralPath $extractedPortableRoot -Force | ForEach-Object {
+      if ($_.Name -eq 'node.exe') {
+        return
+      }
+
+      Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $portableRoot $_.Name) -Recurse -Force
+    }
+  } else {
+    Expand-Archive -LiteralPath $zipPath -DestinationPath $runtimeRoot -Force
+  }
 
   $runtime = Get-NodeRuntime -Root $Root
   if (-not $runtime) {

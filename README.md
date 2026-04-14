@@ -54,6 +54,35 @@ update.bat
 1. 发布 ZIP 包，用户覆盖原目录后执行 `update.bat`
 2. 或者用户先 `git pull`，再执行 `update.bat`
 
+## 自测
+
+启动应用后，可以先跑快速检查：
+
+```powershell
+node .\scripts\run-local-smoke.mjs
+node .\scripts\run-local-smoke.mjs --deep
+```
+
+如果要覆盖更接近真实用户操作的整条链路，可以直接运行：
+
+```powershell
+node .\scripts\run-full-selftest.mjs
+```
+
+这条命令会依次执行：
+- `install.bat` / `start.bat` 入口链路（按参数启用）
+- 后端回归测试
+- 本地 deep smoke
+- Playwright 端到端测试
+
+端到端测试会实际覆盖：
+- 首页加载
+- 添加订阅源
+- 设置页切换
+- 平台连接面板
+- 手动采集
+- 公开订阅源入口
+
 ## 产品原则
 
 - 默认本地运行，尽量减少外部环境依赖

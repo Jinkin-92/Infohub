@@ -204,7 +204,10 @@ export function AddSourceModal({ isOpen, onClose, onSuccess }: AddSourceModalPro
       />
 
       {/* 弹窗内容 */}
-      <div className="relative bg-bg-secondary rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div
+        className="relative bg-bg-secondary rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+        data-testid="add-source-modal"
+      >
         {/* 头部 */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border-color">
           <div className="flex items-center gap-3">
@@ -254,6 +257,7 @@ export function AddSourceModal({ isOpen, onClose, onSuccess }: AddSourceModalPro
                 type="url"
                 value={url}
                 onChange={handleInputChange}
+                data-testid="add-source-url-input"
                 placeholder="https://..."
                 disabled={isLoading}
                 className={cn(
@@ -440,6 +444,7 @@ export function AddSourceModal({ isOpen, onClose, onSuccess }: AddSourceModalPro
             <button
               type="submit"
               disabled={isLoading || !url.trim()}
+              data-testid="submit-add-source"
               className={cn(
                 'px-5 py-2.5 text-sm font-medium text-white rounded-xl',
                 'bg-accent hover:bg-accent-hover',
