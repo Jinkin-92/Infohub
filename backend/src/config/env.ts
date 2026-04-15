@@ -24,6 +24,7 @@ const envSchema = z.object({
   // RSSHub配置
   RSSHUB_URL: z.string().default('http://localhost:1200'),
   CHROME_EXECUTABLE_PATH: z.string().optional(),
+  WEIBO_COLLECTOR_MODE: z.enum(['http', 'browser']).default('http'),
 
   // 可选：Cookie配置（用于需要登录的平台）
   ZHIHU_COOKIES: z.string().optional(),

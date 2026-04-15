@@ -10,7 +10,12 @@ const mocks = vi.hoisted(() => ({
   sqlGet: vi.fn(),
   sqlExecute: vi.fn(),
   weiboCollect: vi.fn(),
+  weiboHttpCollect: vi.fn(),
   xCollect: vi.fn(),
+}));
+
+const envState = vi.hoisted(() => ({
+  WEIBO_COLLECTOR_MODE: 'http',
 }));
 
 vi.mock('../src/db/queries.js', () => ({
@@ -37,12 +42,21 @@ vi.mock('../src/config/env.js', () => ({
   env: {
     RSSHUB_URL: 'http://localhost:1200',
     PORT: 3002,
+    get WEIBO_COLLECTOR_MODE() {
+      return envState.WEIBO_COLLECTOR_MODE;
+    },
   },
 }));
 
 vi.mock('../src/services/weiboBrowserCollector.js', () => ({
   weiboBrowserCollector: {
     collectItems: mocks.weiboCollect,
+  },
+}));
+
+vi.mock('../src/services/weiboHttpCollector.js', () => ({
+  weiboHttpCollector: {
+    collectItems: mocks.weiboHttpCollect,
   },
 }));
 
@@ -84,6 +98,7 @@ describe('collector platform routing', () => {
   beforeEach(() => {
     vi.resetModules();
     Object.values(mocks).forEach((mockFn) => mockFn.mockReset());
+    envState.WEIBO_COLLECTOR_MODE = 'http';
     mocks.updateFetchedAt.mockResolvedValue(undefined);
     mocks.updateSuccess.mockResolvedValue(undefined);
     mocks.updateError.mockResolvedValue(undefined);
@@ -92,7 +107,54 @@ describe('collector platform routing', () => {
     mocks.sqlExecute.mockResolvedValue(undefined);
   });
 
-  it('uses the weibo browser collector for weibo sources', async () => {
+  it('uses the weibo http collector for weibo sources by default', async () => {
+    mocks.getById.mockResolvedValue({
+      id: 35,
+      name: '谷大白话',
+      platform: 'weibo',
+      input_url: 'https://weibo.com/1788911247?refer_flag=1001030103_',
+      rss_url: 'http://localhost:1200/weibo/user/1788911247',
+      platform_id: '1788911247',
+      fetch_interval_min: 360,
+      enabled: true,
+      status: 'active',
+      error_count: 0,
+      last_error: null,
+      last_error_at: null,
+      last_fetched_at: null,
+      last_success_at: null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      is_public: false,
+      public_source_id: null,
+    });
+    mocks.weiboHttpCollect.mockResolvedValue([
+      {
+        guid: 'weibo:1',
+        title: 'Test post',
+        link: 'https://m.weibo.cn/status/1',
+        author: '谷大白话',
+        description: 'desc',
+        contentSnippet: 'desc',
+        pubDate: new Date().toISOString(),
+        isoDate: new Date().toISOString(),
+      },
+    ]);
+
+    const { collector } = await import('../src/services/collector.js');
+    const result = await collector.collectSource(35, { force: true });
+
+    expect(mocks.weiboHttpCollect).toHaveBeenCalledTimes(1);
+    expect(mocks.weiboCollect).not.toHaveBeenCalled();
+    expect(mocks.xCollect).not.toHaveBeenCalled();
+    expect(mocks.itemUpsert).toHaveBeenCalledTimes(1);
+    expect(result.success).toBe(true);
+    expect(result.itemCount).toBe(1);
+  });
+
+  it('uses the browser collector when WEIBO_COLLECTOR_MODE=browser', async () => {
+    envState.WEIBO_COLLECTOR_MODE = 'browser';
+
     mocks.getById.mockResolvedValue({
       id: 35,
       name: '谷大白话',
@@ -130,6 +192,7 @@ describe('collector platform routing', () => {
     const result = await collector.collectSource(35, { force: true });
 
     expect(mocks.weiboCollect).toHaveBeenCalledTimes(1);
+    expect(mocks.weiboHttpCollect).not.toHaveBeenCalled();
     expect(mocks.xCollect).not.toHaveBeenCalled();
     expect(mocks.itemUpsert).toHaveBeenCalledTimes(1);
     expect(result.success).toBe(true);

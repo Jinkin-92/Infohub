@@ -5,7 +5,7 @@ import { weiboProfileStore } from './weiboProfileStore.js';
 import { resolveChromeExecutablePath } from './weiboLogin.js';
 import { sourcesQueries } from '../db/queries.js';
 
-type WeiboMobileCard = {
+export type WeiboMobileCard = {
   time: string;
   main: string;
   repost: string;
@@ -15,7 +15,7 @@ type WeiboMobileCard = {
   screenName: string;
 };
 
-function resolveWeiboUid(source: Source | string): string {
+export function resolveWeiboUid(source: Source | string): string {
   if (typeof source === 'string') {
     const match = source.match(/weibo\.com\/(?:u\/)?(\d{6,})/i) || source.match(/m\.weibo\.cn\/u\/(\d{6,})/i);
     if (match?.[1]) {
@@ -53,7 +53,7 @@ function stripTags(value: string): string {
   return normalizeText(decodeHtml(value).replace(/<[^>]+>/g, ' '));
 }
 
-function normalizeMobileTime(raw: string): string {
+export function normalizeMobileTime(raw: string): string {
   const text = raw.trim();
   const parsed = new Date(text);
   if (!Number.isNaN(parsed.getTime())) {
@@ -72,7 +72,7 @@ function normalizeMobileTime(raw: string): string {
   return text;
 }
 
-function timeToIso(raw: string): string {
+export function timeToIso(raw: string): string {
   const normalized = normalizeMobileTime(raw);
   const parsed = new Date(normalized);
   if (!Number.isNaN(parsed.getTime())) {
@@ -129,7 +129,7 @@ function buildSummary(card: WeiboMobileCard): string {
   return [text, metrics].filter(Boolean).join(' | ').slice(0, 500);
 }
 
-function cardToItem(uid: string, sourceName: string, card: WeiboMobileCard): RSSItem | null {
+export function cardToItem(uid: string, sourceName: string, card: WeiboMobileCard): RSSItem | null {
   const mainText = normalizeText(card.main);
   const repostText = normalizeText(card.repost);
   if (!mainText && !repostText) {
@@ -210,7 +210,7 @@ function normalizeWeiboScheme(scheme: string | undefined, uid: string, bid: stri
   return `https://m.weibo.cn/u/${uid}`;
 }
 
-function toMobileCard(uid: string, card: NonNullable<NonNullable<WeiboApiResponse['data']>['cards']>[number]): WeiboMobileCard | null {
+export function toMobileCard(uid: string, card: NonNullable<NonNullable<WeiboApiResponse['data']>['cards']>[number]): WeiboMobileCard | null {
   if (card.card_type !== 9 || !card.mblog) {
     return null;
   }

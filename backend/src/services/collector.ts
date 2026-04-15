@@ -9,6 +9,7 @@ import { bilibiliPublicCollector } from './bilibiliPublicCollector.js';
 import { weChatArticleCollector } from './wechat/index.js';
 import { sql } from '../db/client.js';
 import { weiboBrowserCollector } from './weiboBrowserCollector.js';
+import { weiboHttpCollector } from './weiboHttpCollector.js';
 import { xBrowserCollector } from './xBrowserCollector.js';
 import { urlDetector } from './urlDetector.js';
 import { youtubePublicCollector } from './youtubePublicCollector.js';
@@ -453,7 +454,10 @@ export class Collector {
     }
 
     if (source.platform === 'weibo') {
-      return weiboBrowserCollector.collectItems(source);
+      if (env.WEIBO_COLLECTOR_MODE === 'browser') {
+        return weiboBrowserCollector.collectItems(source);
+      }
+      return weiboHttpCollector.collectItems(source);
     }
 
     if (source.platform === 'youtube') {

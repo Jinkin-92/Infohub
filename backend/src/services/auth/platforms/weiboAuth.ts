@@ -86,7 +86,7 @@ function getProfileHealth(meta: ReturnType<typeof weiboProfileStore.getMeta>): {
 }
 
 function sessionToStatus(session: WeiboLoginSessionSnapshot | null, cred: { hasValue: boolean } | null): PlatformStatus['status'] {
-  if (!cred?.hasValue && !weiboProfileStore.hasActiveProfile()) return 'disconnected';
+  if (!cred?.hasValue) return 'disconnected';
   if (session?.state === 'cookie_saved') return 'connected';
   if (session?.state === 'failed') return 'invalid';
   return 'connected';

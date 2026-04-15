@@ -41,7 +41,7 @@ import {
 import { URLDetector } from '../services/urlDetector.js';
 import { env } from '../config/env.js';
 import { BadRequestError, NotFoundError } from '../middleware/error.js';
-import { weiboBrowserCollector } from '../services/weiboBrowserCollector.js';
+import { weiboHttpCollector } from '../services/weiboHttpCollector.js';
 import { xBrowserCollector } from '../services/xBrowserCollector.js';
 
 const authRouter = new Hono();
@@ -168,7 +168,7 @@ async function runPlatformTest(platform: Platform, urlOverride?: string): Promis
     }
 
     if (platform === 'weibo') {
-      const result = await weiboBrowserCollector.verifyConnection(testUrl);
+      const result = await weiboHttpCollector.verifyConnection(testUrl);
       return {
         platform,
         testUrl,

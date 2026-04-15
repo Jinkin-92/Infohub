@@ -1,4 +1,4 @@
-$ErrorActionPreference = 'Stop'
+﻿$ErrorActionPreference = 'Stop'
 
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 . (Join-Path $root 'scripts\windows-runtime.ps1')
@@ -14,6 +14,22 @@ $backendLog = Join-Path $backendDir 'backend-run.log'
 $backendErrorLog = Join-Path $backendDir 'backend-error.log'
 $frontendLog = Join-Path $frontendDir 'frontend-run.log'
 $frontendErrorLog = Join-Path $frontendDir 'frontend-error.log'
+
+function Write-Step {
+  param(
+    [string]$Index,
+    [string]$Message
+  )
+
+  Write-Host ''
+  Write-Host "[$Index] $Message" -ForegroundColor Cyan
+}
+
+function Write-Success {
+  param([string]$Message)
+
+  Write-Host $Message -ForegroundColor Green
+}
 
 function Ensure-FileFromTemplate {
   param(
@@ -132,7 +148,7 @@ function Ensure-NodeModules {
 
 function Ensure-BuildArtifacts {
   if (-not (Test-Path (Join-Path $backendDir 'dist\index.js')) -or -not (Test-Path (Join-Path $frontendDir '.next\BUILD_ID'))) {
-    Write-Host 'Build artifacts missing. Running first-time install steps...'
+    Write-Host '检测到缺少构建产物，正在自动补齐首次安装步骤，请稍候...' -ForegroundColor Yellow
     & (Join-Path $root 'install.ps1')
   }
 }
@@ -180,64 +196,82 @@ function Wait-ForHttpOk {
   throw "Service check failed: $Url"
 }
 
-Write-Host '=========================================='
-Write-Host 'InfoHub Windows Local Start'
-Write-Host '=========================================='
+try {
+  Write-Host '=========================================='
+  Write-Host 'InfoHub Windows Local Start'
+  Write-Host '=========================================='
+  Write-Host '说明：启动过程会检查环境、拉起后端和前端，然后自动打开网页。'
 
-$nodeRuntime = Ensure-NodeRuntime -Root $root
-Write-Host "Using Node.js $($nodeRuntime.Version) [$($nodeRuntime.Source)]"
+  Write-Step -Index '1/6' -Message '检查 Node.js 运行时'
+  $nodeRuntime = Ensure-NodeRuntime -Root $root
+  Write-Success "已就绪：Node.js $($nodeRuntime.Version) [$($nodeRuntime.Source)]"
 
-New-Item -ItemType Directory -Force -Path $stateDir | Out-Null
-New-Item -ItemType Directory -Force -Path (Join-Path $backendDir 'data') | Out-Null
+  Write-Step -Index '2/6' -Message '检查配置、浏览器和依赖'
+  New-Item -ItemType Directory -Force -Path $stateDir | Out-Null
+  New-Item -ItemType Directory -Force -Path (Join-Path $backendDir 'data') | Out-Null
+  Ensure-FileFromTemplate -Target $backendEnv -Template $rootEnvExample
+  Ensure-ChromeRuntime -Root $root -NodeRuntime $nodeRuntime | Out-Null
+  Ensure-NodeModules -NodeRuntime $nodeRuntime -WorkingDirectory $backendDir
+  Ensure-NodeModules -NodeRuntime $nodeRuntime -WorkingDirectory $frontendDir
+  Ensure-BuildArtifacts
+  Write-Success '运行环境已就绪。'
 
-Ensure-FileFromTemplate -Target $backendEnv -Template $rootEnvExample
-Ensure-ChromeRuntime -Root $root -NodeRuntime $nodeRuntime | Out-Null
-Ensure-NodeModules -NodeRuntime $nodeRuntime -WorkingDirectory $backendDir
-Ensure-NodeModules -NodeRuntime $nodeRuntime -WorkingDirectory $frontendDir
-Ensure-BuildArtifacts
+  Write-Step -Index '3/6' -Message '清理旧进程和旧日志'
+  Stop-KnownProcess -PidFile $backendPidPath
+  Stop-KnownProcess -PidFile $frontendPidPath
+  Stop-StrayInfoHubProcess -Port 3002 -ExpectedMarkers @($backendDir, 'dist/index.js')
+  Stop-StrayInfoHubProcess -Port 3000 -ExpectedMarkers @($frontendDir, 'next start')
+  Start-Sleep -Seconds 2
 
-Stop-KnownProcess -PidFile $backendPidPath
-Stop-KnownProcess -PidFile $frontendPidPath
-Stop-StrayInfoHubProcess -Port 3002 -ExpectedMarkers @($backendDir, 'dist/index.js')
-Stop-StrayInfoHubProcess -Port 3000 -ExpectedMarkers @($frontendDir, 'next start')
-Start-Sleep -Seconds 2
+  Remove-Item -LiteralPath $backendLog -Force -ErrorAction SilentlyContinue
+  Remove-Item -LiteralPath $backendErrorLog -Force -ErrorAction SilentlyContinue
+  Remove-Item -LiteralPath $frontendLog -Force -ErrorAction SilentlyContinue
+  Remove-Item -LiteralPath $frontendErrorLog -Force -ErrorAction SilentlyContinue
+  Write-Success '旧状态已清理。'
 
-Remove-Item -LiteralPath $backendLog -Force -ErrorAction SilentlyContinue
-Remove-Item -LiteralPath $backendErrorLog -Force -ErrorAction SilentlyContinue
-Remove-Item -LiteralPath $frontendLog -Force -ErrorAction SilentlyContinue
-Remove-Item -LiteralPath $frontendErrorLog -Force -ErrorAction SilentlyContinue
+  Write-Step -Index '4/6' -Message '检查端口是否可用'
+  Assert-PortFree -Port 3000 -Name 'Frontend'
+  Assert-PortFree -Port 3002 -Name 'Backend'
+  Write-Success '端口检查通过。'
 
-Assert-PortFree -Port 3000 -Name 'Frontend'
-Assert-PortFree -Port 3002 -Name 'Backend'
+  Write-Step -Index '5/6' -Message '启动后端和前端服务'
+  Start-ServiceProcess `
+    -FilePath $nodeRuntime.NodeExe `
+    -ArgumentList @('./scripts/run-with-compatible-node.mjs', './dist/index.js') `
+    -WorkingDirectory $backendDir `
+    -StdoutPath $backendLog `
+    -StderrPath $backendErrorLog `
+    -PidFile $backendPidPath
 
-Start-ServiceProcess `
-  -FilePath $nodeRuntime.NodeExe `
-  -ArgumentList @('./scripts/run-with-compatible-node.mjs', './dist/index.js') `
-  -WorkingDirectory $backendDir `
-  -StdoutPath $backendLog `
-  -StderrPath $backendErrorLog `
-  -PidFile $backendPidPath
+  Start-ServiceProcess `
+    -FilePath $nodeRuntime.NodeExe `
+    -ArgumentList @('.\node_modules\next\dist\bin\next', 'start') `
+    -WorkingDirectory $frontendDir `
+    -StdoutPath $frontendLog `
+    -StderrPath $frontendErrorLog `
+    -PidFile $frontendPidPath
+  Write-Success '服务进程已拉起。'
 
-Start-ServiceProcess `
-  -FilePath $nodeRuntime.NodeExe `
-  -ArgumentList @('.\node_modules\next\dist\bin\next', 'start') `
-  -WorkingDirectory $frontendDir `
-  -StdoutPath $frontendLog `
-  -StderrPath $frontendErrorLog `
-  -PidFile $frontendPidPath
+  Write-Step -Index '6/6' -Message '等待服务就绪并打开网页'
+  Wait-ForHttpOk -Url 'http://localhost:3002/health'
+  Wait-ForHttpOk -Url 'http://localhost:3000'
 
-Wait-ForHttpOk -Url 'http://localhost:3002/health'
-Wait-ForHttpOk -Url 'http://localhost:3000'
-
-$frontendUrl = 'http://localhost:3000'
-Write-Host ''
-Write-Host 'Opening frontend in browser...'
-
-$chromePath = Resolve-ChromeExecutablePath -Root $root
-if ($chromePath) {
-  Start-Process -FilePath $chromePath -ArgumentList "--new-window", "--disable-cache", "$frontendUrl"
-} else {
+  $frontendUrl = 'http://localhost:3000'
   Start-Process -FilePath $frontendUrl
-}
+  Write-Success '前端页面已尝试自动打开。'
 
-Write-Host ''
+  Write-Host ''
+  Write-Host 'InfoHub 已启动成功。' -ForegroundColor Green
+  Write-Host "前端地址：$frontendUrl"
+  Write-Host '后端健康检查：http://localhost:3002/health'
+  Write-Host "后端日志：$backendLog"
+  Write-Host "前端日志：$frontendLog"
+  Write-Host ''
+} catch {
+  Write-Host ''
+  Write-Host "启动失败：$($_.Exception.Message)" -ForegroundColor Red
+  Write-Host "后端日志：$backendLog" -ForegroundColor Yellow
+  Write-Host "前端日志：$frontendLog" -ForegroundColor Yellow
+  Write-Host '请保留窗口内容，或把报错和日志发给我排查。' -ForegroundColor Yellow
+  exit 1
+}
