@@ -54,7 +54,7 @@ export class Collector {
         return { sourceId, success: true, itemCount: 0, skipped: true };
       }
 
-      if (source.platform === 'wechat') {
+      if (source.platform === 'wechat' && !source.is_public) {
         const fakerId = await this.ensureWeChatSourceConfigured(source);
         await sourcesQueries.updateFetchedAt(sourceId);
         const count = await weChatArticleCollector.collectAndStore(fakerId, source.id);
@@ -444,6 +444,13 @@ export class Collector {
   }
 
   private async collectItems(source: Source, sourceUrl: string): Promise<RSSItem[]> {
+    if (source.is_public) {
+      if (this.isRsshubUrl(sourceUrl)) {
+        return this.collectRsshubItems(sourceUrl);
+      }
+      return this.collectStandardFeedItems(sourceUrl);
+    }
+
     if (source.platform === 'bilibili') {
       const { items } = await bilibiliPublicCollector.collectItems(source);
       return items;

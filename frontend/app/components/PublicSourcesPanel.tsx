@@ -12,9 +12,10 @@ interface PublicSourcesPanelProps {
   onRefresh?: () => void
 }
 
-type CategorySlug = 'tech' | 'news' | 'finance' | 'life' | 'design' | 'video' | 'aggregator'
+type CategorySlug = 'all' | 'tech' | 'news' | 'finance' | 'life' | 'design' | 'video' | 'aggregator'
 
 const categories: { id: CategorySlug; name: string }[] = [
+  { id: 'all', name: '全部' },
   { id: 'tech', name: '科技' },
   { id: 'news', name: '新闻' },
   { id: 'finance', name: '财经' },
@@ -25,7 +26,7 @@ const categories: { id: CategorySlug; name: string }[] = [
 ]
 
 export function PublicSourcesPanel({ isOpen, onClose, onRefresh }: PublicSourcesPanelProps) {
-  const [selectedCategory, setSelectedCategory] = useState<CategorySlug>('tech')
+  const [selectedCategory, setSelectedCategory] = useState<CategorySlug>('all')
   const [subscribedIds, setSubscribedIds] = useState<Set<number>>(new Set())
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
   const [isSubscribing, setIsSubscribing] = useState(false)
@@ -60,7 +61,7 @@ export function PublicSourcesPanel({ isOpen, onClose, onRefresh }: PublicSources
 
   // 按分类过滤源
   const filteredSources = sourcesData?.sources?.filter(
-    (source) => source.category === selectedCategory
+    (source) => selectedCategory === 'all' || source.category === selectedCategory
   ) ?? []
 
   // 切换选择
@@ -185,7 +186,11 @@ export function PublicSourcesPanel({ isOpen, onClose, onRefresh }: PublicSources
                     ? 'bg-accent text-white shadow-sm'
                     : 'bg-bg-tertiary text-text-secondary hover:bg-bg-primary hover:text-text-primary'
                 )}
-                style={selectedCategory !== cat.id ? { backgroundColor: PUBLIC_CATEGORY_CONFIG[cat.id]?.color + '15', color: PUBLIC_CATEGORY_CONFIG[cat.id]?.color } : undefined}
+                style={
+                  selectedCategory !== cat.id && cat.id !== 'all'
+                    ? { backgroundColor: PUBLIC_CATEGORY_CONFIG[cat.id]?.color + '15', color: PUBLIC_CATEGORY_CONFIG[cat.id]?.color }
+                    : undefined
+                }
               >
                 {cat.name}
               </button>

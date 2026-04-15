@@ -33,6 +33,8 @@ interface DateSection {
 
 const PAGE_SIZE = 300
 const CARD_HEIGHT = 420
+const INITIAL_DAY_WINDOW = 3
+const MAX_DAY_WINDOW = 30
 
 function getDateKey(value: string): string {
   const date = new Date(value)
@@ -145,7 +147,7 @@ export function FeedList({
   const [isTabSwitching, setIsTabSwitching] = useState(false)
   const [activeSourceId, setActiveSourceId] = useState<number | undefined>(undefined)
   // dayWindow: 当前加载的天数窗口（3天起步，每次+3，直到30天）
-  const [dayWindow, setDayWindow] = useState(3)
+  const [dayWindow, setDayWindow] = useState(INITIAL_DAY_WINDOW)
   // 是否在扩展窗口模式（窗口扩展阶段不用offset，每次从最新开始）
   const [isExpanding, setIsExpanding] = useState(true)
 
@@ -191,7 +193,7 @@ export function FeedList({
 
       // 扩展模式(isExpanding=true): dayWindow不断扩大, offset=0
       // 翻页模式(isExpanding=false): dayWindow固定30, offset递增
-      const days = isExpanding ? dayWindow : 30
+      const days = isExpanding ? dayWindow : MAX_DAY_WINDOW
 
       return feedApi.getFeed({
         platform,
@@ -232,11 +234,23 @@ export function FeedList({
     if (tagId) {
       setHasMore(Boolean(data.pagination?.hasMore))
     } else if (isExpanding) {
-      setHasMore(dayWindow < 30)
+      setHasMore(dayWindow < MAX_DAY_WINDOW)
     } else {
       setHasMore(Boolean(data.pagination?.hasMore))
     }
   }, [data, offset, dayWindow, isExpanding, tagId])
+
+  useEffect(() => {
+    if (tagId || !isExpanding || offset !== 0 || searchQuery) {
+      return
+    }
+
+    if ((data?.items?.length ?? 0) !== 0 || dayWindow >= MAX_DAY_WINDOW) {
+      return
+    }
+
+    setDayWindow(MAX_DAY_WINDOW)
+  }, [data?.items?.length, dayWindow, isExpanding, offset, searchQuery, tagId])
 
   useEffect(() => {
     setItems([])
@@ -248,6 +262,16 @@ export function FeedList({
     setActiveSourceId(undefined) // 切换 tab 时重置源筛选
     // State changes will trigger useSWR to re-fetch with new offset=0
     // Just need to wait for the fetch to complete
+    const timer = setTimeout(() => setIsTabSwitching(false), 1000)
+    return () => clearTimeout(timer)
+  }, [platform, category, searchQuery, tagId, tabVersion])
+
+  useEffect(() => {
+    setDayWindow(INITIAL_DAY_WINDOW)
+    setIsExpanding(true)
+    setIsTabSwitching(true)
+    setActiveSourceId(undefined)
+
     const timer = setTimeout(() => setIsTabSwitching(false), 1000)
     return () => clearTimeout(timer)
   }, [platform, category, searchQuery, tagId, tabVersion])
