@@ -138,14 +138,15 @@ function Ensure-NodeModules {
 
   if (-not (Test-Path (Join-Path $WorkingDirectory 'node_modules'))) {
     Write-Host "Installing dependencies in $WorkingDirectory ..."
-    if (Test-Path (Join-Path $WorkingDirectory 'package-lock.json')) {
+    if ($WorkingDirectory -eq $frontendDir -and (Test-Path (Join-Path $WorkingDirectory '.next'))) {
+      Invoke-NpmCommand -NodeRuntime $NodeRuntime -WorkingDirectory $WorkingDirectory -Arguments @('install', 'next')
+    } elseif (Test-Path (Join-Path $WorkingDirectory 'package-lock.json')) {
       Invoke-NpmCommand -NodeRuntime $NodeRuntime -WorkingDirectory $WorkingDirectory -Arguments @('ci')
     } else {
       Invoke-NpmCommand -NodeRuntime $NodeRuntime -WorkingDirectory $WorkingDirectory -Arguments @('install')
     }
   }
 }
-
 function Ensure-BuildArtifacts {
   if (-not (Test-Path (Join-Path $backendDir 'dist\index.js')) -or -not (Test-Path (Join-Path $frontendDir '.next\BUILD_ID'))) {
     Write-Host '检测到缺少构建产物，正在自动补齐首次安装步骤，请稍候...' -ForegroundColor Yellow
@@ -211,8 +212,12 @@ try {
   New-Item -ItemType Directory -Force -Path (Join-Path $backendDir 'data') | Out-Null
   Ensure-FileFromTemplate -Target $backendEnv -Template $rootEnvExample
   Ensure-ChromeRuntime -Root $root -NodeRuntime $nodeRuntime | Out-Null
-  Ensure-NodeModules -NodeRuntime $nodeRuntime -WorkingDirectory $backendDir
-  Ensure-NodeModules -NodeRuntime $nodeRuntime -WorkingDirectory $frontendDir
+  if (-not (Test-Path (Join-Path $backendDir 'node_modules\better-sqlite3\build\Release\better_sqlite3.node'))) {
+    Ensure-NodeModules -NodeRuntime $nodeRuntime -WorkingDirectory $backendDir
+  }
+  if (-not (Test-Path (Join-Path $frontendDir 'node_modules'))) {
+    Ensure-NodeModules -NodeRuntime $nodeRuntime -WorkingDirectory $frontendDir
+  }
   Ensure-BuildArtifacts
   Write-Success '运行环境已就绪。'
 
