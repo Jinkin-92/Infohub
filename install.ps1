@@ -123,9 +123,13 @@ try {
   Write-Success '浏览器环境可用。'
 
   Write-Step -Index '5/7' -Message '安装后端和前端依赖'
-  Ensure-NodeModules -NodeRuntime $nodeRuntime -WorkingDirectory $backendDir
-  Ensure-NodeModules -NodeRuntime $nodeRuntime -WorkingDirectory $frontendDir
-  Write-Success '依赖安装完成。'
+  if (Test-BackendNativeModule -NodeRuntime $nodeRuntime -WorkingDirectory $backendDir) {
+    Write-Success '检测到 better-sqlite3 预编译二进制，跳过后端依赖安装。'
+  } else {
+    Ensure-NodeModules -NodeRuntime $nodeRuntime -WorkingDirectory $backendDir
+    Ensure-NodeModules -NodeRuntime $nodeRuntime -WorkingDirectory $frontendDir
+    Write-Success '依赖安装完成。'
+  }
 
   Write-Step -Index '6/7' -Message '重建本地原生模块'
   if (Test-BackendNativeModule -NodeRuntime $nodeRuntime -WorkingDirectory $backendDir) {

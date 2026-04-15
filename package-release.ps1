@@ -106,6 +106,12 @@ Copy-Item -LiteralPath (Join-Path $root 'package-release.bat') -Destination (Joi
 Copy-Tree -Source (Join-Path $root 'docs') -Destination (Join-Path $stageDir 'docs')
 Copy-Tree -Source (Join-Path $root 'scripts') -Destination (Join-Path $stageDir 'scripts')
 Copy-Tree -Source (Join-Path $root 'backend') -Destination (Join-Path $stageDir 'backend') -ExcludeDirs @('node_modules', '.tmp', 'data', '__pycache__') -ExcludeFiles @('backend-run.log', 'backend-error.log')
+$betterSqlite3Source = Join-Path $root 'backend\node_modules\better-sqlite3'
+$betterSqlite3Dest = Join-Path $stageDir 'backend\node_modules\better-sqlite3'
+if (Test-Path $betterSqlite3Source) {
+  New-Item -ItemType Directory -Force -Path (Join-Path $stageDir 'backend\node_modules') | Out-Null
+  Copy-Tree -Source $betterSqlite3Source -Destination $betterSqlite3Dest
+}
 Copy-Tree -Source (Join-Path $root 'frontend') -Destination (Join-Path $stageDir 'frontend') -ExcludeDirs @('node_modules', '.next\\cache') -ExcludeFiles @('frontend-run.log', 'frontend-error.log')
 Copy-Tree -Source (Join-Path $root 'rsshub-local') -Destination (Join-Path $stageDir 'rsshub-local') -ExcludeDirs @('node_modules', '.tmp', 'logs')
 
@@ -134,6 +140,6 @@ if ($zipSizeMb -gt $sizeLimitMb) {
 Write-Host ''
 Write-Host "Package ready: $zipPath"
 Write-Host "压缩包大小：${zipSizeMb}MB"
-Write-Host '已内置：前端构建产物、后端构建产物、脚本和说明文档。'
-Write-Host '未内置：Chrome/Edge 浏览器运行时、backend/frontend node_modules。'
+Write-Host '已内置：前端构建产物、后端构建产物、脚本和说明文档、better-sqlite3 预编译二进制。'
+Write-Host '未内置：Chrome/Edge 浏览器运行时、frontend node_modules 及后端其他 node_modules。'
 Write-Host ''
