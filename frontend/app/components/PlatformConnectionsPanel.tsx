@@ -201,8 +201,11 @@ interface PlatformCardProps {
 
 function PlatformCard({ platform, isTesting, onQrLogin, onManualLogin, onDelete, onTest }: PlatformCardProps) {
   const isConnected = platform.status === 'connected'
-  const statusColor = isConnected ? 'text-green-600' : 'text-red-500'
-  const statusBg = isConnected ? 'bg-green-50 dark:bg-green-900/20' : 'bg-red-50 dark:bg-red-900/20'
+  const isStale = platform.status === 'expired' || platform.status === 'invalid'
+
+  const statusLabel = isConnected ? '已连接' : isStale ? (platform.status === 'expired' ? '已过期' : '已失效') : '未连接'
+  const statusColor = isConnected ? 'text-green-600' : isStale ? 'text-amber-600' : 'text-red-500'
+  const statusBg = isConnected ? 'bg-green-50 dark:bg-green-900/20' : isStale ? 'bg-amber-50 dark:bg-amber-900/20' : 'bg-red-50 dark:bg-red-900/20'
   const healthTone =
     platform.healthState === 'expired'
       ? 'text-amber-700'
@@ -220,17 +223,17 @@ function PlatformCard({ platform, isTesting, onQrLogin, onManualLogin, onDelete,
           <span className="text-xl">{platform.icon}</span>
           <span className="font-medium text-gray-900 dark:text-gray-100">{platform.displayName}</span>
         </div>
-        <span className={`text-sm font-medium ${statusColor}`}>{isConnected ? '已连接' : '未连接'}</span>
+        <span className={`text-sm font-medium ${statusColor}`}>{statusLabel}</span>
       </div>
 
-      {isConnected && (platform.cookiePreview || platform.tokenPreview) && (
+      {(isConnected || isStale) && (platform.cookiePreview || platform.tokenPreview) && (
         <div className="mb-3 flex gap-4 text-xs text-gray-500">
           {platform.cookiePreview && <span>Cookie: {platform.cookiePreview}</span>}
           {platform.tokenPreview && <span>Token: {platform.tokenPreview}</span>}
         </div>
       )}
 
-      {isConnected && (platform.warningMessage || platform.lastSuccessfulUseAt) && (
+      {(isConnected || isStale) && (platform.warningMessage || platform.lastSuccessfulUseAt) && (
         <div className={`mb-3 space-y-1 text-xs ${healthTone}`}>
           {platform.warningMessage && <p>{platform.warningMessage}</p>}
           {platform.lastSuccessfulUseAt && <p>最近一次成功使用: {platform.lastSuccessfulUseAt}</p>}
@@ -264,7 +267,7 @@ function PlatformCard({ platform, isTesting, onQrLogin, onManualLogin, onDelete,
         >
           {isTesting ? '测试中...' : '测试连接'}
         </button>
-        {isConnected && (
+        {(isConnected || isStale) && (
           <button
             onClick={onDelete}
             data-testid={`disconnect-platform-${platform.platform}`}

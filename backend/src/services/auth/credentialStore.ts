@@ -68,6 +68,7 @@ export class CredentialStore {
          credential_type = excluded.credential_type,
          credential_value = excluded.credential_value,
          status = 'active',
+         verified_at = datetime('now'),
          updated_at = datetime('now')`,
       [platform, credentialType, encrypted]
     );

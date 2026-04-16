@@ -85,10 +85,18 @@ function getProfileHealth(meta: ReturnType<typeof weiboProfileStore.getMeta>): {
   };
 }
 
-function sessionToStatus(session: WeiboLoginSessionSnapshot | null, cred: { hasValue: boolean } | null): PlatformStatus['status'] {
+function sessionToStatus(session: WeiboLoginSessionSnapshot | null, cred: { hasValue: boolean; verifiedAt: string | null } | null | undefined): PlatformStatus['status'] {
   if (!cred?.hasValue) return 'disconnected';
-  if (session?.state === 'cookie_saved') return 'connected';
   if (session?.state === 'failed') return 'invalid';
+  if (session?.state === 'cookie_saved') {
+    // credential was verified through QR login
+    return 'connected';
+  }
+  // No active session - check credential age
+  if (!cred.verifiedAt) return 'invalid';
+  const ageDays = (Date.now() - new Date(cred.verifiedAt).getTime()) / (1000 * 60 * 60 * 24);
+  if (ageDays >= 7) return 'expired';
+  if (ageDays >= 3) return 'connected'; // stale but not yet expired
   return 'connected';
 }
 

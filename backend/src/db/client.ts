@@ -195,6 +195,30 @@ function initSQLiteTables() {
 
     CREATE INDEX IF NOT EXISTS idx_favorites_item ON favorites(item_id);
     CREATE INDEX IF NOT EXISTS idx_favorites_tag ON favorites(favorite_tag_id);
+
+    -- 平台统一凭证表
+    CREATE TABLE IF NOT EXISTS platform_credentials (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      platform VARCHAR(30) UNIQUE NOT NULL,
+      credential_type VARCHAR(20) NOT NULL,
+      credential_value TEXT NOT NULL,
+      status VARCHAR(20) DEFAULT 'active',
+      verified_at TEXT,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+
+    -- 平台登录会话表
+    CREATE TABLE IF NOT EXISTS platform_login_sessions (
+      id VARCHAR(50) PRIMARY KEY,
+      platform VARCHAR(30) NOT NULL,
+      state VARCHAR(30) DEFAULT 'launching',
+      target_url TEXT,
+      cookie_configured BOOLEAN DEFAULT FALSE,
+      error_message TEXT,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
   `);
 
   // Seed default favorite tags

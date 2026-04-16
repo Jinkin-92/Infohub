@@ -9,6 +9,7 @@ import { join } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import puppeteer, { type Browser, type Page } from 'puppeteer-core';
 import { credentialStore } from './auth/credentialStore.js';
+import { localIntegrationsService } from './localIntegrations.js';
 
 const DEFAULT_ZHIHU_URL = 'https://www.zhihu.com/signin';
 const PREFERRED_COOKIE_NAMES = ['z_c0', 'd_c0', 'q_c1', 'tshl'];
@@ -175,6 +176,9 @@ export class ZhihuLoginService {
             try {
               await credentialStore.save('zhihu', 'cookie', cookieString);
             } catch { /* ignore */ }
+            try {
+              await localIntegrationsService.saveRsshubSettings({ ZHIHU_COOKIES: cookieString });
+            } catch { /* ignore */ }
             current.cookieConfigured = true;
             current.state = 'cookie_saved';
             current.message = '知乎 Cookie 已保存';
@@ -210,6 +214,9 @@ export class ZhihuLoginService {
                 .join('; ');
               try {
                 await credentialStore.save('zhihu', 'cookie', cookieString);
+              } catch { /* ignore */ }
+              try {
+                await localIntegrationsService.saveRsshubSettings({ ZHIHU_COOKIES: cookieString });
               } catch { /* ignore */ }
               current.cookieConfigured = true;
               current.state = 'cookie_saved';
@@ -288,6 +295,11 @@ export class ZhihuLoginService {
             await credentialStore.save('zhihu', 'cookie', cookieString);
           } catch (err) {
             console.error('[ZhihuLogin] credentialStore.save failed:', err instanceof Error ? err.message : err);
+          }
+          try {
+            await localIntegrationsService.saveRsshubSettings({ ZHIHU_COOKIES: cookieString });
+          } catch (err) {
+            console.warn('[ZhihuLogin] saveRsshubSettings failed (non-fatal):', err instanceof Error ? err.message : err);
           }
           session.cookieConfigured = true;
         }

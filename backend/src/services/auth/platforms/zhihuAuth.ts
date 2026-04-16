@@ -36,6 +36,15 @@ export interface PlatformStatus {
   dependentSources: number;
 }
 
+function credentialToStatus(cred: { hasValue: boolean; verifiedAt: string | null } | null | undefined): PlatformStatus['status'] {
+  if (!cred?.hasValue) return 'disconnected';
+  if (!cred.verifiedAt) return 'invalid'; // never verified
+  const ageDays = (Date.now() - new Date(cred.verifiedAt).getTime()) / (1000 * 60 * 60 * 24);
+  if (ageDays >= 7) return 'expired';
+  if (ageDays >= 3) return 'connected'; // stale but not yet expired
+  return 'connected';
+}
+
 export async function getZhihuStatus(): Promise<PlatformStatus> {
   const cred = (await credentialStore.getAllStatus()).find((c) => c.platform === 'zhihu');
   return {
@@ -48,7 +57,7 @@ export async function getZhihuStatus(): Promise<PlatformStatus> {
       manualCredential: true,
       needsVerification: true,
     },
-    status: cred?.hasValue ? 'connected' : 'disconnected',
+    status: credentialToStatus(cred),
     cookiePreview: cred?.hasValue ? '●●●●●●' : undefined,
     verifiedAt: cred?.verifiedAt || undefined,
     dependentSources: 0,

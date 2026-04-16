@@ -249,6 +249,32 @@ export class WeiboLoginService {
       session.updatedAt = nowIso();
       session.currentUrl = page.url();
 
+      // 轮询检查登录状态：微博扫码登录是 JS 动态更新 URL，framenavigated 可能不触发
+      const loginPollInterval = setInterval(async () => {
+        const current = this.sessions.get(sessionId);
+        if (!current || current.state !== 'awaiting_login') {
+          clearInterval(loginPollInterval);
+          return;
+        }
+        try {
+          const cookies = await page.cookies('https://weibo.com/', 'https://www.weibo.com/');
+          const sub = cookies.find((c) => c.name === 'SUB');
+          const subp = cookies.find((c) => c.name === 'SUBP');
+          if (sub && subp) {
+            current.state = 'login_detected';
+            current.message = 'Login detected. Waiting for cookies to stabilize...';
+            current.updatedAt = nowIso();
+            current.loginConfirmedAt = Date.now();
+            clearInterval(loginPollInterval);
+            setTimeout(async () => {
+              const s = this.sessions.get(sessionId);
+              if (!s || s.state !== 'login_detected') return;
+              await this.extractAndSaveCookies(s);
+            }, 2000);
+          }
+        } catch { /* poll continues */ }
+      }, 1500);
+
       // 监听 URL 变化，检测登录成功（URL 不再是 login 页面）
       page.on('framenavigated', async (frame) => {
         const current = this.sessions.get(sessionId);

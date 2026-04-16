@@ -96,6 +96,15 @@ function Test-BackendNativeModule {
   }
 }
 
+function Test-BuildExists {
+  param([string]$WorkingDirectory)
+  if ($WorkingDirectory -eq (Join-Path $root 'backend')) {
+    return Test-Path (Join-Path $WorkingDirectory 'dist')
+  } else {
+    return Test-Path (Join-Path $WorkingDirectory '.next')
+  }
+}
+
 try {
   Write-Host '=========================================='
   Write-Host 'InfoHub Windows Local Install'
@@ -141,9 +150,19 @@ try {
   }
 
   Write-Step -Index '7/7' -Message '构建前后端产物'
-  Invoke-Build -NodeRuntime $nodeRuntime -WorkingDirectory $backendDir -ScriptName 'build'
-  Invoke-Build -NodeRuntime $nodeRuntime -WorkingDirectory $frontendDir -ScriptName 'build'
-  Write-Success '构建完成。'
+  $backendBuilt = Test-BuildExists -WorkingDirectory $backendDir
+  $frontendBuilt = Test-BuildExists -WorkingDirectory $frontendDir
+  if ($backendBuilt -and $frontendBuilt) {
+    Write-Success '检测到构建产物已存在，跳过构建。'
+  } else {
+    if (-not $backendBuilt) {
+      Invoke-Build -NodeRuntime $nodeRuntime -WorkingDirectory $backendDir -ScriptName 'build'
+    }
+    if (-not $frontendBuilt) {
+      Invoke-Build -NodeRuntime $nodeRuntime -WorkingDirectory $frontendDir -ScriptName 'build'
+    }
+    Write-Success '构建完成。'
+  }
 
   Write-Host ''
   Write-Host '安装完成。现在可以双击 start.bat 启动 InfoHub。' -ForegroundColor Green

@@ -11,6 +11,12 @@ const tmpDir = path.join(rootDir, '.tmp');
 const pidPath = path.join(tmpDir, 'rsshub.pid');
 
 dotenv.config({ path: envPath, override: true });
+
+// Bootstrap global-agent BEFORE any other imports to intercept http/https modules.
+// global-agent must be bootstrapped before undici/native fetch is used.
+import { bootstrap } from 'global-agent';
+bootstrap();
+
 fs.mkdirSync(tmpDir, { recursive: true });
 fs.writeFileSync(pidPath, `${process.pid}\n`, 'utf8');
 

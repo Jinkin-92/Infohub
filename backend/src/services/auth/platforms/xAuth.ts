@@ -5,6 +5,15 @@
 
 import { credentialStore } from '../credentialStore.js';
 
+function credentialToStatus(cred: { hasValue: boolean; verifiedAt: string | null } | null | undefined): 'connected' | 'disconnected' | 'expired' | 'invalid' {
+  if (!cred?.hasValue) return 'disconnected';
+  if (!cred.verifiedAt) return 'invalid';
+  const ageDays = (Date.now() - new Date(cred.verifiedAt).getTime()) / (1000 * 60 * 60 * 24);
+  if (ageDays >= 7) return 'expired';
+  if (ageDays >= 3) return 'connected'; // stale but not yet expired
+  return 'connected';
+}
+
 export async function getXStatus() {
   const cred = (await credentialStore.getAllStatus()).find((c) => c.platform === 'x');
   return {
@@ -14,7 +23,7 @@ export async function getXStatus() {
     color: '#000000',
     // X 不支持扫码登录，仅手动凭证
     capability: { qrLogin: false, manualCredential: true, needsVerification: true },
-    status: cred?.hasValue ? 'connected' : 'disconnected',
+    status: credentialToStatus(cred),
     cookiePreview: cred?.hasValue ? '●●●●●●' : undefined,
     verifiedAt: cred?.verifiedAt || undefined,
     dependentSources: 0,

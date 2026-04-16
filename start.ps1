@@ -212,7 +212,7 @@ try {
   New-Item -ItemType Directory -Force -Path (Join-Path $backendDir 'data') | Out-Null
   Ensure-FileFromTemplate -Target $backendEnv -Template $rootEnvExample
   Ensure-ChromeRuntime -Root $root -NodeRuntime $nodeRuntime | Out-Null
-  if (-not (Test-Path (Join-Path $backendDir 'node_modules\better-sqlite3\build\Release\better_sqlite3.node'))) {
+  if (-not (Test-Path (Join-Path $backendDir 'node_modules'))) {
     Ensure-NodeModules -NodeRuntime $nodeRuntime -WorkingDirectory $backendDir
   }
   if (-not (Test-Path (Join-Path $frontendDir 'node_modules'))) {
