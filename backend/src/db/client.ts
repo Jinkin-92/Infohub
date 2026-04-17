@@ -61,7 +61,9 @@ function initSQLiteTables() {
     return;
   }
 
-  sqliteClient.exec(`
+  const sqlite = sqliteClient;
+
+  sqlite.exec(`
     CREATE TABLE IF NOT EXISTS sources (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
@@ -219,7 +221,73 @@ function initSQLiteTables() {
       created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
+
+    -- 订阅源栏目与分类
+    CREATE TABLE IF NOT EXISTS source_columns (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL UNIQUE,
+      sort_order INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS source_categories (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL UNIQUE,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+
+    -- 公开 RSS 池
+    CREATE TABLE IF NOT EXISTS public_sources (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      url TEXT NOT NULL,
+      rss_url TEXT NOT NULL UNIQUE,
+      platform TEXT NOT NULL DEFAULT 'news',
+      category TEXT NOT NULL,
+      description TEXT,
+      enabled INTEGER NOT NULL DEFAULT 1,
+      subscribed_count INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS public_source_categories (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      slug TEXT NOT NULL UNIQUE,
+      name TEXT NOT NULL,
+      sort_order INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS public_source_subscriptions (
+      user_id INTEGER NOT NULL DEFAULT 1,
+      source_id INTEGER NOT NULL REFERENCES public_sources(id) ON DELETE CASCADE,
+      subscribed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (user_id, source_id)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_public_sources_category ON public_sources(category);
+    CREATE INDEX IF NOT EXISTS idx_public_source_subscriptions_user ON public_source_subscriptions(user_id);
   `);
+
+  // SQLite 现有库的增量字段迁移
+  const ensureColumn = (table: string, column: string, definition: string) => {
+    const columns = sqlite
+      .prepare(`PRAGMA table_info(${table})`)
+      .all() as Array<{ name: string }>;
+
+    if (!columns.some((item) => item.name === column)) {
+      sqlite.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+    }
+  };
+
+  ensureColumn('sources', 'column_id', 'INTEGER REFERENCES source_columns(id)');
+  ensureColumn('sources', 'category_id', 'INTEGER REFERENCES source_categories(id)');
+  ensureColumn('sources', 'pinned', 'INTEGER NOT NULL DEFAULT 0');
+  ensureColumn('sources', 'card_title', 'TEXT');
+  ensureColumn('sources', 'card_subtitle', 'TEXT');
+  ensureColumn('sources', 'description', 'TEXT');
+  ensureColumn('sources', 'is_public', 'INTEGER NOT NULL DEFAULT 0');
+  ensureColumn('sources', 'public_source_id', 'INTEGER REFERENCES public_sources(id)');
 
   // Seed default favorite tags
   const defaultFavoriteTags = [
@@ -261,7 +329,7 @@ function initSQLiteTables() {
     },
   ];
 
-  const insertTag = sqliteClient.prepare(
+  const insertTag = sqlite.prepare(
     'INSERT OR IGNORE INTO tags (name, color) VALUES (?, ?)'
   );
 
@@ -269,7 +337,7 @@ function initSQLiteTables() {
     insertTag.run(tag.name, tag.color);
   }
 
-  const currentTags = sqliteClient
+  const currentTags = sqlite
     .prepare('SELECT id, name, color FROM tags ORDER BY id ASC')
     .all() as Array<{ id: number; name: string; color: string }>;
 
@@ -277,7 +345,7 @@ function initSQLiteTables() {
     currentTags.length === defaultTags.length &&
     currentTags.some((tag, index) => tag.name !== defaultTags[index]?.name)
   ) {
-    const updateTag = sqliteClient.prepare(
+    const updateTag = sqlite.prepare(
       'UPDATE tags SET name = ?, color = ? WHERE id = ?'
     );
 
@@ -286,12 +354,12 @@ function initSQLiteTables() {
     });
   }
 
-  const sourceCount = sqliteClient
+  const sourceCount = sqlite
     .prepare('SELECT COUNT(*) as count FROM sources')
     .get() as { count: number };
 
   if (sourceCount.count === 0) {
-    const insertSource = sqliteClient.prepare(`
+    const insertSource = sqlite.prepare(`
       INSERT INTO sources (
         name,
         platform,
@@ -312,6 +380,43 @@ function initSQLiteTables() {
         source.fetch_interval_min
       );
     }
+  }
+
+  const defaultColumns = [
+    { name: '核心关注', sort_order: 1 },
+    { name: '高频更新', sort_order: 2 },
+    { name: '深度阅读', sort_order: 3 },
+    { name: '观察中', sort_order: 4 },
+  ];
+  const insertColumn = sqlite.prepare(
+    'INSERT OR IGNORE INTO source_columns (name, sort_order) VALUES (?, ?)'
+  );
+  for (const column of defaultColumns) {
+    insertColumn.run(column.name, column.sort_order);
+  }
+
+  const defaultSourceCategories = ['AI', '科技', '财经', '商业', '宏观', '其他'];
+  const insertSourceCategory = sqlite.prepare(
+    'INSERT OR IGNORE INTO source_categories (name) VALUES (?)'
+  );
+  for (const category of defaultSourceCategories) {
+    insertSourceCategory.run(category);
+  }
+
+  const defaultPublicCategories = [
+    { slug: 'tech', name: '科技', sort_order: 1 },
+    { slug: 'news', name: '新闻', sort_order: 2 },
+    { slug: 'finance', name: '财经', sort_order: 3 },
+    { slug: 'life', name: '生活', sort_order: 4 },
+    { slug: 'design', name: '设计', sort_order: 5 },
+    { slug: 'video', name: '视频', sort_order: 6 },
+    { slug: 'aggregator', name: '聚合', sort_order: 7 },
+  ];
+  const insertPublicCategory = sqlite.prepare(
+    'INSERT OR IGNORE INTO public_source_categories (slug, name, sort_order) VALUES (?, ?, ?)'
+  );
+  for (const category of defaultPublicCategories) {
+    insertPublicCategory.run(category.slug, category.name, category.sort_order);
   }
 
   console.log('[SQLite] Tables initialized');

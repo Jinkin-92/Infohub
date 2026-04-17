@@ -209,6 +209,7 @@ try {
 
   Write-Step -Index '2/6' -Message '检查配置、浏览器和依赖'
   New-Item -ItemType Directory -Force -Path $stateDir | Out-Null
+  $sqlitePath = Initialize-SqlitePath -Root $root
   New-Item -ItemType Directory -Force -Path (Join-Path $backendDir 'data') | Out-Null
   Ensure-FileFromTemplate -Target $backendEnv -Template $rootEnvExample
   Ensure-ChromeRuntime -Root $root -NodeRuntime $nodeRuntime | Out-Null
@@ -219,6 +220,7 @@ try {
     Ensure-NodeModules -NodeRuntime $nodeRuntime -WorkingDirectory $frontendDir
   }
   Ensure-BuildArtifacts
+  Write-Host "SQLite 数据库路径：$sqlitePath"
   Write-Success '运行环境已就绪。'
 
   Write-Step -Index '3/6' -Message '清理旧进程和旧日志'

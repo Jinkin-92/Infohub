@@ -9,7 +9,7 @@ $timestamp = Get-Date -Format 'yyyyMMdd-HHmm'
 $packageName = "infohub-windows-test-$timestamp"
 $stageDir = Join-Path $stageRoot $packageName
 $zipPath = Join-Path $releaseRoot "$packageName.zip"
-$sizeLimitMb = 50
+$sizeLimitMb = 260
 $portableRuntimeStage = Join-Path $stageDir (Join-Path '.runtime' $script:InfoHubNodeFolderName)
 
 function Copy-Tree {
@@ -75,7 +75,7 @@ function Build-ReleaseArchive {
 Write-Host '=========================================='
 Write-Host 'InfoHub Windows Test Package'
 Write-Host '=========================================='
-Write-Host "目标：生成 50MB 以内、适合发给朋友测试的 Windows 压缩包。"
+Write-Host "目标：生成更稳的 Windows 测试包，优先确保朋友机器可安装、可启动。"
 
 $nodeRuntime = Ensure-NodeRuntime -Root $root
 Write-Host "Using Node.js $($nodeRuntime.Version) [$($nodeRuntime.Source)]"
@@ -105,8 +105,8 @@ Copy-Item -LiteralPath (Join-Path $root 'package-release.bat') -Destination (Joi
 
 Copy-Tree -Source (Join-Path $root 'docs') -Destination (Join-Path $stageDir 'docs')
 Copy-Tree -Source (Join-Path $root 'scripts') -Destination (Join-Path $stageDir 'scripts')
-Copy-Tree -Source (Join-Path $root 'backend') -Destination (Join-Path $stageDir 'backend') -ExcludeDirs @('node_modules', '.tmp', 'data', '__pycache__') -ExcludeFiles @('backend-run.log', 'backend-error.log')
-Copy-Tree -Source (Join-Path $root 'frontend') -Destination (Join-Path $stageDir 'frontend') -ExcludeDirs @('node_modules', '.next\\cache') -ExcludeFiles @('frontend-run.log', 'frontend-error.log')
+Copy-Tree -Source (Join-Path $root 'backend') -Destination (Join-Path $stageDir 'backend') -ExcludeDirs @('.tmp', 'data', '__pycache__') -ExcludeFiles @('backend-run.log', 'backend-error.log')
+Copy-Tree -Source (Join-Path $root 'frontend') -Destination (Join-Path $stageDir 'frontend') -ExcludeDirs @('.next\\cache', 'test-results') -ExcludeFiles @('frontend-run.log', 'frontend-error.log')
 Copy-Tree -Source (Join-Path $root 'rsshub-local') -Destination (Join-Path $stageDir 'rsshub-local') -ExcludeDirs @('node_modules', '.tmp', 'logs')
 
 $portableNodeRoot = Get-PortableNodeRoot -Root $root
@@ -118,15 +118,6 @@ if (Test-Path $portableNodeRoot) {
 Build-ReleaseArchive -SourceDir $stageDir -DestinationZip $zipPath
 $zipSizeMb = Get-FileSizeMb -Path $zipPath
 
-if ($zipSizeMb -gt $sizeLimitMb -and (Test-Path $portableRuntimeStage)) {
-  Write-Host ''
-  Write-Host "当前压缩包 ${zipSizeMb}MB，超过 ${sizeLimitMb}MB 限制。" -ForegroundColor Yellow
-  Write-Host '正在移除内置 Node.js 运行时并重新打包，以满足体积要求...'
-  Remove-Item -LiteralPath $portableRuntimeStage -Recurse -Force -ErrorAction SilentlyContinue
-  Build-ReleaseArchive -SourceDir $stageDir -DestinationZip $zipPath
-  $zipSizeMb = Get-FileSizeMb -Path $zipPath
-}
-
 if ($zipSizeMb -gt $sizeLimitMb) {
   throw "打包后的 ZIP 体积为 ${zipSizeMb}MB，仍然超过 ${sizeLimitMb}MB 限制。请先清理包内容后再打包。"
 }
@@ -134,6 +125,6 @@ if ($zipSizeMb -gt $sizeLimitMb) {
 Write-Host ''
 Write-Host "Package ready: $zipPath"
 Write-Host "压缩包大小：${zipSizeMb}MB"
-Write-Host '已内置：前端构建产物、后端构建产物、脚本和说明文档。'
-Write-Host '未内置：Chrome/Edge 浏览器运行时、frontend node_modules 及后端其他 node_modules。'
+Write-Host '已内置：便携 Node.js、前后端构建产物、backend node_modules、frontend node_modules、脚本和说明文档。'
+Write-Host '未内置：Chrome/Edge 浏览器运行时。'
 Write-Host ''

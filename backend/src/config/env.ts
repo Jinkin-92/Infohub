@@ -1,8 +1,21 @@
 import { z } from 'zod';
 import dotenv from 'dotenv';
+import { join, resolve } from 'path';
+import { homedir } from 'os';
 
 // 加载 .env 文件
 dotenv.config();
+
+function getDefaultSqlitePath(): string {
+  if (process.platform === 'win32') {
+    const localAppData = process.env.LOCALAPPDATA;
+    if (localAppData) {
+      return join(localAppData, 'InfoHub', 'data', 'infohub_v2.db');
+    }
+  }
+
+  return join(homedir(), '.infohub', 'data', 'infohub_v2.db');
+}
 
 /**
  * 环境变量验证Schema
@@ -19,7 +32,7 @@ const envSchema = z.object({
   DATABASE_URL: z.string().optional().default(''),
 
   // SQLite 配置
-  SQLITE_PATH: z.string().default('./data/infohub.db'),
+  SQLITE_PATH: z.string().default(getDefaultSqlitePath()),
 
   // RSSHub配置
   RSSHUB_URL: z.string().default('http://localhost:1200'),
@@ -34,7 +47,14 @@ const envSchema = z.object({
 /**
  * 解析后的环境变量
  */
-export const env = envSchema.parse(process.env);
+const parsedEnv = envSchema.parse(process.env);
+
+export const env = {
+  ...parsedEnv,
+  SQLITE_PATH: parsedEnv.SQLITE_PATH.startsWith('.')
+    ? resolve(process.cwd(), parsedEnv.SQLITE_PATH)
+    : parsedEnv.SQLITE_PATH,
+};
 
 /**
  * 是否为开发环境

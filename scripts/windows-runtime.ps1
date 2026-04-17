@@ -3,6 +3,71 @@ $ErrorActionPreference = 'Stop'
 $script:InfoHubNodeVersion = '24.11.0'
 $script:InfoHubNodeFolderName = "node-v$($script:InfoHubNodeVersion)-win-x64"
 
+function Get-InfoHubDataRoot {
+  param([string]$Root)
+
+  $localAppData = $env:LOCALAPPDATA
+  if ($localAppData) {
+    return (Join-Path $localAppData 'InfoHub\data')
+  }
+
+  return (Join-Path $Root 'backend\data')
+}
+
+function Get-PreferredSqlitePath {
+  param([string]$Root)
+
+  return (Join-Path (Get-InfoHubDataRoot -Root $Root) 'infohub_v2.db')
+}
+
+function Get-LegacySqliteCandidates {
+  param([string]$Root)
+
+  return @(
+    (Join-Path $Root 'backend\data\infohub_v2.db'),
+    (Join-Path $Root 'backend\data\infohub.db'),
+    (Join-Path $Root 'infohub\backend\data\infohub_v2.db'),
+    (Join-Path $Root 'infohub\backend\data\infohub.db')
+  ) | Select-Object -Unique
+}
+
+function Initialize-SqlitePath {
+  param([string]$Root)
+
+  $backendEnv = Join-Path $Root 'backend\.env'
+  $preferredSqlitePath = Get-PreferredSqlitePath -Root $Root
+  $preferredDir = Split-Path -Parent $preferredSqlitePath
+
+  New-Item -ItemType Directory -Force -Path $preferredDir | Out-Null
+  Set-EnvValue -FilePath $backendEnv -Key 'SQLITE_PATH' -Value $preferredSqlitePath
+
+  if (Test-Path $preferredSqlitePath) {
+    return $preferredSqlitePath
+  }
+
+  $candidate = Get-LegacySqliteCandidates -Root $Root |
+    Where-Object { (Test-Path $_) -and ($_ -ne $preferredSqlitePath) } |
+    Get-Item |
+    Sort-Object Length, LastWriteTime -Descending |
+    Select-Object -First 1
+
+  if ($candidate) {
+    Copy-Item -LiteralPath $candidate.FullName -Destination $preferredSqlitePath -Force
+
+    $walPath = "$($candidate.FullName)-wal"
+    if (Test-Path $walPath) {
+      Copy-Item -LiteralPath $walPath -Destination "$preferredSqlitePath-wal" -Force
+    }
+
+    $shmPath = "$($candidate.FullName)-shm"
+    if (Test-Path $shmPath) {
+      Copy-Item -LiteralPath $shmPath -Destination "$preferredSqlitePath-shm" -Force
+    }
+  }
+
+  return $preferredSqlitePath
+}
+
 function Get-InfoHubRuntimeRoot {
   param([string]$Root)
 

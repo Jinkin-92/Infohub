@@ -50,6 +50,23 @@ function Ensure-NodeModules {
   }
 }
 
+function Test-FrontendRuntimeModule {
+  param(
+    [hashtable]$NodeRuntime,
+    [string]$WorkingDirectory
+  )
+
+  Push-Location $WorkingDirectory
+  try {
+    & $NodeRuntime.NodeExe -e "require('next/package.json'); require('react/package.json'); require('react-dom/package.json'); console.log('ok')"
+    return ($LASTEXITCODE -eq 0)
+  } catch {
+    return $false
+  } finally {
+    Pop-Location
+  }
+}
+
 function Invoke-Build {
   param(
     [hashtable]$NodeRuntime,
@@ -123,8 +140,10 @@ try {
 
   Write-Step -Index '3/7' -Message '准备配置文件和数据目录'
   Ensure-FileFromTemplate -Target $backendEnv -Template $rootEnvExample
+  $sqlitePath = Initialize-SqlitePath -Root $root
   New-Item -ItemType Directory -Force -Path (Join-Path $backendDir 'data') | Out-Null
   New-Item -ItemType Directory -Force -Path (Join-Path $root '.tmp') | Out-Null
+  Write-Host "SQLite 数据库路径：$sqlitePath"
   Write-Success '基础目录已准备完成。'
 
   Write-Step -Index '4/7' -Message '检查浏览器运行环境'
@@ -132,13 +151,22 @@ try {
   Write-Success '浏览器环境可用。'
 
   Write-Step -Index '5/7' -Message '安装后端和前端依赖'
-  if (Test-BackendNativeModule -NodeRuntime $nodeRuntime -WorkingDirectory $backendDir) {
-    Write-Success '检测到 better-sqlite3 预编译二进制，跳过后端依赖安装。'
+  $backendReady = Test-BackendNativeModule -NodeRuntime $nodeRuntime -WorkingDirectory $backendDir
+  $frontendReady = Test-FrontendRuntimeModule -NodeRuntime $nodeRuntime -WorkingDirectory $frontendDir
+
+  if ($backendReady) {
+    Write-Success '检测到后端依赖已可用，跳过后端依赖安装。'
   } else {
     Ensure-NodeModules -NodeRuntime $nodeRuntime -WorkingDirectory $backendDir
-    Ensure-NodeModules -NodeRuntime $nodeRuntime -WorkingDirectory $frontendDir
-    Write-Success '依赖安装完成。'
   }
+
+  if ($frontendReady) {
+    Write-Success '检测到前端依赖已可用，跳过前端依赖安装。'
+  } else {
+    Ensure-NodeModules -NodeRuntime $nodeRuntime -WorkingDirectory $frontendDir
+  }
+
+  Write-Success '依赖安装完成。'
 
   Write-Step -Index '6/7' -Message '重建本地原生模块'
   if (Test-BackendNativeModule -NodeRuntime $nodeRuntime -WorkingDirectory $backendDir) {
