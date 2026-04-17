@@ -14,6 +14,7 @@ import { xBrowserCollector } from './xBrowserCollector.js';
 import { urlDetector } from './urlDetector.js';
 import { youtubePublicCollector } from './youtubePublicCollector.js';
 import { resolveZhihuSourceName } from './zhihuSourceName.js';
+import { zhihuBrowserCollector } from './zhihuBrowserCollector.js';
 
 const execFileAsync = promisify(execFile);
 
@@ -465,6 +466,10 @@ export class Collector {
         return weiboBrowserCollector.collectItems(source);
       }
       return weiboHttpCollector.collectItems(source);
+    }
+
+    if (source.platform === 'zhihu') {
+      return zhihuBrowserCollector.collectItems(source);
     }
 
     if (source.platform === 'youtube') {

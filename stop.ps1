@@ -64,7 +64,7 @@ function Stop-StrayInfoHubProcess {
     $commandLine = Get-ProcessCommandLine -ProcessId $processId
     $matchesMarker = $false
     foreach ($marker in $ExpectedMarkers) {
-      if ($marker -and $commandLine -and $commandLine.Contains($marker)) {
+      if ($marker -and $commandLine -and $commandLine.ToLower().Contains($marker.ToLower())) {
         $matchesMarker = $true
         break
       }
@@ -81,7 +81,7 @@ function Stop-StrayInfoHubProcess {
 
 Stop-KnownProcess -PidFile $backendPidPath
 Stop-KnownProcess -PidFile $frontendPidPath
-Stop-StrayInfoHubProcess -Port 3002 -ExpectedMarkers @($backendDir, 'dist/index.js')
-Stop-StrayInfoHubProcess -Port 3000 -ExpectedMarkers @($frontendDir, 'next start')
+Stop-StrayInfoHubProcess -Port 3002 -ExpectedMarkers @($backendDir, 'dist/index.js', 'backend/dist/index.js', '.\dist\index.js')
+Stop-StrayInfoHubProcess -Port 3000 -ExpectedMarkers @($frontendDir, 'next start', 'start-server.js', 'frontend/node_modules/next/dist/server/lib/start-server.js', '.\node_modules\next\dist\bin\next')
 
 Write-Host 'InfoHub stopped.'

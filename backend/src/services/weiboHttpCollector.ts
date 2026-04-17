@@ -3,6 +3,7 @@ import { credentialStore } from './auth/credentialStore.js';
 import { sourcesQueries } from '../db/queries.js';
 import { weiboProfileStore } from './weiboProfileStore.js';
 import { cardToItem, resolveWeiboUid, toMobileCard } from './weiboBrowserCollector.js';
+import { weiboBrowserCollector } from './weiboBrowserCollector.js';
 
 type WeiboTimelineApiResponse = {
   ok?: number;
@@ -150,6 +151,11 @@ async function fetchWeiboTimeline(uid: string, cookie: string): Promise<WeiboHtt
   };
 }
 
+function shouldFallbackToBrowser(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error || '');
+  return /unreadable response|rejected the request|returned no post cards|returned cards but no usable items/i.test(message);
+}
+
 export async function collectWeiboHttpItems(source: Source): Promise<RSSItem[]> {
   const uid = resolveWeiboUid(source);
   const cookie = await getWeiboCookie();
@@ -158,14 +164,21 @@ export async function collectWeiboHttpItems(source: Source): Promise<RSSItem[]> 
     throw new Error(verify.message || 'Weibo cookie is invalid. Please reconnect Weibo.');
   }
 
-  const result = await fetchWeiboTimeline(uid, cookie);
+  try {
+    const result = await fetchWeiboTimeline(uid, cookie);
 
-  if (result.screenName && source.name !== result.screenName) {
-    await sourcesQueries.update(source.id, { name: result.screenName });
+    if (result.screenName && source.name !== result.screenName) {
+      await sourcesQueries.update(source.id, { name: result.screenName });
+    }
+
+    weiboProfileStore.markHealthyUse();
+    return result.cards;
+  } catch (error) {
+    if (shouldFallbackToBrowser(error) && weiboProfileStore.hasActiveProfile()) {
+      return weiboBrowserCollector.collectItems(source);
+    }
+    throw error;
   }
-
-  weiboProfileStore.markHealthyUse();
-  return result.cards;
 }
 
 export async function verifyWeiboHttpConnection(testUrl: string): Promise<{
@@ -212,6 +225,17 @@ export async function verifyWeiboHttpConnection(testUrl: string): Promise<{
       resolvedUid: uid,
     };
   } catch (error) {
+    if (shouldFallbackToBrowser(error) && weiboProfileStore.hasActiveProfile()) {
+      const browserResult = await weiboBrowserCollector.verifyConnection(testUrl);
+      return {
+        success: browserResult.success,
+        message: browserResult.success
+          ? `${browserResult.message} (HTTP collector was blocked, browser fallback used.)`
+          : browserResult.message,
+        resolvedUid: browserResult.resolvedUid || uid,
+      };
+    }
+
     weiboProfileStore.markChecked();
     return {
       success: false,

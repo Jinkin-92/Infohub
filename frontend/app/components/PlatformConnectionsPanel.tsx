@@ -172,6 +172,9 @@ export function PlatformConnectionsPanel({ onMessage }: Props) {
           <p className="text-sm text-gray-500">
             公开信源无需登录：YouTube、B站、新闻 RSS、自定义 RSS。
           </p>
+          <p className="mt-2 text-xs text-gray-500">
+            微博日常刷新会优先走无头采集，只有重新连接时才会打开浏览器。知乎当前登录仅用于后续兼容准备，公开活动采集仍可能受上游限制。
+          </p>
         </div>
       </div>
 

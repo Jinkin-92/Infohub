@@ -99,7 +99,7 @@ function Stop-StrayInfoHubProcess {
     $commandLine = Get-ProcessCommandLine -ProcessId $processId
     $matchesMarker = $false
     foreach ($marker in $ExpectedMarkers) {
-      if ($marker -and $commandLine -and $commandLine.Contains($marker)) {
+      if ($marker -and $commandLine -and $commandLine.ToLower().Contains($marker.ToLower())) {
         $matchesMarker = $true
         break
       }
@@ -224,8 +224,8 @@ try {
   Write-Step -Index '3/6' -Message '清理旧进程和旧日志'
   Stop-KnownProcess -PidFile $backendPidPath
   Stop-KnownProcess -PidFile $frontendPidPath
-  Stop-StrayInfoHubProcess -Port 3002 -ExpectedMarkers @($backendDir, 'dist/index.js')
-  Stop-StrayInfoHubProcess -Port 3000 -ExpectedMarkers @($frontendDir, 'next start')
+  Stop-StrayInfoHubProcess -Port 3002 -ExpectedMarkers @($backendDir, 'dist/index.js', 'backend/dist/index.js', '.\dist\index.js')
+  Stop-StrayInfoHubProcess -Port 3000 -ExpectedMarkers @($frontendDir, 'next start', 'start-server.js', 'frontend/node_modules/next/dist/server/lib/start-server.js', '.\node_modules\next\dist\bin\next')
   Start-Sleep -Seconds 2
 
   Remove-Item -LiteralPath $backendLog -Force -ErrorAction SilentlyContinue
@@ -250,7 +250,7 @@ try {
 
   Start-ServiceProcess `
     -FilePath $nodeRuntime.NodeExe `
-    -ArgumentList @('.\node_modules\next\dist\bin\next', 'start') `
+    -ArgumentList @('.\node_modules\next\dist\bin\next', 'start', '-p', '3000') `
     -WorkingDirectory $frontendDir `
     -StdoutPath $frontendLog `
     -StderrPath $frontendErrorLog `

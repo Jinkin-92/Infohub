@@ -99,9 +99,9 @@ function Test-BackendNativeModule {
 function Test-BuildExists {
   param([string]$WorkingDirectory)
   if ($WorkingDirectory -eq (Join-Path $root 'backend')) {
-    return Test-Path (Join-Path $WorkingDirectory 'dist')
+    return Test-Path (Join-Path $WorkingDirectory 'dist\index.js')
   } else {
-    return Test-Path (Join-Path $WorkingDirectory '.next')
+    return Test-Path (Join-Path $WorkingDirectory '.next\BUILD_ID')
   }
 }
 

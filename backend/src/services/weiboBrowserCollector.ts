@@ -259,7 +259,7 @@ async function scrapeMobileCards(uid: string): Promise<{ cards: WeiboMobileCard[
 
   try {
     browser = await puppeteer.launch({
-      headless: false,
+      headless: true,
       executablePath: resolveChromeExecutablePath(),
       userDataDir: runtimeProfileDir,
       defaultViewport: { width: 430, height: 900, isMobile: true },

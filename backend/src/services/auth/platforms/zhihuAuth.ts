@@ -32,16 +32,19 @@ export interface PlatformStatus {
   status: 'connected' | 'disconnected' | 'expired' | 'invalid';
   cookiePreview?: string;
   verifiedAt?: string;
+  lastSuccessfulUseAt?: string;
+  healthState?: 'healthy' | 'warning' | 'expired';
+  warningMessage?: string;
+  reconnectRecommended?: boolean;
   error?: string;
   dependentSources: number;
 }
 
 function credentialToStatus(cred: { hasValue: boolean; verifiedAt: string | null } | null | undefined): PlatformStatus['status'] {
   if (!cred?.hasValue) return 'disconnected';
-  if (!cred.verifiedAt) return 'invalid'; // never verified
+  if (!cred.verifiedAt) return 'invalid';
   const ageDays = (Date.now() - new Date(cred.verifiedAt).getTime()) / (1000 * 60 * 60 * 24);
   if (ageDays >= 7) return 'expired';
-  if (ageDays >= 3) return 'connected'; // stale but not yet expired
   return 'connected';
 }
 
@@ -60,6 +63,12 @@ export async function getZhihuStatus(): Promise<PlatformStatus> {
     status: credentialToStatus(cred),
     cookiePreview: cred?.hasValue ? '●●●●●●' : undefined,
     verifiedAt: cred?.verifiedAt || undefined,
+    lastSuccessfulUseAt: undefined,
+    healthState: cred?.hasValue ? 'healthy' : undefined,
+    warningMessage: cred?.hasValue
+      ? '知乎订阅源当前优先走本地浏览器采集。若刷新失败，请先确认本机 Chrome 可用并重新连接知乎。'
+      : undefined,
+    reconnectRecommended: false,
     dependentSources: 0,
   };
 }

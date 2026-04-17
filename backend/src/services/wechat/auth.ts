@@ -113,6 +113,12 @@ export class WeChatAuth {
     }
   }
 
+  async reloadFromSettings(): Promise<void> {
+    this.loaded = false;
+    this.loading = null;
+    await this.ensureLoaded();
+  }
+
   async isConfigured(): Promise<boolean> {
     await this.ensureLoaded();
     return Boolean(this.cookie && this.token);

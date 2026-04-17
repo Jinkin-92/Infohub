@@ -6,6 +6,7 @@
 import { WeChatAuth } from '../../wechat/auth.js';
 import { weChatQrLogin } from '../../wechat/qrLogin.js';
 import { credentialStore } from '../credentialStore.js';
+import { wechatAuth } from '../../wechat/auth.js';
 
 const weChatAuth = new WeChatAuth();
 
@@ -227,11 +228,13 @@ export async function cancelWechatSession(sessionId: string): Promise<void> {
 export async function saveWechatCredential(cookie: string, token: string): Promise<void> {
   const value = `cookie=${cookie};token=${token}`;
   await weChatAuth.saveToSettings({ cookie, token });
+  await wechatAuth.reloadFromSettings();
   await credentialStore.save('wechat', 'cookie', value);
 }
 
 export async function deleteWechatCredential(): Promise<void> {
   await weChatAuth.saveToSettings({ cookie: '', token: '' });
+  await wechatAuth.reloadFromSettings();
   await credentialStore.delete('wechat');
 }
 
