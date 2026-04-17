@@ -1,0 +1,3080 @@
+[
+  {
+    "name": "ByteByteGo",
+    "url": "https://blog.bytebytego.com/feed",
+    "rss_url": "https://blog.bytebytego.com/feed",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (技术周刊)",
+    "enabled": 1
+  },
+  {
+    "name": "Fluent Reader Releases",
+    "url": "https://github.com/yang991178/fluent-reader/releases.atom",
+    "rss_url": "https://github.com/yang991178/fluent-reader/releases.atom",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (RSS 工具更新)",
+    "enabled": 1
+  },
+  {
+    "name": "FreshRSS Releases",
+    "url": "https://github.com/FreshRSS/FreshRSS/releases.atom",
+    "rss_url": "https://github.com/FreshRSS/FreshRSS/releases.atom",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (RSS 工具更新)",
+    "enabled": 1
+  },
+  {
+    "name": "Golang Weekly",
+    "url": "https://golangweekly.com/rss",
+    "rss_url": "https://golangweekly.com/rss",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (技术周刊)",
+    "enabled": 1
+  },
+  {
+    "name": "Hacker News 最佳",
+    "url": "https://hnrss.org/best",
+    "rss_url": "https://hnrss.org/best",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (技术社区)",
+    "enabled": 1
+  },
+  {
+    "name": "Hacker News 首页",
+    "url": "https://hnrss.org/frontpage",
+    "rss_url": "https://hnrss.org/frontpage",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (技术社区)",
+    "enabled": 1
+  },
+  {
+    "name": "JavaScript Weekly",
+    "url": "https://javascriptweekly.com/rss",
+    "rss_url": "https://javascriptweekly.com/rss",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (技术周刊)",
+    "enabled": 1
+  },
+  {
+    "name": "LinuxDo 最新话题",
+    "url": "https://linux.do/latest.rss",
+    "rss_url": "https://linux.do/latest.rss",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (技术社区)",
+    "enabled": 1
+  },
+  {
+    "name": "LinuxDo 热门话题",
+    "url": "https://linux.do/top.rss",
+    "rss_url": "https://linux.do/top.rss",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (技术社区)",
+    "enabled": 1
+  },
+  {
+    "name": "MIT 科技评论 - 本周热榜",
+    "url": "https://plink.anyfeeder.com/mittrchina/hot",
+    "rss_url": "https://plink.anyfeeder.com/mittrchina/hot",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from weekend-project-space/top-rss-list (aggregator)",
+    "enabled": 1
+  },
+  {
+    "name": "NetNewsWire Releases",
+    "url": "https://github.com/Ranchero-Software/NetNewsWire/releases.atom",
+    "rss_url": "https://github.com/Ranchero-Software/NetNewsWire/releases.atom",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (RSS 工具更新)",
+    "enabled": 1
+  },
+  {
+    "name": "RSSHub Radar Releases",
+    "url": "https://github.com/DIYgod/RSSHub-Radar/releases.atom",
+    "rss_url": "https://github.com/DIYgod/RSSHub-Radar/releases.atom",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (RSS 工具更新)",
+    "enabled": 1
+  },
+  {
+    "name": "RSSHub Releases",
+    "url": "https://github.com/DIYgod/RSSHub/releases.atom",
+    "rss_url": "https://github.com/DIYgod/RSSHub/releases.atom",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (RSS 工具更新)",
+    "enabled": 1
+  },
+  {
+    "name": "This Week in Rust",
+    "url": "https://this-week-in-rust.org/atom.xml",
+    "rss_url": "https://this-week-in-rust.org/atom.xml",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (技术周刊)",
+    "enabled": 1
+  },
+  {
+    "name": "V2EX",
+    "url": "https://v2ex.com/index.xml",
+    "rss_url": "https://v2ex.com/index.xml",
+    "platform": "x",
+    "category": "aggregator",
+    "description": "Imported from weekend-project-space/top-rss-list (aggregator)",
+    "enabled": 1
+  },
+  {
+    "name": "V2EX",
+    "url": "http://www.v2ex.com/index.xml",
+    "rss_url": "http://www.v2ex.com/index.xml",
+    "platform": "x",
+    "category": "aggregator",
+    "description": "Imported from weekend-project-space/top-rss-list (aggregator)",
+    "enabled": 1
+  },
+  {
+    "name": "V2EX - 技术",
+    "url": "https://www.v2ex.com/feed/tab/tech.xml",
+    "rss_url": "https://www.v2ex.com/feed/tab/tech.xml",
+    "platform": "x",
+    "category": "aggregator",
+    "description": "Imported from weekend-project-space/top-rss-list (aggregator)",
+    "enabled": 1
+  },
+  {
+    "name": "V2EX 最热",
+    "url": "https://www.v2ex.com/feed/tab/hot.xml",
+    "rss_url": "https://www.v2ex.com/feed/tab/hot.xml",
+    "platform": "x",
+    "category": "aggregator",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (技术社区)",
+    "enabled": 1
+  },
+  {
+    "name": "iDaily 每日环球视野",
+    "url": "https://plink.anyfeeder.com/idaily/today",
+    "rss_url": "https://plink.anyfeeder.com/idaily/today",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from weekend-project-space/top-rss-list (aggregator)",
+    "enabled": 1
+  },
+  {
+    "name": "《联合早报》-中港台-即时",
+    "url": "https://plink.anyfeeder.com/zaobao/realtime/china",
+    "rss_url": "https://plink.anyfeeder.com/zaobao/realtime/china",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from weekend-project-space/top-rss-list (aggregator)",
+    "enabled": 1
+  },
+  {
+    "name": "《联合早报》-国际-即时",
+    "url": "https://plink.anyfeeder.com/zaobao/realtime/world",
+    "rss_url": "https://plink.anyfeeder.com/zaobao/realtime/world",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from weekend-project-space/top-rss-list (aggregator)",
+    "enabled": 1
+  },
+  {
+    "name": "三联生活周刊",
+    "url": "https://plink.anyfeeder.com/weixin/lifeweek",
+    "rss_url": "https://plink.anyfeeder.com/weixin/lifeweek",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from weekend-project-space/top-rss-list (aggregator)",
+    "enabled": 1
+  },
+  {
+    "name": "中国日报: 专栏",
+    "url": "https://plink.anyfeeder.com/chinadaily/column",
+    "rss_url": "https://plink.anyfeeder.com/chinadaily/column",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from weekend-project-space/top-rss-list (aggregator)",
+    "enabled": 1
+  },
+  {
+    "name": "中国日报: 双语新闻",
+    "url": "https://plink.anyfeeder.com/chinadaily/dual",
+    "rss_url": "https://plink.anyfeeder.com/chinadaily/dual",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from weekend-project-space/top-rss-list (aggregator)",
+    "enabled": 1
+  },
+  {
+    "name": "中国日报: 时政",
+    "url": "https://plink.anyfeeder.com/chinadaily/china",
+    "rss_url": "https://plink.anyfeeder.com/chinadaily/china",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from weekend-project-space/top-rss-list (aggregator)",
+    "enabled": 1
+  },
+  {
+    "name": "中国日报: 财经",
+    "url": "https://plink.anyfeeder.com/chinadaily/caijing",
+    "rss_url": "https://plink.anyfeeder.com/chinadaily/caijing",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from weekend-project-space/top-rss-list (aggregator)",
+    "enabled": 1
+  },
+  {
+    "name": "中国日报: 资讯",
+    "url": "https://plink.anyfeeder.com/chinadaily/world",
+    "rss_url": "https://plink.anyfeeder.com/chinadaily/world",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from weekend-project-space/top-rss-list (aggregator)",
+    "enabled": 1
+  },
+  {
+    "name": "人民日报",
+    "url": "https://plink.anyfeeder.com/people-daily",
+    "rss_url": "https://plink.anyfeeder.com/people-daily",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from weekend-project-space/top-rss-list (aggregator)",
+    "enabled": 1
+  },
+  {
+    "name": "人民日报",
+    "url": "https://plink.anyfeeder.com/weixin/rmrbwx",
+    "rss_url": "https://plink.anyfeeder.com/weixin/rmrbwx",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from weekend-project-space/top-rss-list (aggregator)",
+    "enabled": 1
+  },
+  {
+    "name": "今日话题 - 雪球",
+    "url": "https://xueqiu.com/hots/topic/rss",
+    "rss_url": "https://xueqiu.com/hots/topic/rss",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from weekend-project-space/top-rss-list (aggregator)",
+    "enabled": 1
+  },
+  {
+    "name": "光明日报",
+    "url": "https://plink.anyfeeder.com/guangmingribao",
+    "rss_url": "https://plink.anyfeeder.com/guangmingribao",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from weekend-project-space/top-rss-list (aggregator)",
+    "enabled": 1
+  },
+  {
+    "name": "华尔街日报",
+    "url": "https://plink.anyfeeder.com/wsj/cn",
+    "rss_url": "https://plink.anyfeeder.com/wsj/cn",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from weekend-project-space/top-rss-list (aggregator)",
+    "enabled": 1
+  },
+  {
+    "name": "南都周刊",
+    "url": "https://plink.anyfeeder.com/weixin/nbweekly",
+    "rss_url": "https://plink.anyfeeder.com/weixin/nbweekly",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from weekend-project-space/top-rss-list (aggregator)",
+    "enabled": 1
+  },
+  {
+    "name": "微博热搜榜",
+    "url": "https://plink.anyfeeder.com/weibo/search/hot",
+    "rss_url": "https://plink.anyfeeder.com/weibo/search/hot",
+    "platform": "weibo",
+    "category": "aggregator",
+    "description": "Imported from weekend-project-space/top-rss-list (aggregator)",
+    "enabled": 1
+  },
+  {
+    "name": "新京报书评周刊",
+    "url": "https://plink.anyfeeder.com/weixin/ibookreview",
+    "rss_url": "https://plink.anyfeeder.com/weixin/ibookreview",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from weekend-project-space/top-rss-list (aggregator)",
+    "enabled": 1
+  },
+  {
+    "name": "每日一文",
+    "url": "http://node2.feed43.com/mryw.xml",
+    "rss_url": "http://node2.feed43.com/mryw.xml",
+    "platform": "news",
+    "category": "aggregator",
+    "description": null,
+    "enabled": 0
+  },
+  {
+    "name": "潮流周刊",
+    "url": "https://weekly.tw93.fun/rss.xml",
+    "rss_url": "https://weekly.tw93.fun/rss.xml",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from weekend-project-space/top-rss-list (aggregator)",
+    "enabled": 1
+  },
+  {
+    "name": "知乎日报",
+    "url": "https://plink.anyfeeder.com/zhihu/daily",
+    "rss_url": "https://plink.anyfeeder.com/zhihu/daily",
+    "platform": "zhihu",
+    "category": "aggregator",
+    "description": "Imported from weekend-project-space/top-rss-list (aggregator)",
+    "enabled": 1
+  },
+  {
+    "name": "知乎日报",
+    "url": "http://feeds.feedburner.com/zhihu-daily",
+    "rss_url": "http://feeds.feedburner.com/zhihu-daily",
+    "platform": "zhihu",
+    "category": "aggregator",
+    "description": "Imported from weekend-project-space/top-rss-list (aggregator)",
+    "enabled": 1
+  },
+  {
+    "name": "知乎每日精选",
+    "url": "https://www.zhihu.com/rss",
+    "rss_url": "https://www.zhihu.com/rss",
+    "platform": "zhihu",
+    "category": "aggregator",
+    "description": "Imported from weekend-project-space/top-rss-list (aggregator)",
+    "enabled": 1
+  },
+  {
+    "name": "第一财经周刊",
+    "url": "https://plink.anyfeeder.com/weixin/CBNweekly2008",
+    "rss_url": "https://plink.anyfeeder.com/weixin/CBNweekly2008",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from weekend-project-space/top-rss-list (aggregator)",
+    "enabled": 1
+  },
+  {
+    "name": "经济日报",
+    "url": "https://plink.anyfeeder.com/jingjiribao",
+    "rss_url": "https://plink.anyfeeder.com/jingjiribao",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from weekend-project-space/top-rss-list (aggregator)",
+    "enabled": 1
+  },
+  {
+    "name": "香港凤凰周刊",
+    "url": "https://plink.anyfeeder.com/weixin/phoenixweekly",
+    "rss_url": "https://plink.anyfeeder.com/weixin/phoenixweekly",
+    "platform": "news",
+    "category": "aggregator",
+    "description": "Imported from weekend-project-space/top-rss-list (aggregator)",
+    "enabled": 1
+  },
+  {
+    "name": "A List Apart",
+    "url": "https://alistapart.com/main/feed",
+    "rss_url": "https://alistapart.com/main/feed",
+    "platform": "custom",
+    "category": "design",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (前端 & 设计)",
+    "enabled": 1
+  },
+  {
+    "name": "Amicoyuan的高性能计算世界",
+    "url": "https://my-rssh-gwb5d33jd-amicoyuan.vercel.app/hexo/fluid/xingyuanjie.top",
+    "rss_url": "https://my-rssh-gwb5d33jd-amicoyuan.vercel.app/hexo/fluid/xingyuanjie.top",
+    "platform": "custom",
+    "category": "design",
+    "description": "Imported from weekend-project-space/top-rss-list (design)",
+    "enabled": 1
+  },
+  {
+    "name": "Anyway.FM 设计杂谈",
+    "url": "https://anyway.fm/rss.xml",
+    "rss_url": "https://anyway.fm/rss.xml",
+    "platform": "custom",
+    "category": "design",
+    "description": null,
+    "enabled": 0
+  },
+  {
+    "name": "CSS-Tricks",
+    "url": "https://css-tricks.com/feed",
+    "rss_url": "https://css-tricks.com/feed/",
+    "platform": "custom",
+    "category": "design",
+    "description": "Imported from weekend-project-space/top-rss-list (design)",
+    "enabled": 1
+  },
+  {
+    "name": "Chrome Developer Blog",
+    "url": "https://developer.chrome.com/blog/feed.xml",
+    "rss_url": "https://developer.chrome.com/blog/feed.xml",
+    "platform": "custom",
+    "category": "design",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (前端 & 设计)",
+    "enabled": 1
+  },
+  {
+    "name": "Codrops",
+    "url": "https://tympanus.net/codrops/feed",
+    "rss_url": "https://tympanus.net/codrops/feed",
+    "platform": "custom",
+    "category": "design",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (前端 & 设计)",
+    "enabled": 1
+  },
+  {
+    "name": "Decohack",
+    "url": "https://www.decohack.com/feed",
+    "rss_url": "https://www.decohack.com/feed",
+    "platform": "custom",
+    "category": "design",
+    "description": "Imported from weekend-project-space/top-rss-list (design)",
+    "enabled": 1
+  },
+  {
+    "name": "Dev.to",
+    "url": "https://dev.to/feed",
+    "rss_url": "https://dev.to/feed",
+    "platform": "custom",
+    "category": "design",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (前端 & 设计)",
+    "enabled": 1
+  },
+  {
+    "name": "GeekPlux",
+    "url": "https://geekplux.com/feed.xml",
+    "rss_url": "https://geekplux.com/feed.xml",
+    "platform": "x",
+    "category": "design",
+    "description": "Imported from weekend-project-space/top-rss-list (design)",
+    "enabled": 1
+  },
+  {
+    "name": "Product Hunt",
+    "url": "https://www.producthunt.com/feed",
+    "rss_url": "https://www.producthunt.com/feed",
+    "platform": "custom",
+    "category": "design",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (前端 & 设计)",
+    "enabled": 1
+  },
+  {
+    "name": "Smashing Magazine",
+    "url": "https://www.smashingmagazine.com/feed",
+    "rss_url": "https://www.smashingmagazine.com/feed/",
+    "platform": "custom",
+    "category": "design",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (前端 & 设计)",
+    "enabled": 1
+  },
+  {
+    "name": "Tailwind CSS Blog",
+    "url": "https://tailwindcss.com/feeds/feed.xml",
+    "rss_url": "https://tailwindcss.com/feeds/feed.xml",
+    "platform": "custom",
+    "category": "design",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (前端 & 设计)",
+    "enabled": 1
+  },
+  {
+    "name": "UX Collective",
+    "url": "https://uxdesign.cc/",
+    "rss_url": "https://uxdesign.cc/feed",
+    "platform": "news",
+    "category": "design",
+    "description": "UX 与产品设计文章。",
+    "enabled": 1
+  },
+  {
+    "name": "优设-UISDC",
+    "url": "http://www.uisdc.com/feed",
+    "rss_url": "http://www.uisdc.com/feed",
+    "platform": "news",
+    "category": "design",
+    "description": null,
+    "enabled": 0
+  },
+  {
+    "name": "吴晓波频道",
+    "url": "https://plink.anyfeeder.com/weixin/wuxiaobopd",
+    "rss_url": "https://plink.anyfeeder.com/weixin/wuxiaobopd",
+    "platform": "news",
+    "category": "design",
+    "description": "Imported from weekend-project-space/top-rss-list (design)",
+    "enabled": 1
+  },
+  {
+    "name": "太隐",
+    "url": "https://wangyurui.com/feed.xml",
+    "rss_url": "https://wangyurui.com/feed.xml",
+    "platform": "custom",
+    "category": "design",
+    "description": "Imported from weekend-project-space/top-rss-list (design)",
+    "enabled": 1
+  },
+  {
+    "name": "扯氮集",
+    "url": "http://weiwuhui.com/feed",
+    "rss_url": "http://weiwuhui.com/feed",
+    "platform": "custom",
+    "category": "design",
+    "description": "Imported from weekend-project-space/top-rss-list (design)",
+    "enabled": 1
+  },
+  {
+    "name": "简书",
+    "url": "https://plink.anyfeeder.com/weixin/jianshuio",
+    "rss_url": "https://plink.anyfeeder.com/weixin/jianshuio",
+    "platform": "news",
+    "category": "design",
+    "description": "Imported from weekend-project-space/top-rss-list (design)",
+    "enabled": 1
+  },
+  {
+    "name": "虎嗅",
+    "url": "https://rss.huxiu.com/",
+    "rss_url": "https://rss.huxiu.com/",
+    "platform": "custom",
+    "category": "design",
+    "description": "Imported from weekend-project-space/top-rss-list (design)",
+    "enabled": 1
+  },
+  {
+    "name": "虎嗅网",
+    "url": "https://plink.anyfeeder.com/weixin/huxiu_com",
+    "rss_url": "https://plink.anyfeeder.com/weixin/huxiu_com",
+    "platform": "news",
+    "category": "design",
+    "description": "Imported from weekend-project-space/top-rss-list (design)",
+    "enabled": 1
+  },
+  {
+    "name": "读小库",
+    "url": "https://plink.anyfeeder.com/weixin/duxiaoku666",
+    "rss_url": "https://plink.anyfeeder.com/weixin/duxiaoku666",
+    "platform": "news",
+    "category": "design",
+    "description": "Imported from weekend-project-space/top-rss-list (design)",
+    "enabled": 1
+  },
+  {
+    "name": "读库小报",
+    "url": "https://plink.anyfeeder.com/weixin/dukuxiaobao",
+    "rss_url": "https://plink.anyfeeder.com/weixin/dukuxiaobao",
+    "platform": "news",
+    "category": "design",
+    "description": "Imported from weekend-project-space/top-rss-list (design)",
+    "enabled": 1
+  },
+  {
+    "name": "21世纪经济报道",
+    "url": "https://plink.anyfeeder.com/weixin/jjbd21",
+    "rss_url": "https://plink.anyfeeder.com/weixin/jjbd21",
+    "platform": "news",
+    "category": "finance",
+    "description": "Imported from weekend-project-space/top-rss-list (finance)",
+    "enabled": 1
+  },
+  {
+    "name": "FT中文网",
+    "url": "https://www.ftchinese.com/",
+    "rss_url": "https://www.ftchinese.com/rss/feed",
+    "platform": "news",
+    "category": "finance",
+    "description": "FT 中文版。",
+    "enabled": 1
+  },
+  {
+    "name": "一天一篇经济学人(双语)",
+    "url": "https://plink.anyfeeder.com/weixin/Economist_fans",
+    "rss_url": "https://plink.anyfeeder.com/weixin/Economist_fans",
+    "platform": "news",
+    "category": "finance",
+    "description": "Imported from weekend-project-space/top-rss-list (finance)",
+    "enabled": 1
+  },
+  {
+    "name": "中国企业家杂志",
+    "url": "https://plink.anyfeeder.com/weixin/iceo-com-cn",
+    "rss_url": "https://plink.anyfeeder.com/weixin/iceo-com-cn",
+    "platform": "news",
+    "category": "finance",
+    "description": "Imported from weekend-project-space/top-rss-list (finance)",
+    "enabled": 1
+  },
+  {
+    "name": "华尔街见闻",
+    "url": "https://plink.anyfeeder.com/weixin/wallstreetcn",
+    "rss_url": "https://plink.anyfeeder.com/weixin/wallstreetcn",
+    "platform": "news",
+    "category": "finance",
+    "description": "Imported from weekend-project-space/top-rss-list (finance)",
+    "enabled": 1
+  },
+  {
+    "name": "叶檀财经",
+    "url": "https://plink.anyfeeder.com/weixin/tancaijing",
+    "rss_url": "https://plink.anyfeeder.com/weixin/tancaijing",
+    "platform": "news",
+    "category": "finance",
+    "description": "Imported from weekend-project-space/top-rss-list (finance)",
+    "enabled": 1
+  },
+  {
+    "name": "哈佛商业评论",
+    "url": "https://plink.anyfeeder.com/weixin/hbrchinese",
+    "rss_url": "https://plink.anyfeeder.com/weixin/hbrchinese",
+    "platform": "news",
+    "category": "finance",
+    "description": "Imported from weekend-project-space/top-rss-list (finance)",
+    "enabled": 1
+  },
+  {
+    "name": "商业 - 财富中文网 - FORTUNEChina.com",
+    "url": "https://plink.anyfeeder.com/fortunechina/shangye",
+    "rss_url": "https://plink.anyfeeder.com/fortunechina/shangye",
+    "platform": "news",
+    "category": "finance",
+    "description": "Imported from weekend-project-space/top-rss-list (finance)",
+    "enabled": 1
+  },
+  {
+    "name": "喷嚏网-财经风云",
+    "url": "https://plink.anyfeeder.com/dapenti/caijing",
+    "rss_url": "https://plink.anyfeeder.com/dapenti/caijing",
+    "platform": "news",
+    "category": "finance",
+    "description": "Imported from weekend-project-space/top-rss-list (finance)",
+    "enabled": 1
+  },
+  {
+    "name": "央视财经",
+    "url": "https://plink.anyfeeder.com/weixin/cctvyscj",
+    "rss_url": "https://plink.anyfeeder.com/weixin/cctvyscj",
+    "platform": "news",
+    "category": "finance",
+    "description": "Imported from weekend-project-space/top-rss-list (finance)",
+    "enabled": 1
+  },
+  {
+    "name": "新经济100人",
+    "url": "https://plink.anyfeeder.com/weixin/qiyejiagc",
+    "rss_url": "https://plink.anyfeeder.com/weixin/qiyejiagc",
+    "platform": "news",
+    "category": "finance",
+    "description": "Imported from weekend-project-space/top-rss-list (finance)",
+    "enabled": 1
+  },
+  {
+    "name": "新财富",
+    "url": "https://plink.anyfeeder.com/weixin/newfortune",
+    "rss_url": "https://plink.anyfeeder.com/weixin/newfortune",
+    "platform": "news",
+    "category": "finance",
+    "description": "Imported from weekend-project-space/top-rss-list (finance)",
+    "enabled": 1
+  },
+  {
+    "name": "界面新闻: 商业",
+    "url": "https://plink.anyfeeder.com/jiemian/business",
+    "rss_url": "https://plink.anyfeeder.com/jiemian/business",
+    "platform": "news",
+    "category": "finance",
+    "description": "Imported from weekend-project-space/top-rss-list (finance)",
+    "enabled": 1
+  },
+  {
+    "name": "界面新闻: 财经",
+    "url": "https://plink.anyfeeder.com/jiemian/finance",
+    "rss_url": "https://plink.anyfeeder.com/jiemian/finance",
+    "platform": "news",
+    "category": "finance",
+    "description": "Imported from weekend-project-space/top-rss-list (finance)",
+    "enabled": 1
+  },
+  {
+    "name": "研究 - 财富中文网 - FORTUNEChina.com",
+    "url": "https://plink.anyfeeder.com/fortunechina/report",
+    "rss_url": "https://plink.anyfeeder.com/fortunechina/report",
+    "platform": "news",
+    "category": "finance",
+    "description": null,
+    "enabled": 0
+  },
+  {
+    "name": "科技 - 财富中文网 - FORTUNEChina.com",
+    "url": "https://plink.anyfeeder.com/fortunechina/keji",
+    "rss_url": "https://plink.anyfeeder.com/fortunechina/keji",
+    "platform": "news",
+    "category": "finance",
+    "description": "Imported from weekend-project-space/top-rss-list (finance)",
+    "enabled": 1
+  },
+  {
+    "name": "经济学人",
+    "url": "https://plink.anyfeeder.com/weixin/theeconomist",
+    "rss_url": "https://plink.anyfeeder.com/weixin/theeconomist",
+    "platform": "news",
+    "category": "finance",
+    "description": "Imported from weekend-project-space/top-rss-list (finance)",
+    "enabled": 1
+  },
+  {
+    "name": "经济观察报",
+    "url": "https://plink.anyfeeder.com/weixin/eeo-com-cn",
+    "rss_url": "https://plink.anyfeeder.com/weixin/eeo-com-cn",
+    "platform": "news",
+    "category": "finance",
+    "description": "Imported from weekend-project-space/top-rss-list (finance)",
+    "enabled": 1
+  },
+  {
+    "name": "让小产品的独立变现更简单 - ezindie.com",
+    "url": "https://www.ezindie.com/feed/rss.xml",
+    "rss_url": "https://www.ezindie.com/feed/rss.xml",
+    "platform": "news",
+    "category": "finance",
+    "description": "Imported from weekend-project-space/top-rss-list (finance)",
+    "enabled": 1
+  },
+  {
+    "name": "财富中文网",
+    "url": "https://plink.anyfeeder.com/fortunechina",
+    "rss_url": "https://plink.anyfeeder.com/fortunechina",
+    "platform": "news",
+    "category": "finance",
+    "description": "Imported from weekend-project-space/top-rss-list (finance)",
+    "enabled": 1
+  },
+  {
+    "name": "透明创业实验",
+    "url": "https://blog.t9t.io/atom.xml",
+    "rss_url": "https://blog.t9t.io/atom.xml",
+    "platform": "news",
+    "category": "finance",
+    "description": "Imported from weekend-project-space/top-rss-list (finance)",
+    "enabled": 1
+  },
+  {
+    "name": "钛媒体：引领未来商业与生活新知",
+    "url": "https://www.tmtpost.com/feed",
+    "rss_url": "https://www.tmtpost.com/feed",
+    "platform": "news",
+    "category": "finance",
+    "description": "Imported from weekend-project-space/top-rss-list (finance)",
+    "enabled": 1
+  },
+  {
+    "name": "钛媒体：引领未来商业与生活新知",
+    "url": "https://plink.anyfeeder.com/tmtpost",
+    "rss_url": "https://plink.anyfeeder.com/tmtpost",
+    "platform": "news",
+    "category": "finance",
+    "description": "Imported from weekend-project-space/top-rss-list (finance)",
+    "enabled": 1
+  },
+  {
+    "name": "雪球",
+    "url": "https://plink.anyfeeder.com/weixin/xueqiujinghua",
+    "rss_url": "https://plink.anyfeeder.com/weixin/xueqiujinghua",
+    "platform": "news",
+    "category": "finance",
+    "description": "Imported from weekend-project-space/top-rss-list (finance)",
+    "enabled": 1
+  },
+  {
+    "name": "饭统戴老板",
+    "url": "https://plink.anyfeeder.com/weixin/worldofboss",
+    "rss_url": "https://plink.anyfeeder.com/weixin/worldofboss",
+    "platform": "news",
+    "category": "finance",
+    "description": "Imported from weekend-project-space/top-rss-list (finance)",
+    "enabled": 1
+  },
+  {
+    "name": "Knowyourself",
+    "url": "https://plink.anyfeeder.com/weixin/knowyourself2015",
+    "rss_url": "https://plink.anyfeeder.com/weixin/knowyourself2015",
+    "platform": "news",
+    "category": "life",
+    "description": "Imported from weekend-project-space/top-rss-list (life)",
+    "enabled": 1
+  },
+  {
+    "name": "书单来了",
+    "url": "https://plink.anyfeeder.com/weixin/shudanlaile",
+    "rss_url": "https://plink.anyfeeder.com/weixin/shudanlaile",
+    "platform": "news",
+    "category": "life",
+    "description": "Imported from weekend-project-space/top-rss-list (life)",
+    "enabled": 1
+  },
+  {
+    "name": "人物",
+    "url": "https://plink.anyfeeder.com/weixin/renwumag1980",
+    "rss_url": "https://plink.anyfeeder.com/weixin/renwumag1980",
+    "platform": "news",
+    "category": "life",
+    "description": "Imported from weekend-project-space/top-rss-list (life)",
+    "enabled": 1
+  },
+  {
+    "name": "利维坦",
+    "url": "https://plink.anyfeeder.com/weixin/liweitan2014",
+    "rss_url": "https://plink.anyfeeder.com/weixin/liweitan2014",
+    "platform": "news",
+    "category": "life",
+    "description": "Imported from weekend-project-space/top-rss-list (life)",
+    "enabled": 1
+  },
+  {
+    "name": "十点读书",
+    "url": "https://plink.anyfeeder.com/weixin/duhaoshu",
+    "rss_url": "https://plink.anyfeeder.com/weixin/duhaoshu",
+    "platform": "news",
+    "category": "life",
+    "description": "Imported from weekend-project-space/top-rss-list (life)",
+    "enabled": 1
+  },
+  {
+    "name": "唐书房",
+    "url": "https://plink.anyfeeder.com/weixin/clouds70",
+    "rss_url": "https://plink.anyfeeder.com/weixin/clouds70",
+    "platform": "news",
+    "category": "life",
+    "description": "Imported from weekend-project-space/top-rss-list (life)",
+    "enabled": 1
+  },
+  {
+    "name": "国家人文历史",
+    "url": "https://plink.anyfeeder.com/weixin/gjrwls",
+    "rss_url": "https://plink.anyfeeder.com/weixin/gjrwls",
+    "platform": "news",
+    "category": "life",
+    "description": "Imported from weekend-project-space/top-rss-list (life)",
+    "enabled": 1
+  },
+  {
+    "name": "有书",
+    "url": "https://plink.anyfeeder.com/weixin/youshucc",
+    "rss_url": "https://plink.anyfeeder.com/weixin/youshucc",
+    "platform": "news",
+    "category": "life",
+    "description": "Imported from weekend-project-space/top-rss-list (life)",
+    "enabled": 1
+  },
+  {
+    "name": "理想生活实验室",
+    "url": "https://www.toodaylab.com/feed",
+    "rss_url": "https://www.toodaylab.com/feed",
+    "platform": "custom",
+    "category": "life",
+    "description": "Imported from weekend-project-space/top-rss-list (life)",
+    "enabled": 1
+  },
+  {
+    "name": "理想生活实验室",
+    "url": "https://plink.anyfeeder.com/toodaylab",
+    "rss_url": "https://plink.anyfeeder.com/toodaylab",
+    "platform": "custom",
+    "category": "life",
+    "description": "Imported from weekend-project-space/top-rss-list (life)",
+    "enabled": 1
+  },
+  {
+    "name": "简书首页",
+    "url": "https://plink.anyfeeder.com/jianshu/home",
+    "rss_url": "https://plink.anyfeeder.com/jianshu/home",
+    "platform": "custom",
+    "category": "life",
+    "description": "Imported from weekend-project-space/top-rss-list (life)",
+    "enabled": 1
+  },
+  {
+    "name": "豆瓣最受欢迎的书评",
+    "url": "https://www.douban.com/feed/review/book",
+    "rss_url": "https://www.douban.com/feed/review/book",
+    "platform": "custom",
+    "category": "life",
+    "description": "Imported from weekend-project-space/top-rss-list (life)",
+    "enabled": 1
+  },
+  {
+    "name": "青年文摘",
+    "url": "https://plink.anyfeeder.com/weixin/qnwzwx",
+    "rss_url": "https://plink.anyfeeder.com/weixin/qnwzwx",
+    "platform": "news",
+    "category": "life",
+    "description": "Imported from weekend-project-space/top-rss-list (life)",
+    "enabled": 1
+  },
+  {
+    "name": "BBC",
+    "url": "https://plink.anyfeeder.com/bbc/cn",
+    "rss_url": "https://plink.anyfeeder.com/bbc/cn",
+    "platform": "news",
+    "category": "news",
+    "description": "Imported from weekend-project-space/top-rss-list (news)",
+    "enabled": 1
+  },
+  {
+    "name": "BBC 英语教学",
+    "url": "https://plink.anyfeeder.com/bbc/learningenglish",
+    "rss_url": "https://plink.anyfeeder.com/bbc/learningenglish",
+    "platform": "news",
+    "category": "news",
+    "description": "Imported from weekend-project-space/top-rss-list (news)",
+    "enabled": 1
+  },
+  {
+    "name": "NPR News",
+    "url": "https://www.npr.org/sections/news/",
+    "rss_url": "https://feeds.npr.org/1001/rss.xml",
+    "platform": "news",
+    "category": "news",
+    "description": "NPR 新闻。",
+    "enabled": 1
+  },
+  {
+    "name": "[http://plink.anyfeeder.com/weixin/The-Intellectual](http://plink.anyfeeder.com/weixin/The-Intellectual)",
+    "url": "https://www.ifeed.cc/discover?q=plink.anyfeeder.com/weixin/The-Intellectual",
+    "rss_url": "https://www.ifeed.cc/discover?q=plink.anyfeeder.com/weixin/The-Intellectual",
+    "platform": "wechat",
+    "category": "news",
+    "description": null,
+    "enabled": 0
+  },
+  {
+    "name": "[http://plink.anyfeeder.com/weixin/almosthuman2014](http://plink.anyfeeder.com/weixin/almosthuman2014)",
+    "url": "https://www.ifeed.cc/discover?q=plink.anyfeeder.com/weixin/almosthuman2014",
+    "rss_url": "https://www.ifeed.cc/discover?q=plink.anyfeeder.com/weixin/almosthuman2014",
+    "platform": "wechat",
+    "category": "news",
+    "description": null,
+    "enabled": 0
+  },
+  {
+    "name": "人民网",
+    "url": "https://plink.anyfeeder.com/weixin/people_rmw",
+    "rss_url": "https://plink.anyfeeder.com/weixin/people_rmw",
+    "platform": "news",
+    "category": "news",
+    "description": "Imported from weekend-project-space/top-rss-list (news)",
+    "enabled": 1
+  },
+  {
+    "name": "人民网-国内新闻",
+    "url": "https://plink.anyfeeder.com/people/politics",
+    "rss_url": "https://plink.anyfeeder.com/people/politics",
+    "platform": "news",
+    "category": "news",
+    "description": "Imported from weekend-project-space/top-rss-list (news)",
+    "enabled": 1
+  },
+  {
+    "name": "人民网-国际新闻",
+    "url": "https://plink.anyfeeder.com/people/world",
+    "rss_url": "https://plink.anyfeeder.com/people/world",
+    "platform": "news",
+    "category": "news",
+    "description": "Imported from weekend-project-space/top-rss-list (news)",
+    "enabled": 1
+  },
+  {
+    "name": "人民网-英语新闻",
+    "url": "https://plink.anyfeeder.com/people/english",
+    "rss_url": "https://plink.anyfeeder.com/people/english",
+    "platform": "news",
+    "category": "news",
+    "description": "Imported from weekend-project-space/top-rss-list (news)",
+    "enabled": 1
+  },
+  {
+    "name": "华尔街日报",
+    "url": "https://cn.wsj.com/zh-hans/rss",
+    "rss_url": "https://cn.wsj.com/zh-hans/rss",
+    "platform": "custom",
+    "category": "news",
+    "description": null,
+    "enabled": 0
+  },
+  {
+    "name": "南方周末",
+    "url": "https://plink.anyfeeder.com/weixin/nanfangzhoumo",
+    "rss_url": "https://plink.anyfeeder.com/weixin/nanfangzhoumo",
+    "platform": "news",
+    "category": "news",
+    "description": "Imported from weekend-project-space/top-rss-list (news)",
+    "enabled": 1
+  },
+  {
+    "name": "南方周末-推荐",
+    "url": "https://plink.anyfeeder.com/infzm/recommends",
+    "rss_url": "https://plink.anyfeeder.com/infzm/recommends",
+    "platform": "news",
+    "category": "news",
+    "description": "Imported from weekend-project-space/top-rss-list (news)",
+    "enabled": 1
+  },
+  {
+    "name": "南方周末-新闻",
+    "url": "https://plink.anyfeeder.com/infzm/news",
+    "rss_url": "https://plink.anyfeeder.com/infzm/news",
+    "platform": "news",
+    "category": "news",
+    "description": "Imported from weekend-project-space/top-rss-list (news)",
+    "enabled": 1
+  },
+  {
+    "name": "品玩",
+    "url": "https://plink.anyfeeder.com/pingwest",
+    "rss_url": "https://plink.anyfeeder.com/pingwest",
+    "platform": "news",
+    "category": "news",
+    "description": null,
+    "enabled": 0
+  },
+  {
+    "name": "央视新闻",
+    "url": "https://plink.anyfeeder.com/weixin/cctvnewscenter",
+    "rss_url": "https://plink.anyfeeder.com/weixin/cctvnewscenter",
+    "platform": "news",
+    "category": "news",
+    "description": "Imported from weekend-project-space/top-rss-list (news)",
+    "enabled": 1
+  },
+  {
+    "name": "好奇心日报",
+    "url": "http://www.qdaily.com/feed.xml",
+    "rss_url": "http://www.qdaily.com/feed.xml",
+    "platform": "custom",
+    "category": "news",
+    "description": null,
+    "enabled": 0
+  },
+  {
+    "name": "新华社新闻_新华网",
+    "url": "https://plink.anyfeeder.com/newscn/whxw",
+    "rss_url": "https://plink.anyfeeder.com/newscn/whxw",
+    "platform": "news",
+    "category": "news",
+    "description": "Imported from weekend-project-space/top-rss-list (news)",
+    "enabled": 1
+  },
+  {
+    "name": "湾区日报第1370期 2021/08/09",
+    "url": "https://wanqu.co/feed/",
+    "rss_url": "https://wanqu.co/feed/",
+    "platform": "news",
+    "category": "news",
+    "description": null,
+    "enabled": 0
+  },
+  {
+    "name": "澎湃新闻",
+    "url": "https://plink.anyfeeder.com/weixin/thepapernews",
+    "rss_url": "https://plink.anyfeeder.com/weixin/thepapernews",
+    "platform": "news",
+    "category": "news",
+    "description": "Imported from weekend-project-space/top-rss-list (news)",
+    "enabled": 1
+  },
+  {
+    "name": "澳大利亚广播公司",
+    "url": "https://plink.anyfeeder.com/abc/cn",
+    "rss_url": "https://plink.anyfeeder.com/abc/cn",
+    "platform": "news",
+    "category": "news",
+    "description": "Imported from weekend-project-space/top-rss-list (news)",
+    "enabled": 1
+  },
+  {
+    "name": "环球时报",
+    "url": "https://plink.anyfeeder.com/weixin/hqsbwx",
+    "rss_url": "https://plink.anyfeeder.com/weixin/hqsbwx",
+    "platform": "news",
+    "category": "news",
+    "description": "Imported from weekend-project-space/top-rss-list (news)",
+    "enabled": 1
+  },
+  {
+    "name": "界面新闻: 新闻",
+    "url": "https://plink.anyfeeder.com/jiemian/news",
+    "rss_url": "https://plink.anyfeeder.com/jiemian/news",
+    "platform": "news",
+    "category": "news",
+    "description": "Imported from weekend-project-space/top-rss-list (news)",
+    "enabled": 1
+  },
+  {
+    "name": "纽约时报",
+    "url": "https://plink.anyfeeder.com/nytimes/cn",
+    "rss_url": "https://plink.anyfeeder.com/nytimes/cn",
+    "platform": "news",
+    "category": "news",
+    "description": "Imported from weekend-project-space/top-rss-list (news)",
+    "enabled": 1
+  },
+  {
+    "name": "纽约时报中文网 国际纵览",
+    "url": "http://cn.nytimes.com/rss/news.xml",
+    "rss_url": "http://cn.nytimes.com/rss/news.xml",
+    "platform": "news",
+    "category": "news",
+    "description": "Imported from weekend-project-space/top-rss-list (news)",
+    "enabled": 1
+  },
+  {
+    "name": "纽约时报双语版",
+    "url": "https://plink.anyfeeder.com/nytimes/dual",
+    "rss_url": "https://plink.anyfeeder.com/nytimes/dual",
+    "platform": "news",
+    "category": "news",
+    "description": "Imported from weekend-project-space/top-rss-list (news)",
+    "enabled": 1
+  },
+  {
+    "name": "首页头条--人民网",
+    "url": "https://plink.anyfeeder.com/people",
+    "rss_url": "https://plink.anyfeeder.com/people",
+    "platform": "news",
+    "category": "news",
+    "description": "Imported from weekend-project-space/top-rss-list (news)",
+    "enabled": 1
+  },
+  {
+    "name": "360 核心安全技术博客",
+    "url": "https://blogs.360.net/rss.html",
+    "rss_url": "https://blogs.360.net/rss.html",
+    "platform": "custom",
+    "category": "tech",
+    "description": null,
+    "enabled": 0
+  },
+  {
+    "name": "36氪",
+    "url": "https://36kr.com/feed",
+    "rss_url": "https://36kr.com/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "36氪",
+    "url": "https://www.36kr.com/feed",
+    "rss_url": "https://www.36kr.com/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "36氪",
+    "url": "https://plink.anyfeeder.com/36kr",
+    "rss_url": "https://plink.anyfeeder.com/36kr",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "AI | The Verge",
+    "url": "https://www.theverge.com/ai-artificial-intelligence",
+    "rss_url": "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml",
+    "platform": "news",
+    "category": "tech",
+    "description": "The Verge 的 AI 专栏。",
+    "enabled": 1
+  },
+  {
+    "name": "AWS Blog",
+    "url": "https://aws.amazon.com/blogs/aws/feed",
+    "rss_url": "https://aws.amazon.com/blogs/aws/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (大厂技术博客)",
+    "enabled": 1
+  },
+  {
+    "name": "Anthony Fu",
+    "url": "https://antfu.me/feed.xml",
+    "rss_url": "https://antfu.me/feed.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "Ars Technica",
+    "url": "https://arstechnica.com/",
+    "rss_url": "https://arstechnica.com/feed/",
+    "platform": "news",
+    "category": "tech",
+    "description": "Ars Technica 科技新闻。",
+    "enabled": 1
+  },
+  {
+    "name": "Ars Technica",
+    "url": "https://feeds.arstechnica.com/arstechnica/index",
+    "rss_url": "https://feeds.arstechnica.com/arstechnica/index",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (科技媒体)",
+    "enabled": 1
+  },
+  {
+    "name": "BAI YUN",
+    "url": "https://baiyun.me/feed",
+    "rss_url": "https://baiyun.me/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "CSDN",
+    "url": "https://plink.anyfeeder.com/weixin/CSDNnews",
+    "rss_url": "https://plink.anyfeeder.com/weixin/CSDNnews",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "Cloudflare Blog",
+    "url": "https://blog.cloudflare.com/rss",
+    "rss_url": "https://blog.cloudflare.com/rss/",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (大厂技术博客)",
+    "enabled": 1
+  },
+  {
+    "name": "DIYGod - 写代码是热爱，写到世界充满爱!",
+    "url": "https://diygod.me/atom.xml",
+    "rss_url": "https://diygod.me/atom.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": null,
+    "enabled": 0
+  },
+  {
+    "name": "Dan Abramov's Overreacted Blog RSS Feed",
+    "url": "https://overreacted.io/rss.xml",
+    "rss_url": "https://overreacted.io/rss.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "Deepzz's Blog",
+    "url": "https://deepzz.com/feed",
+    "rss_url": "https://deepzz.com/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "Engadget",
+    "url": "http://www.engadget.com/rss.xml",
+    "rss_url": "http://www.engadget.com/rss.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "Engadget 中国",
+    "url": "https://cn.engadget.com/rss.xml",
+    "rss_url": "https://cn.engadget.com/rss.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": null,
+    "enabled": 0
+  },
+  {
+    "name": "GitHub Blog",
+    "url": "https://github.blog/feed",
+    "rss_url": "https://github.blog/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (大厂技术博客)",
+    "enabled": 1
+  },
+  {
+    "name": "Go Blog",
+    "url": "https://go.dev/blog/feed.atom",
+    "rss_url": "https://go.dev/blog/feed.atom",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (编程语言官方博客)",
+    "enabled": 1
+  },
+  {
+    "name": "Google AI Blog",
+    "url": "https://blog.google/technology/ai/",
+    "rss_url": "https://blog.google/technology/ai/rss/",
+    "platform": "news",
+    "category": "tech",
+    "description": "Google AI 官方博客。",
+    "enabled": 1
+  },
+  {
+    "name": "Google DeepMind",
+    "url": "https://deepmind.google/blog/rss.xml",
+    "rss_url": "https://deepmind.google/blog/rss.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (AI 专题)",
+    "enabled": 1
+  },
+  {
+    "name": "Hacker News OpenClaw",
+    "url": "https://hnrss.org/newest?q=OpenClaw",
+    "rss_url": "https://hnrss.org/newest?q=OpenClaw",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (AI 专题)",
+    "enabled": 1
+  },
+  {
+    "name": "Halfrost's Field",
+    "url": "http://halfrost.com/rss",
+    "rss_url": "http://halfrost.com/rss/",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "HelloGitHub 月刊",
+    "url": "http://hellogithub.com/rss",
+    "rss_url": "http://hellogithub.com/rss",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "Hugging Face 博客",
+    "url": "https://huggingface.co/blog/feed.xml",
+    "rss_url": "https://huggingface.co/blog/feed.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (AI 专题)",
+    "enabled": 1
+  },
+  {
+    "name": "IT之家",
+    "url": "https://www.ithome.com/rss",
+    "rss_url": "https://www.ithome.com/rss/",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "ImportNew",
+    "url": "https://plink.anyfeeder.com/weixin/importnew",
+    "rss_url": "https://plink.anyfeeder.com/weixin/importnew",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "InfoQ 推荐",
+    "url": "https://plink.anyfeeder.com/infoq/recommend",
+    "rss_url": "https://plink.anyfeeder.com/infoq/recommend",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "JetBrains Blog",
+    "url": "https://blog.jetbrains.com/",
+    "rss_url": "https://blog.jetbrains.com/feed/",
+    "platform": "custom",
+    "category": "tech",
+    "description": "JetBrains 官方博客。",
+    "enabled": 1
+  },
+  {
+    "name": "Josh Comeau's blog",
+    "url": "https://www.joshwcomeau.com/rss.xml",
+    "rss_url": "https://www.joshwcomeau.com/rss.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "Julia Evans",
+    "url": "https://jvns.ca/atom.xml",
+    "rss_url": "https://jvns.ca/atom.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "Krebs on Security",
+    "url": "https://krebsonsecurity.com/feed",
+    "rss_url": "https://krebsonsecurity.com/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (安全资讯)",
+    "enabled": 1
+  },
+  {
+    "name": "MIT Technology Review",
+    "url": "https://www.technologyreview.com/feed",
+    "rss_url": "https://www.technologyreview.com/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (科技媒体)",
+    "enabled": 1
+  },
+  {
+    "name": "MOOC",
+    "url": "https://plink.anyfeeder.com/weixin/mooc",
+    "rss_url": "https://plink.anyfeeder.com/weixin/mooc",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "MacTalk",
+    "url": "https://plink.anyfeeder.com/weixin/sagacity-mac",
+    "rss_url": "https://plink.anyfeeder.com/weixin/sagacity-mac",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "MacTalk-池建强的随想录",
+    "url": "http://macshuo.com/?feed=rss2",
+    "rss_url": "http://macshuo.com/?feed=rss2",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "Mac玩儿法",
+    "url": "http://www.waerfa.com/feed",
+    "rss_url": "http://www.waerfa.com/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "Meta Engineering",
+    "url": "https://engineering.fb.com/feed",
+    "rss_url": "https://engineering.fb.com/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (大厂技术博客)",
+    "enabled": 1
+  },
+  {
+    "name": "Mozilla Hacks",
+    "url": "https://hacks.mozilla.org/feed",
+    "rss_url": "https://hacks.mozilla.org/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (大厂技术博客)",
+    "enabled": 1
+  },
+  {
+    "name": "Nature",
+    "url": "https://www.nature.com/nature.rss",
+    "rss_url": "https://www.nature.com/nature.rss",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (学术论文)",
+    "enabled": 1
+  },
+  {
+    "name": "Netflix TechBlog",
+    "url": "https://netflixtechblog.com/",
+    "rss_url": "https://netflixtechblog.com/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Netflix 工程博客。",
+    "enabled": 1
+  },
+  {
+    "name": "Node.js Blog",
+    "url": "https://nodejs.org/en/feed/blog.xml",
+    "rss_url": "https://nodejs.org/en/feed/blog.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (编程语言官方博客)",
+    "enabled": 1
+  },
+  {
+    "name": "O'Reilly Radar",
+    "url": "https://www.oreilly.com/radar/",
+    "rss_url": "https://feeds.feedburner.com/oreilly/radar/atom",
+    "platform": "custom",
+    "category": "tech",
+    "description": "O'Reilly Radar 技术趋势博客。",
+    "enabled": 1
+  },
+  {
+    "name": "OpenAI 博客",
+    "url": "https://openai.com/news/rss.xml",
+    "rss_url": "https://openai.com/news/rss.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (AI 专题)",
+    "enabled": 1
+  },
+  {
+    "name": "OpenClaw Commits",
+    "url": "https://github.com/openclaw/openclaw/commits/main.atom",
+    "rss_url": "https://github.com/openclaw/openclaw/commits/main.atom",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (AI 专题)",
+    "enabled": 1
+  },
+  {
+    "name": "OpenClaw Releases",
+    "url": "https://github.com/openclaw/openclaw/releases.atom",
+    "rss_url": "https://github.com/openclaw/openclaw/releases.atom",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (AI 专题)",
+    "enabled": 1
+  },
+  {
+    "name": "Phoenix's island",
+    "url": "https://blog.phoenixlzx.com/atom.xml",
+    "rss_url": "https://blog.phoenixlzx.com/atom.xml",
+    "platform": "x",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "Posts on 煎鱼",
+    "url": "https://eddycjy.com/posts/index.xml",
+    "rss_url": "https://eddycjy.com/posts/index.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "Python Blog",
+    "url": "https://blog.python.org/feeds/posts/default",
+    "rss_url": "https://blog.python.org/feeds/posts/default",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (编程语言官方博客)",
+    "enabled": 1
+  },
+  {
+    "name": "Python 工匠",
+    "url": "https://www.zlovezl.cn/feeds/latest/",
+    "rss_url": "https://www.zlovezl.cn/feeds/latest/",
+    "platform": "news",
+    "category": "tech",
+    "description": null,
+    "enabled": 0
+  },
+  {
+    "name": "Randy's Blog",
+    "url": "https://lutaonan.com/rss.xml",
+    "rss_url": "https://lutaonan.com/rss.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "React Blog",
+    "url": "https://react.dev/rss.xml",
+    "rss_url": "https://react.dev/rss.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (编程语言官方博客)",
+    "enabled": 1
+  },
+  {
+    "name": "Rust Blog",
+    "url": "https://blog.rust-lang.org/feed.xml",
+    "rss_url": "https://blog.rust-lang.org/feed.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (编程语言官方博客)",
+    "enabled": 1
+  },
+  {
+    "name": "Schneier on Security",
+    "url": "https://www.schneier.com/feed",
+    "rss_url": "https://www.schneier.com/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (安全资讯)",
+    "enabled": 1
+  },
+  {
+    "name": "Simon Willison's Blog",
+    "url": "https://simonwillison.net/atom/everything",
+    "rss_url": "https://simonwillison.net/atom/everything/",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (AI 专题)",
+    "enabled": 1
+  },
+  {
+    "name": "Spotify Engineering",
+    "url": "https://engineering.atspotify.com/feed",
+    "rss_url": "https://engineering.atspotify.com/feed/",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (大厂技术博客)",
+    "enabled": 1
+  },
+  {
+    "name": "Stack Overflow Blog",
+    "url": "https://stackoverflow.blog/",
+    "rss_url": "https://stackoverflow.blog/feed/",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Stack Overflow 官方博客。",
+    "enabled": 1
+  },
+  {
+    "name": "Stripe Blog",
+    "url": "https://stripe.com/blog/feed.rss",
+    "rss_url": "https://stripe.com/blog/feed.rss",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (大厂技术博客)",
+    "enabled": 1
+  },
+  {
+    "name": "Swift Blog",
+    "url": "https://www.swift.org/atom.xml",
+    "rss_url": "https://www.swift.org/atom.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (编程语言官方博客)",
+    "enabled": 1
+  },
+  {
+    "name": "TechCrunch",
+    "url": "https://techcrunch.com/feed",
+    "rss_url": "https://techcrunch.com/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (科技媒体)",
+    "enabled": 1
+  },
+  {
+    "name": "The Hacker News",
+    "url": "https://feeds.feedburner.com/TheHackersNews",
+    "rss_url": "https://feeds.feedburner.com/TheHackersNews",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (安全资讯)",
+    "enabled": 1
+  },
+  {
+    "name": "The Verge",
+    "url": "https://www.theverge.com/rss/index.xml",
+    "rss_url": "https://www.theverge.com/rss/index.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (科技媒体)",
+    "enabled": 1
+  },
+  {
+    "name": "Tiny Projects",
+    "url": "https://tinyprojects.dev/feed.xml",
+    "rss_url": "https://tinyprojects.dev/feed.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "Tony Bai",
+    "url": "http://tonybai.com/feed",
+    "rss_url": "http://tonybai.com/feed/",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "TypeScript Blog",
+    "url": "https://devblogs.microsoft.com/typescript/feed",
+    "rss_url": "https://devblogs.microsoft.com/typescript/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (编程语言官方博客)",
+    "enabled": 1
+  },
+  {
+    "name": "Vercel Blog",
+    "url": "https://vercel.com/atom",
+    "rss_url": "https://vercel.com/atom",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (大厂技术博客)",
+    "enabled": 1
+  },
+  {
+    "name": "Vista看天下",
+    "url": "https://plink.anyfeeder.com/weixin/vistaweek",
+    "rss_url": "https://plink.anyfeeder.com/weixin/vistaweek",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "Vue Blog",
+    "url": "https://blog.vuejs.org/feed.rss",
+    "rss_url": "https://blog.vuejs.org/feed.rss",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (编程语言官方博客)",
+    "enabled": 1
+  },
+  {
+    "name": "Wired",
+    "url": "https://www.wired.com/feed/rss",
+    "rss_url": "https://www.wired.com/feed/rss",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (科技媒体)",
+    "enabled": 1
+  },
+  {
+    "name": "Xuanwo's Blog",
+    "url": "https://xuanwo.io/index.xml",
+    "rss_url": "https://xuanwo.io/index.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "X博士",
+    "url": "https://plink.anyfeeder.com/weixin/doctorx666",
+    "rss_url": "https://plink.anyfeeder.com/weixin/doctorx666",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "[https://draveness.me/feed.xml](https://draveness.me/feed.xml)",
+    "url": "https://www.ifeed.cc/discover?q=draveness.me/feed.xml",
+    "rss_url": "https://www.ifeed.cc/discover?q=draveness.me/feed.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": null,
+    "enabled": 0
+  },
+  {
+    "name": "arXiv AI",
+    "url": "https://rss.arxiv.org/rss/cs.AI",
+    "rss_url": "https://rss.arxiv.org/rss/cs.AI",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (AI 专题)",
+    "enabled": 1
+  },
+  {
+    "name": "arXiv NLP",
+    "url": "https://rss.arxiv.org/rss/cs.CL",
+    "rss_url": "https://rss.arxiv.org/rss/cs.CL",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (AI 专题)",
+    "enabled": 1
+  },
+  {
+    "name": "arXiv 机器学习",
+    "url": "https://rss.arxiv.org/rss/cs.LG",
+    "rss_url": "https://rss.arxiv.org/rss/cs.LG",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (AI 专题)",
+    "enabled": 1
+  },
+  {
+    "name": "arXiv 计算机视觉",
+    "url": "https://rss.arxiv.org/rss/cs.CV",
+    "rss_url": "https://rss.arxiv.org/rss/cs.CV",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (AI 专题)",
+    "enabled": 1
+  },
+  {
+    "name": "caoz的梦呓",
+    "url": "https://plink.anyfeeder.com/weixin/caozsay",
+    "rss_url": "https://plink.anyfeeder.com/weixin/caozsay",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "cnBeta",
+    "url": "https://plink.anyfeeder.com/cnbeta",
+    "rss_url": "https://plink.anyfeeder.com/cnbeta",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "draveness.me",
+    "url": "https://draveness.me/feed.xml",
+    "rss_url": "https://draveness.me/feed.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "elmagnifico",
+    "url": "http://elmagnifico.tech/feed.xml",
+    "rss_url": "http://elmagnifico.tech/feed.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "iNote",
+    "url": "https://inote.xyz/rss",
+    "rss_url": "https://inote.xyz/rss",
+    "platform": "custom",
+    "category": "tech",
+    "description": null,
+    "enabled": 0
+  },
+  {
+    "name": "maxOS",
+    "url": "https://maxoxo.me/rss",
+    "rss_url": "https://maxoxo.me/rss/",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "oldj's blog",
+    "url": "https://oldj.net/feed",
+    "rss_url": "https://oldj.net/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "plink.anyfeeder.com",
+    "url": "http://plink.anyfeeder.com/weixin/almosthuman2014",
+    "rss_url": "http://plink.anyfeeder.com/weixin/almosthuman2014",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "plink.anyfeeder.com",
+    "url": "http://plink.anyfeeder.com/weixin/The-Intellectual",
+    "rss_url": "http://plink.anyfeeder.com/weixin/The-Intellectual",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "web.dev",
+    "url": "https://web.dev/feed.xml",
+    "rss_url": "https://web.dev/feed.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "weekly 标签新帖",
+    "url": "https://discuss-cn.bestxtools.com/atom/t/weekly/discussions",
+    "rss_url": "https://discuss-cn.bestxtools.com/atom/t/weekly/discussions",
+    "platform": "custom",
+    "category": "tech",
+    "description": null,
+    "enabled": 0
+  },
+  {
+    "name": "أخبار - آخر أخبار اليوم   الجزيرة نت",
+    "url": "https://plink.anyfeeder.com/aljazeera/news",
+    "rss_url": "https://plink.anyfeeder.com/aljazeera/news",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "丁香医生",
+    "url": "https://plink.anyfeeder.com/weixin/DingXiangYiSheng",
+    "rss_url": "https://plink.anyfeeder.com/weixin/DingXiangYiSheng",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "丁香妈妈",
+    "url": "https://plink.anyfeeder.com/weixin/DingXiangMaMi",
+    "rss_url": "https://plink.anyfeeder.com/weixin/DingXiangMaMi",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "三节课",
+    "url": "https://plink.anyfeeder.com/weixin/sanjieke01",
+    "rss_url": "https://plink.anyfeeder.com/weixin/sanjieke01",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "东哥解读电商",
+    "url": "https://plink.anyfeeder.com/weixin/dgjdds",
+    "rss_url": "https://plink.anyfeeder.com/weixin/dgjdds",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "中国国家地理",
+    "url": "https://plink.anyfeeder.com/weixin/dili360",
+    "rss_url": "https://plink.anyfeeder.com/weixin/dili360",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "二丫讲梵",
+    "url": "https://wiki.eryajf.net/rss.xml",
+    "rss_url": "https://wiki.eryajf.net/rss.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "云风的 BLOG",
+    "url": "http://blog.codingnow.com/atom.xml",
+    "rss_url": "http://blog.codingnow.com/atom.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "人人都是产品经理",
+    "url": "https://plink.anyfeeder.com/weixin/woshipm",
+    "rss_url": "https://plink.anyfeeder.com/weixin/woshipm",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "人人都是产品经理",
+    "url": "https://www.woshipm.com/feed",
+    "rss_url": "https://www.woshipm.com/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "侠客岛",
+    "url": "https://plink.anyfeeder.com/weixin/xiake_island",
+    "rss_url": "https://plink.anyfeeder.com/weixin/xiake_island",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "全栈应用开发:精益实践",
+    "url": "https://www.phodal.com/blog/feeds/rss",
+    "rss_url": "https://www.phodal.com/blog/feeds/rss/",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "六神磊磊读金庸",
+    "url": "https://plink.anyfeeder.com/weixin/dujinyong6",
+    "rss_url": "https://plink.anyfeeder.com/weixin/dujinyong6",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "刘未鹏   Mind Hacks",
+    "url": "http://mindhacks.cn/feed/",
+    "rss_url": "http://mindhacks.cn/feed/",
+    "platform": "news",
+    "category": "tech",
+    "description": null,
+    "enabled": 0
+  },
+  {
+    "name": "刘润",
+    "url": "https://plink.anyfeeder.com/weixin/runliu-pub",
+    "rss_url": "https://plink.anyfeeder.com/weixin/runliu-pub",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "前端之巅",
+    "url": "https://plink.anyfeeder.com/weixin/frontshow",
+    "rss_url": "https://plink.anyfeeder.com/weixin/frontshow",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "医学界",
+    "url": "https://plink.anyfeeder.com/weixin/yixuejiezazhi",
+    "rss_url": "https://plink.anyfeeder.com/weixin/yixuejiezazhi",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "半月谈",
+    "url": "https://plink.anyfeeder.com/weixin/banyuetan-weixin",
+    "rss_url": "https://plink.anyfeeder.com/weixin/banyuetan-weixin",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "单读",
+    "url": "https://plink.anyfeeder.com/weixin/dandureading",
+    "rss_url": "https://plink.anyfeeder.com/weixin/dandureading",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "卡瓦邦噶！ » Feed",
+    "url": "https://www.kawabangga.com/feed",
+    "rss_url": "https://www.kawabangga.com/feed",
+    "platform": "news",
+    "category": "tech",
+    "description": null,
+    "enabled": 1
+  },
+  {
+    "name": "卢昌海的个人主页",
+    "url": "https://www.changhai.org/feed.xml",
+    "rss_url": "https://www.changhai.org/feed.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "历史研习社",
+    "url": "https://plink.anyfeeder.com/weixin/mingqinghistory",
+    "rss_url": "https://plink.anyfeeder.com/weixin/mingqinghistory",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "参考消息",
+    "url": "https://plink.anyfeeder.com/weixin/ckxxwx",
+    "rss_url": "https://plink.anyfeeder.com/weixin/ckxxwx",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "反斗限免",
+    "url": "http://free.apprcn.com/feed",
+    "rss_url": "http://free.apprcn.com/feed/",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "只读",
+    "url": "https://www.rdonly.com/?feed=rss2",
+    "rss_url": "https://www.rdonly.com/?feed=rss2",
+    "platform": "custom",
+    "category": "tech",
+    "description": null,
+    "enabled": 0
+  },
+  {
+    "name": "唐巧的博客",
+    "url": "http://blog.devtang.com/atom.xml",
+    "rss_url": "http://blog.devtang.com/atom.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "喷嚏-70",
+    "url": "https://plink.anyfeeder.com/pentitugua",
+    "rss_url": "https://plink.anyfeeder.com/pentitugua",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "喷嚏网-铂程斋",
+    "url": "https://plink.anyfeeder.com/dapenti/xilei",
+    "rss_url": "https://plink.anyfeeder.com/dapenti/xilei",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "土木坛子",
+    "url": "https://tumutanzi.com/feed",
+    "rss_url": "https://tumutanzi.com/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "地球知识局",
+    "url": "https://plink.anyfeeder.com/weixin/diqiuzhishiju",
+    "rss_url": "https://plink.anyfeeder.com/weixin/diqiuzhishiju",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "头条 - 求是网",
+    "url": "https://plink.anyfeeder.com/qstheory",
+    "rss_url": "https://plink.anyfeeder.com/qstheory",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "奇客Solidot–传递最新科技情报",
+    "url": "https://www.solidot.org/index.rss",
+    "rss_url": "https://www.solidot.org/index.rss",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "奔跑中的奶酪",
+    "url": "https://www.runningcheese.com/feed",
+    "rss_url": "https://www.runningcheese.com/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "安全客",
+    "url": "https://api.anquanke.com/data/v1/rss",
+    "rss_url": "https://api.anquanke.com/data/v1/rss",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (安全资讯)",
+    "enabled": 1
+  },
+  {
+    "name": "小众软件",
+    "url": "https://feeds.appinn.com/appinns",
+    "rss_url": "https://feeds.appinn.com/appinns/",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "小众软件",
+    "url": "http://feed.appinn.com/",
+    "rss_url": "http://feed.appinn.com/",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "小众软件",
+    "url": "https://www.appinn.com/feed",
+    "rss_url": "https://www.appinn.com/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "小众软件",
+    "url": "http://feeds.appinn.com/appinns",
+    "rss_url": "http://feeds.appinn.com/appinns",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "小众软件",
+    "url": "https://plink.anyfeeder.com/appinn",
+    "rss_url": "https://plink.anyfeeder.com/appinn",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "小明明s à domicile",
+    "url": "https://www.dongwm.com/atom.xml",
+    "rss_url": "https://www.dongwm.com/atom.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "小球飞鱼",
+    "url": "https://mantyke.icu/index.xml",
+    "rss_url": "https://mantyke.icu/index.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "小胡子哥的个人网站",
+    "url": "http://www.barretlee.com/rss2.xml",
+    "rss_url": "http://www.barretlee.com/rss2.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "小道消息",
+    "url": "https://plink.anyfeeder.com/weixin/WebNotes",
+    "rss_url": "https://plink.anyfeeder.com/weixin/WebNotes",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "少数派",
+    "url": "https://sspai.com/feed",
+    "rss_url": "https://sspai.com/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "少数派",
+    "url": "http://sspai.me/feed",
+    "rss_url": "http://sspai.me/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "少数派",
+    "url": "https://plink.anyfeeder.com/sspai",
+    "rss_url": "https://plink.anyfeeder.com/sspai",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "少数派 -- Matrix",
+    "url": "https://plink.anyfeeder.com/ssapi/matrix",
+    "rss_url": "https://plink.anyfeeder.com/ssapi/matrix",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "左岸读书",
+    "url": "http://www.zreading.cn/feed",
+    "rss_url": "http://www.zreading.cn/feed",
+    "platform": "news",
+    "category": "tech",
+    "description": null,
+    "enabled": 0
+  },
+  {
+    "name": "异次元软件世界",
+    "url": "https://feed.iplaysoft.com/",
+    "rss_url": "https://feed.iplaysoft.com",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "异次元软件世界",
+    "url": "http://feed.iplaysoft.com/",
+    "rss_url": "http://feed.iplaysoft.com/",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "张佳玮写字的地方",
+    "url": "https://plink.anyfeeder.com/weixin/zhangjiawei_1983",
+    "rss_url": "https://plink.anyfeeder.com/weixin/zhangjiawei_1983",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "张鑫旭-鑫空间-鑫生活",
+    "url": "https://www.zhangxinxu.com/wordpress/feed/",
+    "rss_url": "https://www.zhangxinxu.com/wordpress/feed/",
+    "platform": "news",
+    "category": "tech",
+    "description": null,
+    "enabled": 1
+  },
+  {
+    "name": "微软研究院AI头条",
+    "url": "https://plink.anyfeeder.com/weixin/MSRAsia",
+    "rss_url": "https://plink.anyfeeder.com/weixin/MSRAsia",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "德林社",
+    "url": "https://plink.anyfeeder.com/weixin/delinshe",
+    "rss_url": "https://plink.anyfeeder.com/weixin/delinshe",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "技术小黑屋",
+    "url": "https://droidyue.com/atom.xml",
+    "rss_url": "https://droidyue.com/atom.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "搬砖小组",
+    "url": "https://plink.anyfeeder.com/weixin/banzhuanxiaozu",
+    "rss_url": "https://plink.anyfeeder.com/weixin/banzhuanxiaozu",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "新世相",
+    "url": "https://plink.anyfeeder.com/weixin/thefair2",
+    "rss_url": "https://plink.anyfeeder.com/weixin/thefair2",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "新华网",
+    "url": "https://plink.anyfeeder.com/weixin/newsxinhua",
+    "rss_url": "https://plink.anyfeeder.com/weixin/newsxinhua",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "新智元",
+    "url": "https://plink.anyfeeder.com/weixin/AI_era",
+    "rss_url": "https://plink.anyfeeder.com/weixin/AI_era",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "新浪专栏-创事记",
+    "url": "https://plink.anyfeeder.com/sina/csj",
+    "rss_url": "https://plink.anyfeeder.com/sina/csj",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "新浪体育",
+    "url": "https://plink.anyfeeder.com/weixin/sports_sina",
+    "rss_url": "https://plink.anyfeeder.com/weixin/sports_sina",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "晚晴幽草轩",
+    "url": "https://www.jeffjade.com/atom.xml",
+    "rss_url": "https://www.jeffjade.com/atom.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "月光博客",
+    "url": "http://www.williamlong.info/rss.xml",
+    "rss_url": "http://www.williamlong.info/rss.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "月光博客",
+    "url": "http://feed.williamlong.info/",
+    "rss_url": "http://feed.williamlong.info/",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "有赞技术团队",
+    "url": "https://tech.youzan.com/rss",
+    "rss_url": "https://tech.youzan.com/rss/",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "木遥的窗子",
+    "url": "http://blog.farmostwood.net/feed",
+    "rss_url": "http://blog.farmostwood.net/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "机核",
+    "url": "https://www.gcores.com/rss",
+    "rss_url": "https://www.gcores.com/rss",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "机核",
+    "url": "https://plink.anyfeeder.com/gcores",
+    "rss_url": "https://plink.anyfeeder.com/gcores",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "极客公园",
+    "url": "https://plink.anyfeeder.com/geekpark",
+    "rss_url": "https://plink.anyfeeder.com/geekpark",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "构建我的被动收入",
+    "url": "https://www.bmpi.dev/index.xml",
+    "rss_url": "https://www.bmpi.dev/index.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "果壳网",
+    "url": "https://plink.anyfeeder.com/weixin/Guokr42",
+    "rss_url": "https://plink.anyfeeder.com/weixin/Guokr42",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "果壳网 科学人",
+    "url": "https://plink.anyfeeder.com/guokr/scientific",
+    "rss_url": "https://plink.anyfeeder.com/guokr/scientific",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "架构师之路",
+    "url": "https://plink.anyfeeder.com/weixin/gh_10a6b96351a9",
+    "rss_url": "https://plink.anyfeeder.com/weixin/gh_10a6b96351a9",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "棱镜",
+    "url": "https://plink.anyfeeder.com/weixin/lengjing_qqfinance",
+    "rss_url": "https://plink.anyfeeder.com/weixin/lengjing_qqfinance",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "槽边往事",
+    "url": "https://plink.anyfeeder.com/weixin/bitsea",
+    "rss_url": "https://plink.anyfeeder.com/weixin/bitsea",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "毛有话说",
+    "url": "https://plink.anyfeeder.com/weixin/mao-talk",
+    "rss_url": "https://plink.anyfeeder.com/weixin/mao-talk",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "法广",
+    "url": "https://plink.anyfeeder.com/rfi/cn",
+    "rss_url": "https://plink.anyfeeder.com/rfi/cn",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "洞见",
+    "url": "https://plink.anyfeeder.com/weixin/DJ00123987",
+    "rss_url": "https://plink.anyfeeder.com/weixin/DJ00123987",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "涛叔",
+    "url": "https://taoshu.in/feed.xml",
+    "rss_url": "https://taoshu.in/feed.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "热门文章 - 日榜 - 人人都是产品经理",
+    "url": "https://plink.anyfeeder.com/woshipm/popular",
+    "rss_url": "https://plink.anyfeeder.com/woshipm/popular",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "爱范儿",
+    "url": "https://www.ifanr.com/feed",
+    "rss_url": "https://www.ifanr.com/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "爱范儿",
+    "url": "https://plink.anyfeeder.com/ifanr",
+    "rss_url": "https://plink.anyfeeder.com/ifanr",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "物种日历",
+    "url": "https://plink.anyfeeder.com/weixin/guokrpac",
+    "rss_url": "https://plink.anyfeeder.com/weixin/guokrpac",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "猫笔刀",
+    "url": "https://plink.anyfeeder.com/weixin/maobidao",
+    "rss_url": "https://plink.anyfeeder.com/weixin/maobidao",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "王登科-DK博客",
+    "url": "https://greatdk.com/feed",
+    "rss_url": "https://greatdk.com/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "环球科学",
+    "url": "https://plink.anyfeeder.com/weixin/ScientificAmerican",
+    "rss_url": "https://plink.anyfeeder.com/weixin/ScientificAmerican",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "理想岛",
+    "url": "https://plink.anyfeeder.com/weixin/lixiangdao002",
+    "rss_url": "https://plink.anyfeeder.com/weixin/lixiangdao002",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "界面",
+    "url": "https://plink.anyfeeder.com/weixin/wowjiemian",
+    "rss_url": "https://plink.anyfeeder.com/weixin/wowjiemian",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "疯投圈",
+    "url": "https://crazy.capital/feed",
+    "rss_url": "https://crazy.capital/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "看理想",
+    "url": "https://plink.anyfeeder.com/weixin/ikanlixiang",
+    "rss_url": "https://plink.anyfeeder.com/weixin/ikanlixiang",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "福布斯",
+    "url": "https://plink.anyfeeder.com/weixin/forbes_china",
+    "rss_url": "https://plink.anyfeeder.com/weixin/forbes_china",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "离别歌",
+    "url": "https://www.leavesongs.com/feed",
+    "rss_url": "https://www.leavesongs.com/feed/",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "科技美学",
+    "url": "https://plink.anyfeeder.com/weixin/kejimx",
+    "rss_url": "https://plink.anyfeeder.com/weixin/kejimx",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "程序员的喵",
+    "url": "https://catcoding.me/atom.xml",
+    "rss_url": "https://catcoding.me/atom.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "笔记侠",
+    "url": "https://plink.anyfeeder.com/weixin/Notesman",
+    "rss_url": "https://plink.anyfeeder.com/weixin/Notesman",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "笨方法学写作",
+    "url": "https://www.cnfeat.com/feed.xml",
+    "rss_url": "https://www.cnfeat.com/feed.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "维基百科优良条目供稿",
+    "url": "https://zh.wikipedia.org/w/api.php?action=featuredfeed&feed=good&feedformat=atom",
+    "rss_url": "https://zh.wikipedia.org/w/api.php?action=featuredfeed&feed=good&feedformat=atom",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "编程随想的博客",
+    "url": "https://feeds2.feedburner.com/programthink",
+    "rss_url": "https://feeds2.feedburner.com/programthink",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "罗辑思维",
+    "url": "https://plink.anyfeeder.com/weixin/luojisw",
+    "rss_url": "https://plink.anyfeeder.com/weixin/luojisw",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "美团技术团队",
+    "url": "https://tech.meituan.com/feed",
+    "rss_url": "https://tech.meituan.com/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "美股研究社",
+    "url": "https://plink.anyfeeder.com/weixin/meigushe",
+    "rss_url": "https://plink.anyfeeder.com/weixin/meigushe",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "胡涂说",
+    "url": "https://hutusi.com/feed.xml",
+    "rss_url": "https://hutusi.com/feed.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "脑洞故事板",
+    "url": "https://plink.anyfeeder.com/weixin/ndgs233",
+    "rss_url": "https://plink.anyfeeder.com/weixin/ndgs233",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "腾讯科技",
+    "url": "https://plink.anyfeeder.com/weixin/qqtech",
+    "rss_url": "https://plink.anyfeeder.com/weixin/qqtech",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "虎嗅网",
+    "url": "https://www.huxiu.com/rss/0.xml",
+    "rss_url": "https://www.huxiu.com/rss/0.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": null,
+    "enabled": 0
+  },
+  {
+    "name": "虹膜",
+    "url": "https://plink.anyfeeder.com/weixin/IrisMagazine",
+    "rss_url": "https://plink.anyfeeder.com/weixin/IrisMagazine",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "西秦公子",
+    "url": "https://www.ixiqin.com/feed",
+    "rss_url": "https://www.ixiqin.com/feed/",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "观止·每日一文",
+    "url": "https://plink.anyfeeder.com/meiriyiwen",
+    "rss_url": "https://plink.anyfeeder.com/meiriyiwen",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "解放军报",
+    "url": "https://plink.anyfeeder.com/jiefangjunbao",
+    "rss_url": "https://plink.anyfeeder.com/jiefangjunbao",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "触乐",
+    "url": "http://www.chuapp.com/feed",
+    "rss_url": "http://www.chuapp.com/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "译言",
+    "url": "https://plink.anyfeeder.com/weixin/yeeyancom",
+    "rss_url": "https://plink.anyfeeder.com/weixin/yeeyancom",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "财新网",
+    "url": "https://plink.anyfeeder.com/weixin/caixinwang",
+    "rss_url": "https://plink.anyfeeder.com/weixin/caixinwang",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "超能网",
+    "url": "https://plink.anyfeeder.com/expreview",
+    "rss_url": "https://plink.anyfeeder.com/expreview",
+    "platform": "news",
+    "category": "tech",
+    "description": null,
+    "enabled": 0
+  },
+  {
+    "name": "软餐 - 新鲜软件资讯",
+    "url": "https://plink.anyfeeder.com/ruancan",
+    "rss_url": "https://plink.anyfeeder.com/ruancan",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "轶哥博客",
+    "url": "https://www.wyr.me/rss.xml",
+    "rss_url": "https://www.wyr.me/rss.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "连岳",
+    "url": "https://plink.anyfeeder.com/weixin/ilianyue",
+    "rss_url": "https://plink.anyfeeder.com/weixin/ilianyue",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "酷 壳 – CoolShell",
+    "url": "http://coolshell.cn/feed",
+    "rss_url": "http://coolshell.cn/feed",
+    "platform": "news",
+    "category": "tech",
+    "description": null,
+    "enabled": 0
+  },
+  {
+    "name": "长安街知事",
+    "url": "https://plink.anyfeeder.com/weixin/capitalnews",
+    "rss_url": "https://plink.anyfeeder.com/weixin/capitalnews",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "阑夕",
+    "url": "https://plink.anyfeeder.com/weixin/techread",
+    "rss_url": "https://plink.anyfeeder.com/weixin/techread",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "阮一峰的网络日志",
+    "url": "https://www.ruanyifeng.com/blog/atom.xml",
+    "rss_url": "https://www.ruanyifeng.com/blog/atom.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "阮一峰的网络日志",
+    "url": "http://feeds.feedburner.com/ruanyifeng",
+    "rss_url": "http://feeds.feedburner.com/ruanyifeng",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "阳志平的网志",
+    "url": "https://www.yangzhiping.com/feed.xml",
+    "rss_url": "https://www.yangzhiping.com/feed.xml",
+    "platform": "custom",
+    "category": "tech",
+    "description": null,
+    "enabled": 0
+  },
+  {
+    "name": "雷峰网",
+    "url": "https://plink.anyfeeder.com/leiphone",
+    "rss_url": "https://plink.anyfeeder.com/leiphone",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "风雪之隅",
+    "url": "http://www.laruence.com/feed",
+    "rss_url": "http://www.laruence.com/feed",
+    "platform": "custom",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "魔宙",
+    "url": "https://plink.anyfeeder.com/weixin/mzmojo",
+    "rss_url": "https://plink.anyfeeder.com/weixin/mzmojo",
+    "platform": "news",
+    "category": "tech",
+    "description": "Imported from weekend-project-space/top-rss-list (tech)",
+    "enabled": 1
+  },
+  {
+    "name": "游戏研究社",
+    "url": "https://www.yystv.cn/rss/feed",
+    "rss_url": "https://www.yystv.cn/rss/feed",
+    "platform": "custom",
+    "category": "video",
+    "description": "Imported from weekend-project-space/top-rss-list (video)",
+    "enabled": 1
+  }
+]

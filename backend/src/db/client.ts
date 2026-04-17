@@ -1,7 +1,7 @@
 ﻿import Database from 'better-sqlite3';
 import postgres from 'postgres';
-import { mkdirSync } from 'fs';
-import { dirname } from 'path';
+import { existsSync, mkdirSync, readFileSync } from 'fs';
+import { dirname, resolve } from 'path';
 import { env } from '../config/env.js';
 
 export type DbType = 'postgresql' | 'sqlite';
@@ -12,6 +12,10 @@ type SqliteClient = Database.Database;
 
 let pgClient: PgClient | null = null;
 let sqliteClient: SqliteClient | null = null;
+
+function sqliteBoolean(value: boolean): number {
+  return value ? 1 : 0;
+}
 
 function normalizeQuery(query: string): string {
   if (dbType !== 'postgresql') {
@@ -417,6 +421,50 @@ function initSQLiteTables() {
   );
   for (const category of defaultPublicCategories) {
     insertPublicCategory.run(category.slug, category.name, category.sort_order);
+  }
+
+  const publicSourceCount = sqlite
+    .prepare('SELECT COUNT(*) as count FROM public_sources')
+    .get() as { count: number };
+
+  if (publicSourceCount.count === 0) {
+    const seedPath = resolve(process.cwd(), 'static', 'public-sources.seed.json');
+    if (existsSync(seedPath)) {
+      const seedItems = JSON.parse(readFileSync(seedPath, 'utf8')) as Array<{
+        name: string;
+        url: string;
+        rss_url: string;
+        platform: string;
+        category: string;
+        description?: string | null;
+        enabled?: number | boolean;
+      }>;
+
+      const insertPublicSource = sqlite.prepare(`
+        INSERT OR IGNORE INTO public_sources (
+          name,
+          url,
+          rss_url,
+          platform,
+          category,
+          description,
+          enabled,
+          subscribed_count
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, 0)
+      `);
+
+      for (const item of seedItems) {
+        insertPublicSource.run(
+          item.name,
+          item.url,
+          item.rss_url,
+          item.platform || 'news',
+          item.category,
+          item.description ?? null,
+          typeof item.enabled === 'boolean' ? sqliteBoolean(item.enabled) : (item.enabled ?? 1)
+        );
+      }
+    }
   }
 
   console.log('[SQLite] Tables initialized');
