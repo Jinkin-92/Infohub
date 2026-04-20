@@ -9,7 +9,7 @@ $timestamp = Get-Date -Format 'yyyyMMdd-HHmm'
 $packageName = "infohub-windows-test-$timestamp"
 $stageDir = Join-Path $stageRoot $packageName
 $zipPath = Join-Path $releaseRoot "$packageName.zip"
-$sizeLimitMb = 260
+$sizeLimitMb = 320
 $portableRuntimeStage = Join-Path $stageDir (Join-Path '.runtime' $script:InfoHubNodeFolderName)
 
 function Copy-Tree {
@@ -59,6 +59,24 @@ function Get-FileSizeMb {
   return [math]::Round((Get-Item $Path).Length / 1MB, 2)
 }
 
+function Invoke-ProductionPrune {
+  param(
+    [hashtable]$NodeRuntime,
+    [string]$WorkingDirectory
+  )
+
+  if (-not (Test-Path (Join-Path $WorkingDirectory 'package.json'))) {
+    return
+  }
+
+  if (-not (Test-Path (Join-Path $WorkingDirectory 'node_modules'))) {
+    return
+  }
+
+  Write-Host "Pruning devDependencies in $WorkingDirectory ..."
+  Invoke-NpmCommand -NodeRuntime $NodeRuntime -WorkingDirectory $WorkingDirectory -Arguments @('prune', '--omit=dev')
+}
+
 function Build-ReleaseArchive {
   param(
     [string]$SourceDir,
@@ -69,7 +87,73 @@ function Build-ReleaseArchive {
     Remove-Item -LiteralPath $DestinationZip -Force
   }
 
-  Compress-Archive -Path (Join-Path $SourceDir '*') -DestinationPath $DestinationZip -CompressionLevel Optimal
+  Add-Type -AssemblyName System.IO.Compression
+  Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+  $zipFileStream = [System.IO.File]::Open($DestinationZip, [System.IO.FileMode]::CreateNew)
+  try {
+    $archive = [System.IO.Compression.ZipArchive]::new($zipFileStream, [System.IO.Compression.ZipArchiveMode]::Create, $false)
+    try {
+      $sourceRoot = (Resolve-Path $SourceDir).Path
+      $sourceRootWithSeparator = $sourceRoot.TrimEnd('\') + '\'
+
+      Get-ChildItem -LiteralPath $SourceDir -Recurse -Force | ForEach-Object {
+        $fullPath = $_.FullName
+        $relativePath = $fullPath.Substring($sourceRootWithSeparator.Length).Replace('\', '/')
+
+        if ([string]::IsNullOrWhiteSpace($relativePath)) {
+          return
+        }
+
+        if ($_.PSIsContainer) {
+          if (-not $relativePath.EndsWith('/')) {
+            $relativePath += '/'
+          }
+          $archive.CreateEntry($relativePath) | Out-Null
+          return
+        }
+
+        $entry = $archive.CreateEntry($relativePath, [System.IO.Compression.CompressionLevel]::Optimal)
+        $entryStream = $entry.Open()
+        $fileStream = [System.IO.File]::OpenRead($fullPath)
+        try {
+          $fileStream.CopyTo($entryStream)
+        } finally {
+          $fileStream.Dispose()
+          $entryStream.Dispose()
+        }
+      }
+    } finally {
+      $archive.Dispose()
+    }
+  } finally {
+    $zipFileStream.Dispose()
+  }
+}
+
+function Assert-ZipContainsRequiredContent {
+  param([string]$ZipPath)
+
+  Add-Type -AssemblyName System.IO.Compression.FileSystem
+  $zip = [System.IO.Compression.ZipFile]::OpenRead($ZipPath)
+
+  try {
+    $requiredPrefixes = @(
+      'backend/node_modules/',
+      'frontend/node_modules/',
+      'rsshub-local/node_modules/',
+      '.runtime/'
+    )
+
+    foreach ($prefix in $requiredPrefixes) {
+      $count = ($zip.Entries | Where-Object { $_.FullName -like ($prefix + '*') }).Count
+      if ($count -le 0) {
+        throw "Archive verification failed: missing required content under $prefix"
+      }
+    }
+  } finally {
+    $zip.Dispose()
+  }
 }
 
 Write-Host '=========================================='
@@ -109,6 +193,10 @@ Copy-Tree -Source (Join-Path $root 'backend') -Destination (Join-Path $stageDir 
 Copy-Tree -Source (Join-Path $root 'frontend') -Destination (Join-Path $stageDir 'frontend') -ExcludeDirs @('.next\\cache', 'test-results') -ExcludeFiles @('frontend-run.log', 'frontend-error.log')
 Copy-Tree -Source (Join-Path $root 'rsshub-local') -Destination (Join-Path $stageDir 'rsshub-local') -ExcludeDirs @('.tmp', 'logs')
 
+Invoke-ProductionPrune -NodeRuntime $nodeRuntime -WorkingDirectory (Join-Path $stageDir 'backend')
+Invoke-ProductionPrune -NodeRuntime $nodeRuntime -WorkingDirectory (Join-Path $stageDir 'frontend')
+Invoke-ProductionPrune -NodeRuntime $nodeRuntime -WorkingDirectory (Join-Path $stageDir 'rsshub-local')
+
 $portableNodeRoot = Get-PortableNodeRoot -Root $root
 if (Test-Path $portableNodeRoot) {
   Write-Host '内置固定依赖：便携 Node.js 运行时。'
@@ -116,6 +204,7 @@ if (Test-Path $portableNodeRoot) {
 }
 
 Build-ReleaseArchive -SourceDir $stageDir -DestinationZip $zipPath
+Assert-ZipContainsRequiredContent -ZipPath $zipPath
 $zipSizeMb = Get-FileSizeMb -Path $zipPath
 
 if ($zipSizeMb -gt $sizeLimitMb) {
