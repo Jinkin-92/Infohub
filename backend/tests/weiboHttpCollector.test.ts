@@ -5,6 +5,8 @@ const mocks = vi.hoisted(() => ({
   updateSource: vi.fn(),
   markHealthyUse: vi.fn(),
   markChecked: vi.fn(),
+  hasActiveProfile: vi.fn(),
+  browserVerifyConnection: vi.fn(),
 }));
 
 vi.mock('../src/services/auth/credentialStore.js', () => ({
@@ -23,8 +25,20 @@ vi.mock('../src/services/weiboProfileStore.js', () => ({
   weiboProfileStore: {
     markHealthyUse: mocks.markHealthyUse,
     markChecked: mocks.markChecked,
+    hasActiveProfile: mocks.hasActiveProfile,
   },
 }));
+
+vi.mock('../src/services/weiboBrowserCollector.js', async () => {
+  const actual = await vi.importActual('../src/services/weiboBrowserCollector.js');
+  return {
+    ...actual,
+    weiboBrowserCollector: {
+      collectItems: vi.fn(),
+      verifyConnection: mocks.browserVerifyConnection,
+    },
+  };
+});
 
 describe('weibo http collector', () => {
   beforeEach(() => {
@@ -39,6 +53,12 @@ describe('weibo http collector', () => {
       updatedAt: new Date().toISOString(),
     });
     mocks.updateSource.mockResolvedValue(undefined);
+    mocks.hasActiveProfile.mockReturnValue(false);
+    mocks.browserVerifyConnection.mockResolvedValue({
+      success: false,
+      message: 'Weibo mobile api returned no post cards',
+      resolvedUid: '1788911247',
+    });
     global.fetch = vi.fn();
   });
 
@@ -141,7 +161,7 @@ describe('weibo http collector', () => {
 
     expect(result.success).toBe(false);
     expect(result.message).toMatch(/no post cards/i);
-    expect(mocks.markChecked).toHaveBeenCalledTimes(1);
+    expect(mocks.browserVerifyConnection).toHaveBeenCalledTimes(1);
   });
 
   it('fails clearly when timeline api returns non-200', async () => {

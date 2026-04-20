@@ -13,20 +13,27 @@ import { feedApi, favoritesApi, settingsApi, sourcesApi } from './lib/api'
 import { FavoriteTag } from './types'
 import { cn } from './lib/utils'
 
-// 两层 Tab 结构：
-// - sourceType: 'custom' | 'public' (顶级：定制订阅源 / 公开订阅源)
-// - 对于 'custom': platform ('all' | 'zhihu' | 'x' | 'wechat' | 'weibo' | 'bilibili' | 'youtube')
-// - 对于 'public': category ('all' | 'tech' | 'news' | 'finance' | 'life' | 'design' | 'video' | 'aggregator')
 export type SourceType = 'custom' | 'public'
 export type CustomPlatform = 'all' | 'zhihu' | 'x' | 'wechat' | 'weibo' | 'bilibili' | 'youtube'
 export type PublicCategory = 'all' | 'tech' | 'news' | 'finance' | 'life' | 'design' | 'video' | 'aggregator'
 
 export interface TabState {
   sourceType: SourceType
-  // 平台过滤（定制订阅源）
   platform?: CustomPlatform
-  // 分类过滤（公开订阅源）
   category?: PublicCategory
+}
+
+const PUBLIC_CATEGORIES: PublicCategory[] = ['all', 'tech', 'news', 'finance', 'life', 'design', 'video', 'aggregator']
+
+const PUBLIC_CATEGORY_LABELS: Record<PublicCategory, string> = {
+  all: '全部',
+  tech: '科技',
+  news: '新闻',
+  finance: '财经',
+  life: '生活',
+  design: '设计',
+  video: '视频',
+  aggregator: '聚合',
 }
 
 export default function Home() {
@@ -78,12 +85,20 @@ export default function Home() {
       setLoadingFreshContent(true)
       try {
         const response = await sourcesApi.collectAll()
+        if (!active) {
+          return
+        }
+
         setRefreshMessage(
           response.refresh.alreadyRunning
-            ? '订阅源正在后台刷新，内容会在完成后自动更新。'
-            : '已开始后台刷新订阅源，最新内容会在完成后自动显示。'
+            ? '后台刷新已经在进行中，页面先显示上次同步内容，完成后会自动更新。'
+            : '已开始后台刷新，页面先显示上次同步内容，完成后会自动更新。'
         )
       } catch (error) {
+        if (!active) {
+          return
+        }
+
         setRefreshMessage(error instanceof Error ? error.message : '启动刷新失败，请稍后重试。')
       } finally {
         if (!active) {
@@ -98,7 +113,7 @@ export default function Home() {
     return () => {
       active = false
     }
-  }, [mutateIntegrations, mutateUnread])
+  }, [mutateIntegrations])
 
   useEffect(() => {
     if (!integrationsData) {
@@ -119,16 +134,6 @@ export default function Home() {
       setRefreshMessage('订阅源刷新完成，内容已更新。')
     }
   }, [integrationsData, mutateUnread])
-
-  // 根据当前 Tab 状态计算 API 参数
-  const getFeedParams = useCallback(() => {
-    if (activeTab.sourceType === 'public') {
-      // 公开订阅源：不过滤 platform，只过滤 is_public
-      return { platform: undefined, isPublic: true as const, category: activeTab.category }
-    }
-    // 定制订阅源
-    return { platform: activeTab.platform === 'all' ? undefined : activeTab.platform, isPublic: false as const }
-  }, [activeTab])
 
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query)
@@ -205,7 +210,7 @@ export default function Home() {
 
         {loadingFreshContent && !collectorIssue && (
           <div className="mb-4 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900 shadow-sm">
-            正在刷新订阅源并检查最新内容...
+            正在后台刷新订阅源。当前先显示上次同步内容，最新内容会在刷新完成后自动更新。
           </div>
         )}
 
@@ -231,9 +236,8 @@ export default function Home() {
       </div>
 
       <div className="mx-auto max-w-content px-4 py-4 sm:px-6 lg:px-8">
-        {/* 定制订阅源：显示添加按钮 */}
         {activeTab.sourceType === 'custom' && (
-          <div className="flex items-center justify-end mb-4">
+          <div className="mb-4 flex items-center justify-end">
             <button
               onClick={() => setIsAddModalOpen(true)}
               data-testid="open-add-source-modal"
@@ -247,30 +251,26 @@ export default function Home() {
           </div>
         )}
 
-        {/* 公开订阅源时显示分类标签栏 */}
         {activeTab.sourceType === 'public' && (
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
-              {['all', 'tech', 'news', 'finance', 'life', 'design', 'video', 'aggregator'].map((cat) => {
-                const label = cat === 'all' ? '全部' : cat === 'tech' ? '科技' : cat === 'news' ? '新闻' : cat === 'finance' ? '财经' : cat === 'life' ? '生活' : cat === 'design' ? '设计' : cat === 'video' ? '视频' : '聚合'
-                return (
-                  <button
-                    key={cat}
-                    onClick={() => {
-                      setActiveTab({ sourceType: 'public', category: cat as any })
-                      setTabVersion((v) => v + 1)
-                    }}
-                    className={cn(
-                      'whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-all',
-                      activeTab.category === cat
-                        ? 'bg-accent text-white shadow-sm'
-                        : 'bg-bg-tertiary text-text-secondary hover:bg-bg-secondary hover:text-text-primary'
-                    )}
-                  >
-                    {label}
-                  </button>
-                )
-              })}
+          <div className="mb-4 flex items-center justify-between">
+            <div className="scrollbar-hide flex items-center gap-2 overflow-x-auto pb-2">
+              {PUBLIC_CATEGORIES.map((category) => (
+                <button
+                  key={category}
+                  onClick={() => {
+                    setActiveTab({ sourceType: 'public', category })
+                    setTabVersion((v) => v + 1)
+                  }}
+                  className={cn(
+                    'whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-all',
+                    activeTab.category === category
+                      ? 'bg-accent text-white shadow-sm'
+                      : 'bg-bg-tertiary text-text-secondary hover:bg-bg-secondary hover:text-text-primary'
+                  )}
+                >
+                  {PUBLIC_CATEGORY_LABELS[category]}
+                </button>
+              ))}
             </div>
             <button
               onClick={() => setIsPublicSourcesOpen(true)}
@@ -280,14 +280,14 @@ export default function Home() {
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
-              添加公开RSS
+              添加公开 RSS
             </button>
           </div>
         )}
 
         <FeedList
           key={`${activeTab.sourceType}-${activeTab.sourceType === 'public' ? activeTab.category : activeTab.platform}-${tabVersion}`}
-          platform={activeTab.sourceType === 'public' ? undefined : (activeTab.platform === 'all' ? undefined : activeTab.platform)}
+          platform={activeTab.sourceType === 'public' ? undefined : activeTab.platform === 'all' ? undefined : activeTab.platform}
           isPublic={activeTab.sourceType === 'public'}
           category={activeTab.sourceType === 'public' ? (activeTab.category === 'all' ? undefined : activeTab.category) : undefined}
           searchQuery={searchQuery}
@@ -301,7 +301,6 @@ export default function Home() {
         />
       </div>
 
-      {/* 公开订阅源添加面板 */}
       <PublicSourcesPanel
         isOpen={isPublicSourcesOpen}
         onClose={() => setIsPublicSourcesOpen(false)}

@@ -107,7 +107,7 @@ Copy-Tree -Source (Join-Path $root 'docs') -Destination (Join-Path $stageDir 'do
 Copy-Tree -Source (Join-Path $root 'scripts') -Destination (Join-Path $stageDir 'scripts')
 Copy-Tree -Source (Join-Path $root 'backend') -Destination (Join-Path $stageDir 'backend') -ExcludeDirs @('.tmp', 'data', '__pycache__') -ExcludeFiles @('backend-run.log', 'backend-error.log')
 Copy-Tree -Source (Join-Path $root 'frontend') -Destination (Join-Path $stageDir 'frontend') -ExcludeDirs @('.next\\cache', 'test-results') -ExcludeFiles @('frontend-run.log', 'frontend-error.log')
-Copy-Tree -Source (Join-Path $root 'rsshub-local') -Destination (Join-Path $stageDir 'rsshub-local') -ExcludeDirs @('node_modules', '.tmp', 'logs')
+Copy-Tree -Source (Join-Path $root 'rsshub-local') -Destination (Join-Path $stageDir 'rsshub-local') -ExcludeDirs @('.tmp', 'logs')
 
 $portableNodeRoot = Get-PortableNodeRoot -Root $root
 if (Test-Path $portableNodeRoot) {
@@ -125,6 +125,6 @@ if ($zipSizeMb -gt $sizeLimitMb) {
 Write-Host ''
 Write-Host "Package ready: $zipPath"
 Write-Host "压缩包大小：${zipSizeMb}MB"
-Write-Host '已内置：便携 Node.js、前后端构建产物、backend node_modules、frontend node_modules、脚本和说明文档。'
+Write-Host '已内置：便携 Node.js、前后端构建产物、backend node_modules、frontend node_modules、rsshub-local node_modules、脚本和说明文档。'
 Write-Host '未内置：Chrome/Edge 浏览器运行时。'
 Write-Host ''

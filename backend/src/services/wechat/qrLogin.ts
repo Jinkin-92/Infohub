@@ -25,6 +25,12 @@ interface LoginSuccessData {
   cookiesDict: Record<string, string>;
 }
 
+type ParsedCookie = {
+  name: string;
+  value: string;
+  expired: boolean;
+};
+
 export class WeChatQrLogin {
   private baseUrl = 'https://mp.weixin.qq.com';
   private sessionCookies: Record<string, string> = {};
@@ -262,33 +268,78 @@ export class WeChatQrLogin {
     return merged.split(/,(?=[^;,=\s]+=[^;,]+)/g);
   }
 
-  private parseCookies(lines: string[]): Record<string, string> {
-    const cookies: Record<string, string> = {};
-
-    for (const line of lines) {
-      const [nameValue] = line.split(';');
-      const eqIndex = nameValue.indexOf('=');
-      if (eqIndex <= 0) {
-        continue;
-      }
-
-      const name = nameValue.substring(0, eqIndex).trim();
-      const value = nameValue.substring(eqIndex + 1).trim();
-      cookies[name] = value;
+  private parseCookieLine(line: string): ParsedCookie | null {
+    const segments = line.split(';').map((part) => part.trim()).filter(Boolean);
+    const [nameValue, ...attributes] = segments;
+    if (!nameValue) {
+      return null;
     }
 
-    return cookies;
+    const eqIndex = nameValue.indexOf('=');
+    if (eqIndex <= 0) {
+      return null;
+    }
+
+    const name = nameValue.substring(0, eqIndex).trim();
+    const value = nameValue.substring(eqIndex + 1).trim();
+    if (!name) {
+      return null;
+    }
+
+    const lowerValue = value.toLowerCase();
+    const expiredByValue =
+      lowerValue === 'expired'
+      || lowerValue === 'deleted'
+      || value === '';
+
+    const expiredByAttribute = attributes.some((attribute) => {
+      const [rawKey, rawVal = ''] = attribute.split('=');
+      const key = rawKey.trim().toLowerCase();
+      const attrValue = rawVal.trim().toLowerCase();
+
+      if (key === 'max-age') {
+        const maxAge = Number.parseInt(attrValue, 10);
+        return Number.isFinite(maxAge) && maxAge <= 0;
+      }
+
+      if (key === 'expires') {
+        const expiresAt = Date.parse(rawVal.trim());
+        return Number.isFinite(expiresAt) && expiresAt <= Date.now();
+      }
+
+      return false;
+    });
+
+    return {
+      name,
+      value,
+      expired: expiredByValue || expiredByAttribute,
+    };
   }
 
   private mergeCookies(lines: string[]): void {
-    this.sessionCookies = {
-      ...this.sessionCookies,
-      ...this.parseCookies(lines),
-    };
+    const nextCookies = { ...this.sessionCookies };
+
+    for (const line of lines) {
+      const parsed = this.parseCookieLine(line);
+      if (!parsed) {
+        continue;
+      }
+
+      if (parsed.expired) {
+        delete nextCookies[parsed.name];
+        continue;
+      }
+
+      nextCookies[parsed.name] = parsed.value;
+    }
+
+    this.sessionCookies = nextCookies;
   }
 
   private formatCookies(cookies: Record<string, string>): string {
     return Object.entries(cookies)
+      .filter(([, value]) => value && !/^(expired|deleted)$/i.test(value))
       .map(([key, value]) => `${key}=${value}`)
       .join('; ');
   }
@@ -334,3 +385,7 @@ export class WeChatQrLogin {
 }
 
 export const weChatQrLogin = new WeChatQrLogin();
+
+export const weChatQrLoginInternals = {
+  parseCookieLine: (line: string) => (weChatQrLogin as any).parseCookieLine(line) as ParsedCookie | null,
+};

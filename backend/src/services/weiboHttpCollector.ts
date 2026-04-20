@@ -177,6 +177,10 @@ export async function collectWeiboHttpItems(source: Source): Promise<RSSItem[]> 
     if (shouldFallbackToBrowser(error) && weiboProfileStore.hasActiveProfile()) {
       return weiboBrowserCollector.collectItems(source);
     }
+
+    if (shouldFallbackToBrowser(error)) {
+      return weiboBrowserCollector.collectItems(source, { cookieString: cookie });
+    }
     throw error;
   }
 }
@@ -231,6 +235,17 @@ export async function verifyWeiboHttpConnection(testUrl: string): Promise<{
         success: browserResult.success,
         message: browserResult.success
           ? `${browserResult.message} (HTTP collector was blocked, browser fallback used.)`
+          : browserResult.message,
+        resolvedUid: browserResult.resolvedUid || uid,
+      };
+    }
+
+    if (shouldFallbackToBrowser(error)) {
+      const browserResult = await weiboBrowserCollector.verifyConnection(testUrl, { cookieString: cookie });
+      return {
+        success: browserResult.success,
+        message: browserResult.success
+          ? `${browserResult.message} (HTTP collector was blocked, cookie-backed browser fallback used.)`
           : browserResult.message,
         resolvedUid: browserResult.resolvedUid || uid,
       };

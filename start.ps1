@@ -5,6 +5,7 @@ $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 $backendDir = Join-Path $root 'backend'
 $frontendDir = Join-Path $root 'frontend'
+$rsshubDir = Join-Path $root 'rsshub-local'
 $backendEnv = Join-Path $backendDir '.env'
 $rootEnvExample = Join-Path $root '.env.example'
 $stateDir = Join-Path $root '.tmp'
@@ -147,6 +148,158 @@ function Ensure-NodeModules {
     }
   }
 }
+
+function Test-RsshubRuntimeModule {
+  param(
+    [hashtable]$NodeRuntime,
+    [string]$WorkingDirectory
+  )
+
+  Push-Location $WorkingDirectory
+  try {
+    & $NodeRuntime.NodeExe -e "const fs = require('fs'); const path = require('path'); if (!fs.existsSync(path.join(process.cwd(), 'node_modules', 'rsshub', 'dist-lib', 'pkg.mjs'))) process.exit(1); require('node-releases/data/processed/envs.json'); require('stream-length/lib/stream-length.js'); console.log('ok')"
+    return ($LASTEXITCODE -eq 0)
+  } catch {
+    return $false
+  } finally {
+    Pop-Location
+  }
+}
+
+function Repair-RsshubRuntime {
+  param([string]$WorkingDirectory)
+
+  $nestedBluebirdDir = Join-Path $WorkingDirectory 'node_modules\stream-length\node_modules\bluebird'
+  if (Test-Path $nestedBluebirdDir) {
+    Remove-Item -LiteralPath $nestedBluebirdDir -Recurse -Force -ErrorAction SilentlyContinue
+  }
+
+  $streamLengthDir = Join-Path $WorkingDirectory 'node_modules\stream-length\lib'
+  $streamLengthFile = Join-Path $streamLengthDir 'stream-length.js'
+  if (Test-Path $streamLengthDir) {
+    @'
+const fs = require("fs");
+
+function nodeify(promise, callback) {
+  if (typeof callback !== "function") {
+    return promise;
+  }
+
+  promise.then(
+    (value) => callback(null, value),
+    (error) => callback(error)
+  );
+  return promise;
+}
+
+function createRetrieverPromise(stream, retriever) {
+  return new Promise((resolve, reject) => {
+    retriever(stream, (result) => {
+      if (result != null) {
+        if (result instanceof Error) {
+          reject(result);
+        } else {
+          resolve(result);
+        }
+        return;
+      }
+
+      reject(new Error("Could not find a length using this lengthRetriever."));
+    });
+  });
+}
+
+function retrieveBuffer(stream, callback) {
+  if (stream instanceof Buffer) {
+    callback(stream.length);
+    return;
+  }
+
+  callback(null);
+}
+
+function retrieveFilesystemStream(stream, callback) {
+  if (!Object.prototype.hasOwnProperty.call(stream, "fd")) {
+    callback(null);
+    return;
+  }
+
+  if (stream.end !== undefined && stream.end !== Infinity && stream.start !== undefined) {
+    callback(stream.end + 1 - (stream.start ?? 0));
+    return;
+  }
+
+  fs.promises.stat(stream.path).then(
+    (stat) => callback(stat.size - (stream.start ?? 0)),
+    (error) => callback(error)
+  );
+}
+
+function retrieveCoreHttpStream(stream, callback) {
+  if (Object.prototype.hasOwnProperty.call(stream, "httpVersion") && stream.headers && stream.headers["content-length"] != null) {
+    callback(parseInt(stream.headers["content-length"], 10));
+    return;
+  }
+
+  callback(null);
+}
+
+function retrieveRequestHttpStream(stream, callback) {
+  if (!Object.prototype.hasOwnProperty.call(stream, "httpModule")) {
+    callback(null);
+    return;
+  }
+
+  stream.on("response", (response) => {
+    if (response.headers["content-length"] != null) {
+      callback(parseInt(response.headers["content-length"], 10));
+      return;
+    }
+
+    callback(null);
+  });
+}
+
+function retrieveCombinedStream(stream, callback) {
+  if (typeof stream.getCombinedStreamLength !== "function") {
+    callback(null);
+    return;
+  }
+
+  stream.getCombinedStreamLength().then(
+    (length) => callback(length),
+    (error) => callback(error)
+  );
+}
+
+module.exports = function(stream, options, callback) {
+  const resolvedOptions = options ?? {};
+
+  return nodeify((async () => {
+    const retrieverPromises = [];
+
+    if (resolvedOptions.lengthRetrievers != null) {
+      for (const retriever of resolvedOptions.lengthRetrievers) {
+        retrieverPromises.push(createRetrieverPromise(stream, retriever));
+      }
+    }
+
+    for (const retriever of [
+      retrieveBuffer,
+      retrieveFilesystemStream,
+      retrieveCoreHttpStream,
+      retrieveRequestHttpStream,
+      retrieveCombinedStream,
+    ]) {
+      retrieverPromises.push(createRetrieverPromise(stream, retriever));
+    }
+
+    return Promise.any(retrieverPromises);
+  })(), callback);
+};
+'@ | Set-Content -Path $streamLengthFile -Encoding ascii
+  }
+}
 function Ensure-BuildArtifacts {
   if (-not (Test-Path (Join-Path $backendDir 'dist\index.js')) -or -not (Test-Path (Join-Path $frontendDir '.next\BUILD_ID'))) {
     Write-Host '检测到缺少构建产物，正在自动补齐首次安装步骤，请稍候...' -ForegroundColor Yellow
@@ -219,6 +372,10 @@ try {
   if (-not (Test-Path (Join-Path $frontendDir 'node_modules'))) {
     Ensure-NodeModules -NodeRuntime $nodeRuntime -WorkingDirectory $frontendDir
   }
+  if (-not (Test-RsshubRuntimeModule -NodeRuntime $nodeRuntime -WorkingDirectory $rsshubDir)) {
+    Ensure-NodeModules -NodeRuntime $nodeRuntime -WorkingDirectory $rsshubDir
+  }
+  Repair-RsshubRuntime -WorkingDirectory $rsshubDir
   Ensure-BuildArtifacts
   Write-Host "SQLite 数据库路径：$sqlitePath"
   Write-Success '运行环境已就绪。'

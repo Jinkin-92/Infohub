@@ -221,6 +221,24 @@ export class WeChatArticleCollector {
       throw new Error('WeChat credentials not configured');
     }
 
+    try {
+      return await this.getArticlesOnce(fakerId, limit);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (!/invalid session|appmsgpublish failed/i.test(message)) {
+        throw error;
+      }
+
+      await wechatAuth.reloadFromSettings();
+      return this.getArticlesOnce(fakerId, limit);
+    }
+  }
+
+  private async getArticlesOnce(fakerId: string, limit: number): Promise<ArticleListItem[]> {
+    if (!await wechatAuth.isConfigured()) {
+      throw new Error('WeChat credentials not configured');
+    }
+
     const apiFakeId = toWechatApiFakeId(fakerId);
     const [token, headers] = await Promise.all([
       wechatAuth.getToken(),

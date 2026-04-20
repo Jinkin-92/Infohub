@@ -1,4 +1,6 @@
 import { createHash } from 'node:crypto';
+import { mkdirSync, rmSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 import puppeteer from 'puppeteer-core';
 import type { RSSItem, Source } from '../types/index.js';
 import { weiboProfileStore } from './weiboProfileStore.js';
@@ -312,9 +314,108 @@ async function scrapeMobileCards(uid: string): Promise<{ cards: WeiboMobileCard[
   }
 }
 
-export async function collectWeiboBrowserItems(source: Source): Promise<RSSItem[]> {
+function parseCookieString(cookieString: string, url: string): Array<{ name: string; value: string; url: string }> {
+  return cookieString
+    .split(';')
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .map((part) => {
+      const separatorIndex = part.indexOf('=');
+      if (separatorIndex <= 0) {
+        return null;
+      }
+
+      return {
+        name: part.slice(0, separatorIndex),
+        value: part.slice(separatorIndex + 1),
+        url,
+      };
+    })
+    .filter((cookie): cookie is { name: string; value: string; url: string } => Boolean(cookie));
+}
+
+function createCookieRuntimeProfile(): string {
+  const runtimeRoot = resolve(process.cwd(), '.tmp', 'weibo-cookie-runtime');
+  const runtimeProfileDir = join(runtimeRoot, `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`);
+  mkdirSync(runtimeProfileDir, { recursive: true });
+  return runtimeProfileDir;
+}
+
+async function scrapeMobileCardsWithCookie(
+  uid: string,
+  cookieString: string
+): Promise<{ cards: WeiboMobileCard[]; pageText: string; screenName: string | null }> {
+  const runtimeProfileDir = createCookieRuntimeProfile();
+  let browser: Awaited<ReturnType<typeof puppeteer.launch>> | null = null;
+
+  try {
+    browser = await puppeteer.launch({
+      headless: true,
+      executablePath: resolveChromeExecutablePath(),
+      userDataDir: runtimeProfileDir,
+      defaultViewport: { width: 430, height: 900, isMobile: true },
+      args: ['--disable-gpu', '--no-sandbox'],
+    });
+
+    const page = await browser.newPage();
+    await page.setUserAgent(
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1'
+    );
+    await page.setCookie(
+      ...parseCookieString(cookieString, 'https://weibo.com'),
+      ...parseCookieString(cookieString, 'https://m.weibo.cn')
+    );
+
+    await page.goto(`https://m.weibo.cn/u/${uid}`, {
+      waitUntil: 'domcontentloaded',
+      timeout: 45000,
+    });
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+    const apiPayload = await page.evaluate(async (targetUid) => {
+      const response = await fetch(
+        `https://m.weibo.cn/api/container/getIndex?type=uid&value=${targetUid}&containerid=107603${targetUid}`,
+        { credentials: 'include' }
+      );
+      const text = await response.text();
+      return {
+        ok: response.ok,
+        status: response.status,
+        text,
+      };
+    }, uid);
+    const pageText = await page.$eval('body', (body) => body.innerText).catch(() => '');
+
+    if (!apiPayload.ok) {
+      throw new Error(`Weibo mobile api returned ${apiPayload.status}. Page text: ${pageText.slice(0, 120)}`);
+    }
+
+    const parsed = JSON.parse(apiPayload.text) as WeiboApiResponse;
+    const cards = (parsed.data?.cards ?? [])
+      .map((card) => toMobileCard(uid, card))
+      .filter((card): card is WeiboMobileCard => Boolean(card));
+
+    return {
+      cards,
+      pageText,
+      screenName: cards.find((card) => card.screenName)?.screenName || null,
+    };
+  } finally {
+    if (browser) {
+      await browser.close().catch(() => undefined);
+    }
+    rmSync(runtimeProfileDir, { recursive: true, force: true });
+  }
+}
+
+export async function collectWeiboBrowserItems(
+  source: Source,
+  options: { cookieString?: string } = {}
+): Promise<RSSItem[]> {
   const uid = resolveWeiboUid(source);
-  const { cards, pageText, screenName } = await scrapeMobileCards(uid);
+  const { cards, pageText, screenName } =
+    options.cookieString && !weiboProfileStore.hasActiveProfile()
+      ? await scrapeMobileCardsWithCookie(uid, options.cookieString)
+      : await scrapeMobileCards(uid);
 
   if (!cards.length) {
     throw new Error(`Weibo mobile page did not render any post cards. Page text: ${pageText.slice(0, 120)}`);
@@ -332,12 +433,15 @@ export async function collectWeiboBrowserItems(source: Source): Promise<RSSItem[
   return items;
 }
 
-export async function verifyWeiboBrowserConnection(testUrl: string): Promise<{
+export async function verifyWeiboBrowserConnection(
+  testUrl: string,
+  options: { cookieString?: string } = {}
+): Promise<{
   success: boolean;
   message: string;
   resolvedUid?: string;
 }> {
-  if (!weiboProfileStore.hasActiveProfile()) {
+  if (!weiboProfileStore.hasActiveProfile() && !options.cookieString) {
     return {
       success: false,
       message: 'Weibo QR login has not produced a reusable browser profile yet.',
@@ -345,7 +449,10 @@ export async function verifyWeiboBrowserConnection(testUrl: string): Promise<{
   }
 
   const uid = resolveWeiboUid(testUrl);
-  const { cards, pageText, screenName } = await scrapeMobileCards(uid);
+  const { cards, pageText, screenName } =
+    options.cookieString && !weiboProfileStore.hasActiveProfile()
+      ? await scrapeMobileCardsWithCookie(uid, options.cookieString)
+      : await scrapeMobileCards(uid);
   weiboProfileStore.markChecked();
 
   if (!cards.length) {
@@ -364,7 +471,10 @@ export async function verifyWeiboBrowserConnection(testUrl: string): Promise<{
   };
 }
 
-export const weiboBrowserCollector = {
+export const weiboBrowserCollector: {
+  collectItems: typeof collectWeiboBrowserItems;
+  verifyConnection: typeof verifyWeiboBrowserConnection;
+} = {
   collectItems: collectWeiboBrowserItems,
   verifyConnection: verifyWeiboBrowserConnection,
 };

@@ -12,10 +12,28 @@ const currentMajor = Number.parseInt(process.versions.node.split('.')[0], 10);
 const needsNode24 = Number.isFinite(currentMajor) && currentMajor >= 25;
 const isWindows = process.platform === 'win32';
 
+function quoteWindowsArg(value) {
+  if (!value) {
+    return '""';
+  }
+
+  if (!/[\s"]/u.test(value)) {
+    return value;
+  }
+
+  return `"${value.replace(/"/g, '\\"')}"`;
+}
+
 const command = needsNode24
-  ? (isWindows ? 'npx.cmd' : 'npx')
+  ? (isWindows ? (process.env.ComSpec || 'C:\\Windows\\System32\\cmd.exe') : 'npx')
   : process.execPath;
-const commandArgs = needsNode24 ? ['-y', 'node@24', target, ...args] : [target, ...args];
+const commandArgs = needsNode24
+  ? (
+      isWindows
+        ? ['/d', '/s', '/c', ['npx', '-y', 'node@24', target, ...args].map(quoteWindowsArg).join(' ')]
+        : ['-y', 'node@24', target, ...args]
+    )
+  : [target, ...args];
 
 if (needsNode24) {
   console.log('[runtime] RSSHub requires Node 24 on this machine, using Node 24 shim');

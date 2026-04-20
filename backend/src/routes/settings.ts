@@ -12,6 +12,9 @@ const saveIntegrationsSchema = z.object({
 
 settingsRouter.get('/integrations', async (c) => {
   const rsshub = await localIntegrationsService.getRsshubSettings();
+  if (rsshub.running) {
+    cronManager.clearRecoveredIntegrationError();
+  }
   return c.json({
     ok: true,
     rsshub,
@@ -22,6 +25,9 @@ settingsRouter.get('/integrations', async (c) => {
 settingsRouter.post('/integrations', validateBody(saveIntegrationsSchema), async (c) => {
   const { values } = getValidatedBody<z.infer<typeof saveIntegrationsSchema>>(c);
   const rsshub = await localIntegrationsService.saveRsshubSettings(values);
+  if (rsshub.running) {
+    cronManager.clearRecoveredIntegrationError();
+  }
 
   return c.json({
     ok: true,
@@ -34,6 +40,9 @@ settingsRouter.post('/integrations', validateBody(saveIntegrationsSchema), async
 settingsRouter.post('/integrations/restart', async (c) => {
   await localIntegrationsService.restartRsshub();
   const rsshub = await localIntegrationsService.getRsshubSettings();
+  if (rsshub.running) {
+    cronManager.clearRecoveredIntegrationError();
+  }
 
   return c.json({
     ok: true,

@@ -10,7 +10,9 @@ import { weChatArticleCollector } from './wechat/index.js';
 import { sql } from '../db/client.js';
 import { weiboBrowserCollector } from './weiboBrowserCollector.js';
 import { weiboHttpCollector } from './weiboHttpCollector.js';
+import { weiboProfileStore } from './weiboProfileStore.js';
 import { xBrowserCollector } from './xBrowserCollector.js';
+import { xCancelCollector } from './xCancelCollector.js';
 import { urlDetector } from './urlDetector.js';
 import { youtubePublicCollector } from './youtubePublicCollector.js';
 import { resolveZhihuSourceName } from './zhihuSourceName.js';
@@ -458,11 +460,19 @@ export class Collector {
     }
 
     if (source.platform === 'x') {
-      return xBrowserCollector.collectItems(source);
+      try {
+        return await xCancelCollector.collectItems(source);
+      } catch (error) {
+        console.warn(
+          `[Collector] XCancel collector failed for source ${source.id}, falling back to browser collector:`,
+          error instanceof Error ? error.message : error
+        );
+        return xBrowserCollector.collectItems(source);
+      }
     }
 
     if (source.platform === 'weibo') {
-      if (env.WEIBO_COLLECTOR_MODE === 'browser') {
+      if (env.WEIBO_COLLECTOR_MODE === 'browser' || weiboProfileStore.hasActiveProfile()) {
         return weiboBrowserCollector.collectItems(source);
       }
       return weiboHttpCollector.collectItems(source);
