@@ -156,6 +156,10 @@ function shouldFallbackToBrowser(error: unknown): boolean {
   return /unreadable response|rejected the request|returned no post cards|returned cards but no usable items/i.test(message);
 }
 
+function missingProfileMessage(): string {
+  return 'Weibo desktop cookie is saved, but no reusable browser profile is available for timeline collection. Reconnect Weibo in platform settings.';
+}
+
 export async function collectWeiboHttpItems(source: Source): Promise<RSSItem[]> {
   const uid = resolveWeiboUid(source);
   const cookie = await getWeiboCookie();
@@ -179,7 +183,7 @@ export async function collectWeiboHttpItems(source: Source): Promise<RSSItem[]> 
     }
 
     if (shouldFallbackToBrowser(error)) {
-      return weiboBrowserCollector.collectItems(source, { cookieString: cookie });
+      throw new Error(missingProfileMessage());
     }
     throw error;
   }
@@ -241,13 +245,10 @@ export async function verifyWeiboHttpConnection(testUrl: string): Promise<{
     }
 
     if (shouldFallbackToBrowser(error)) {
-      const browserResult = await weiboBrowserCollector.verifyConnection(testUrl, { cookieString: cookie });
       return {
-        success: browserResult.success,
-        message: browserResult.success
-          ? `${browserResult.message} (HTTP collector was blocked, cookie-backed browser fallback used.)`
-          : browserResult.message,
-        resolvedUid: browserResult.resolvedUid || uid,
+        success: false,
+        message: missingProfileMessage(),
+        resolvedUid: uid,
       };
     }
 

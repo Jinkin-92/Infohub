@@ -5,6 +5,9 @@ import useSWR from 'swr'
 import { cn } from '../lib/utils'
 import { publicSourcesApi } from '../lib/api'
 import { PUBLIC_CATEGORY_CONFIG } from '../types'
+import { ActionButton } from './ActionButton'
+import { EmptyState } from './EmptyState'
+import { SourceChip } from './SourceChip'
 
 interface PublicSourcesPanelProps {
   isOpen: boolean
@@ -177,23 +180,15 @@ export function PublicSourcesPanel({ isOpen, onClose, onRefresh }: PublicSources
         <div className="px-6 py-3 border-b border-border-color">
           <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
             {categories.map((cat) => (
-              <button
+              <SourceChip
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={cn(
-                  'whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-all',
-                  selectedCategory === cat.id
-                    ? 'bg-accent text-white shadow-sm'
-                    : 'bg-bg-tertiary text-text-secondary hover:bg-bg-primary hover:text-text-primary'
-                )}
-                style={
-                  selectedCategory !== cat.id && cat.id !== 'all'
-                    ? { backgroundColor: PUBLIC_CATEGORY_CONFIG[cat.id]?.color + '15', color: PUBLIC_CATEGORY_CONFIG[cat.id]?.color }
-                    : undefined
-                }
+                selected={selectedCategory === cat.id}
+                accentColor={cat.id !== 'all' ? PUBLIC_CATEGORY_CONFIG[cat.id]?.color : undefined}
+                className="px-4 py-2 text-sm"
               >
                 {cat.name}
-              </button>
+              </SourceChip>
             ))}
           </div>
         </div>
@@ -208,12 +203,11 @@ export function PublicSourcesPanel({ isOpen, onClose, onRefresh }: PublicSources
               </svg>
             </div>
           ) : filteredSources.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-text-muted">
-              <svg className="h-12 w-12 mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-              <p className="text-lg font-medium">暂无{categories.find(c => c.id === selectedCategory)?.name}类订阅源</p>
-            </div>
+            <EmptyState
+              title={`暂无${categories.find(c => c.id === selectedCategory)?.name}类订阅源`}
+              description="当前分类下没有可添加的公开 RSS。"
+              className="py-16"
+            />
           ) : (
             filteredSources.map((source) => {
               const isSubscribed = subscribedIds.has(source.id)
@@ -303,13 +297,14 @@ export function PublicSourcesPanel({ isOpen, onClose, onRefresh }: PublicSources
               >
                 取消
               </button>
-              <button
+              <ActionButton
                 onClick={() => void handleSubscribe()}
                 disabled={isSubscribing}
-                className="rounded-lg bg-accent px-5 py-2 text-sm font-medium text-white hover:bg-accent-hover transition-colors disabled:opacity-50"
+                variant="primary"
+                size="md"
               >
                 {isSubscribing ? '订阅中...' : '确认订阅'}
-              </button>
+              </ActionButton>
             </div>
           </div>
         )}

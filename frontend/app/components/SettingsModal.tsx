@@ -7,6 +7,11 @@ import { settingsApi, sourcesApi, favoritesApi, wechatApi } from '../lib/api'
 import { PlatformConnectionsPanel } from './PlatformConnectionsPanel'
 import { IntegrationSetting, PLATFORM_CONFIG, PUBLIC_CATEGORY_CONFIG, Source, FavoriteTag } from '../types'
 import { useTheme } from './ThemeProvider'
+import { EmptyState } from './EmptyState'
+import { SourceHealthBadge } from './SourceHealthBadge'
+import { StatusBanner } from './StatusBanner'
+import { ActionButton } from './ActionButton'
+import { TextAreaField } from './FormField'
 
 interface SettingsModalProps {
   isOpen: boolean
@@ -323,9 +328,12 @@ function SourcesTab({
       </div>
 
       {notice && (
-        <div className="mb-4 rounded-xl border border-border-color bg-bg-primary px-4 py-3 text-sm text-text-secondary">
-          {notice}
-        </div>
+        <StatusBanner
+          variant={notice.includes('失败') || notice.includes('错误') ? 'error' : 'info'}
+          title="订阅源状态"
+          description={notice}
+          className="mb-4"
+        />
       )}
 
       {/* 两级目录切换 */}
@@ -375,10 +383,7 @@ function SourcesTab({
           ))}
         </div>
       ) : filteredSources.length === 0 ? (
-        <EmptyState
-          title="暂无订阅源"
-          description="先从顶部加号添加一个订阅源，系统就会开始采集内容。"
-        />
+        <EmptyState title="暂无订阅源" description="先添加订阅源，再回到这里做管理。" />
       ) : (
         <div className="space-y-3">
           {filteredSources.map((source) => (
@@ -448,6 +453,17 @@ function SourceItem({
             <span className="rounded bg-bg-tertiary px-1.5 py-0.5 text-xs text-text-secondary">
               {displayName}
             </span>
+            <SourceHealthBadge
+              tone={
+                !source.enabled
+                  ? 'disabled'
+                  : source.status === 'active'
+                    ? 'active'
+                    : source.error_count > 0
+                      ? 'error'
+                      : 'interrupted'
+              }
+            />
             {source.error_count > 0 && (
               <span className="rounded bg-red-100 px-1.5 py-0.5 text-xs text-red-600">
                 错误 {source.error_count}
@@ -665,14 +681,15 @@ function GeneralTab() {
               ))}
 
               <div className="flex justify-end">
-                <button
+                <ActionButton
                   onClick={handleSave}
                   disabled={isSaving}
                   data-testid="save-rsshub-settings"
-                  className="rounded-xl bg-accent px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
+                  variant="primary"
+                  size="md"
                 >
                   {isSaving ? '保存中...' : '保存并重启 RSSHub'}
-                </button>
+                </ActionButton>
               </div>
             </div>
           )}
@@ -725,12 +742,13 @@ function IntegrationFieldEditor({
         )}
       </div>
       <p className="mb-3 text-sm text-text-secondary">{setting.description}</p>
-      <textarea
+      <TextAreaField
+        label="配置值"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={setting.placeholder}
         rows={4}
-        className="w-full rounded-xl border border-border-color bg-bg-primary px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+        className="bg-bg-primary"
       />
       <p className="mt-2 text-xs text-text-muted">环境变量名：{setting.key}</p>
     </div>
@@ -761,20 +779,6 @@ function AboutTab() {
           ))}
         </div>
       </div>
-    </div>
-  )
-}
-
-function EmptyState({ title, description }: { title: string; description: string }) {
-  return (
-    <div className="py-12 text-center">
-      <div className="mx-auto mb-4 h-16 w-16 text-text-muted">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-        </svg>
-      </div>
-      <h4 className="mb-1 font-medium text-text-primary">{title}</h4>
-      <p className="text-sm text-text-secondary">{description}</p>
     </div>
   )
 }
@@ -837,19 +841,19 @@ function TagsTab({ tags, onMutate }: { tags: FavoriteTag[]; onMutate: () => void
               className="w-full rounded-lg border border-border-color bg-bg-secondary px-3 py-2 text-text-primary placeholder:text-text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
             />
             <div className="flex justify-end gap-2">
-              <button
+              <ActionButton
                 onClick={resetForm}
-                className="rounded-lg px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary"
+                variant="subtle"
               >
                 取消
-              </button>
-              <button
+              </ActionButton>
+              <ActionButton
                 onClick={handleCreate}
                 disabled={isSubmitting || !formData.name.trim()}
-                className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
+                variant="primary"
               >
                 {isSubmitting ? '保存中...' : '保存'}
-              </button>
+              </ActionButton>
             </div>
           </div>
         </div>

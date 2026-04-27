@@ -153,12 +153,12 @@
     "enabled": 1
   },
   {
-    "name": "V2EX 最热",
-    "url": "https://www.v2ex.com/feed/tab/hot.xml",
-    "rss_url": "https://www.v2ex.com/feed/tab/hot.xml",
-    "platform": "x",
+    "name": "V2EX ??",
+    "url": "https://www.v2ex.com/index.xml",
+    "rss_url": "https://www.v2ex.com/index.xml",
+    "platform": "custom",
     "category": "aggregator",
-    "description": "Imported from JackyST0/awesome-rsshub-routes (技术社区)",
+    "description": "Imported from JackyST0/awesome-rsshub-routes (technology community)",
     "enabled": 1
   },
   {
@@ -351,9 +351,9 @@
     "enabled": 1
   },
   {
-    "name": "知乎每日精选",
-    "url": "https://www.zhihu.com/rss",
-    "rss_url": "https://www.zhihu.com/rss",
+    "name": "??????",
+    "url": "https://daily.zhihu.com",
+    "rss_url": "http://localhost:1200/zhihu/daily",
     "platform": "zhihu",
     "category": "aggregator",
     "description": "Imported from weekend-project-space/top-rss-list (aggregator)",

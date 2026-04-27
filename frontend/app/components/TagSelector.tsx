@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { Tag } from '../types'
 import { cn } from '../lib/utils'
+import { DropdownMenu } from './DropdownMenu'
+import { SourceChip } from './SourceChip'
 
 interface TagSelectorProps {
   itemId: number
@@ -122,36 +124,28 @@ export function TagSelector({
 
       {/* 下拉选择面板 */}
       {isOpen && unselectedTags.length > 0 && (
-        <div
-          className={cn(
-            'absolute left-0 top-full mt-1 z-50',
-            'min-w-[160px] max-h-[200px] overflow-y-auto',
-            'bg-bg-primary rounded-lg shadow-lg border border-border-color',
-            'py-1'
-          )}
-        >
+        <DropdownMenu className="min-w-[160px] max-h-[200px]">
           {unselectedTags.map((tag) => (
-            <button
+            <SourceChip
               key={tag.id}
               onClick={(e) => {
                 e.stopPropagation()
                 handleAdd(tag.id)
               }}
               disabled={isLoading}
-              className={cn(
-                'w-full flex items-center gap-2 px-3 py-2 text-left',
-                'hover:bg-bg-secondary transition-colors',
-                'disabled:opacity-50'
-              )}
+              accentColor={tag.color}
+              className="w-full justify-start rounded-lg px-3 py-2 text-sm disabled:opacity-50"
+              dot={
+                <span
+                  className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: tag.color }}
+                />
+              }
             >
-              <span
-                className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                style={{ backgroundColor: tag.color }}
-              />
-              <span className="text-sm text-text-secondary truncate">{tag.name}</span>
-            </button>
+              <span className="truncate">{tag.name}</span>
+            </SourceChip>
           ))}
-        </div>
+        </DropdownMenu>
       )}
     </div>
   )

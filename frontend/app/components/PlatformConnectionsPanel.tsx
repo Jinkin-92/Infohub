@@ -5,6 +5,9 @@ import useSWR from 'swr'
 import { authApi, type LoginSession, type PlatformStatus } from '../lib/api'
 import { ManualCredentialModal } from './ManualCredentialModal'
 import { QrLoginModal } from './QrLoginModal'
+import { EmptyState } from './EmptyState'
+import { SourceHealthBadge } from './SourceHealthBadge'
+import { StatusBanner } from './StatusBanner'
 
 interface Props {
   onMessage?: (msg: string) => void
@@ -150,11 +153,27 @@ export function PlatformConnectionsPanel({ onMessage }: Props) {
     return <div className="p-4 text-sm text-gray-500">加载中...</div>
   }
 
+  if (platforms.length === 0) {
+    return (
+      <EmptyState
+        title="暂无平台连接配置"
+        description="当前没有可管理的平台连接项，请检查后端平台配置是否已正确加载。"
+        className="p-4"
+      />
+    )
+  }
+
   return (
     <>
       <div className="space-y-3" data-testid="platform-connections-panel">
         <p className="mb-4 text-sm text-gray-500">连接需要登录的平台后，相关订阅源才可稳定采集。</p>
-        {testStatusText && <p className="text-xs text-blue-600">{testStatusText}</p>}
+        {testStatusText && (
+          <StatusBanner
+            variant="info"
+            title="正在测试平台连接"
+            description={testStatusText}
+          />
+        )}
 
         {platforms.map((platform) => (
           <PlatformCard
@@ -207,7 +226,6 @@ function PlatformCard({ platform, isTesting, onQrLogin, onManualLogin, onDelete,
   const isStale = platform.status === 'expired' || platform.status === 'invalid'
 
   const statusLabel = isConnected ? '已连接' : isStale ? (platform.status === 'expired' ? '已过期' : '已失效') : '未连接'
-  const statusColor = isConnected ? 'text-green-600' : isStale ? 'text-amber-600' : 'text-red-500'
   const statusBg = isConnected ? 'bg-green-50 dark:bg-green-900/20' : isStale ? 'bg-amber-50 dark:bg-amber-900/20' : 'bg-red-50 dark:bg-red-900/20'
   const healthTone =
     platform.healthState === 'expired'
@@ -215,6 +233,14 @@ function PlatformCard({ platform, isTesting, onQrLogin, onManualLogin, onDelete,
       : platform.healthState === 'warning'
         ? 'text-amber-600'
         : 'text-gray-500'
+  const healthBadgeTone =
+    platform.status === 'connected'
+      ? 'active'
+      : platform.status === 'expired'
+        ? 'interrupted'
+        : platform.status === 'invalid'
+          ? 'error'
+          : 'stale'
 
   return (
     <div
@@ -226,7 +252,7 @@ function PlatformCard({ platform, isTesting, onQrLogin, onManualLogin, onDelete,
           <span className="text-xl">{platform.icon}</span>
           <span className="font-medium text-gray-900 dark:text-gray-100">{platform.displayName}</span>
         </div>
-        <span className={`text-sm font-medium ${statusColor}`}>{statusLabel}</span>
+        <SourceHealthBadge tone={healthBadgeTone} label={statusLabel} />
       </div>
 
       {(isConnected || isStale) && (platform.cookiePreview || platform.tokenPreview) && (

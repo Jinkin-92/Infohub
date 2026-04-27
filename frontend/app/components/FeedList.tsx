@@ -5,6 +5,8 @@ import useSWR from 'swr'
 import { feedApi, favoritesApi, sourcesApi } from '../lib/api'
 import { Item, Source, FavoriteTag } from '../types'
 import { cn, formatDate, getSourceColor, getSourceTone } from '../lib/utils'
+import { EmptyState } from './EmptyState'
+import { SourceHealthBadge } from './SourceHealthBadge'
 
 interface FeedListProps {
   platform?: string
@@ -418,8 +420,14 @@ export function FeedList({
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center py-20">
-        <div className="mb-4 h-16 w-16 text-text-muted">
+      <EmptyState
+        title="加载失败"
+        description={
+          error instanceof Error
+            ? `${error.message} 可先检查后端健康页：http://127.0.0.1:3002/health`
+            : '本地服务暂时不可用，请稍后重试。可先检查后端健康页：http://127.0.0.1:3002/health'
+        }
+        icon={
           <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
               strokeLinecap="round"
@@ -428,21 +436,11 @@ export function FeedList({
               d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
             />
           </svg>
-        </div>
-        <h3 className="mb-2 text-lg font-medium text-text-primary">加载失败</h3>
-        <p className="mb-2 text-center text-text-secondary">
-          {error instanceof Error ? error.message : '本地服务暂时不可用，请稍后重试。'}
-        </p>
-        <p className="mb-4 text-center text-sm text-text-muted">
-          可先检查后端健康页：http://127.0.0.1:3002/health
-        </p>
-        <button
-          onClick={() => void mutate()}
-          className="rounded-lg bg-accent px-4 py-2 text-white transition-colors hover:bg-accent-hover"
-        >
-          重试
-        </button>
-      </div>
+        }
+        actionLabel="重试"
+        onAction={() => void mutate()}
+        className="py-20"
+      />
     )
   }
 
@@ -450,8 +448,16 @@ export function FeedList({
     const primaryError = erroredSources[0]
 
     return (
-      <div className="flex flex-col items-center justify-center py-20">
-        <div className="mb-4 h-16 w-16 text-text-muted">
+      <EmptyState
+        title={searchQuery ? '没有找到相关内容' : primaryError ? '订阅源采集失败' : '暂无内容'}
+        description={
+          searchQuery
+            ? `搜索 "${searchQuery}" 没有结果。`
+            : primaryError
+              ? `${primaryError.last_error || '当前订阅源抓取失败，请在设置中查看错误详情。'} 最近失败源：${primaryError.name}`
+              : '该筛选条件下暂时没有新内容。'
+        }
+        icon={
           <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
               strokeLinecap="round"
@@ -460,21 +466,9 @@ export function FeedList({
               d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
             />
           </svg>
-        </div>
-        <h3 className="mb-2 text-lg font-medium text-text-primary">
-          {searchQuery ? '没有找到相关内容' : primaryError ? '订阅源采集失败' : '暂无内容'}
-        </h3>
-        <p className="max-w-xl text-center text-text-secondary">
-          {searchQuery
-            ? `搜索 "${searchQuery}" 没有结果`
-            : primaryError
-              ? primaryError.last_error || '当前订阅源抓取失败，请在设置中查看错误详情。'
-              : '该订阅源暂时没有新内容'}
-        </p>
-        {!searchQuery && primaryError && (
-          <p className="mt-2 text-sm text-text-muted">最近失败源：{primaryError.name}</p>
-        )}
-      </div>
+        }
+        className="py-20"
+      />
     )
   }
 
@@ -594,7 +588,9 @@ export function FeedList({
 
                   <div className="flex items-center justify-between px-4 py-3 text-xs text-text-secondary">
                     <span>总更新 {updateCount}</span>
-                    <span>{group.source.status === 'active' ? '采集正常' : '采集中断'}</span>
+                    <SourceHealthBadge
+                      tone={group.source.status === 'active' ? 'active' : group.source.status === 'disabled' ? 'disabled' : 'interrupted'}
+                    />
                   </div>
 
                   <div className="h-[calc(100%-112px)] overflow-y-auto px-3 pb-3">

@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { ActionButton } from './ActionButton'
+import { TextAreaField } from './FormField'
 
 const PLATFORM_CONFIG: Record<string, { name: string; label: string; placeholder: string }> = {
   weibo: { name: '微博', label: 'Cookie', placeholder: 'SUB=xxx; SUBP=xxx' },
@@ -33,49 +35,44 @@ export function ManualCredentialModal({ platform, onSave, onClose }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-md mx-4 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
-          手动填写{config.name}凭证
-        </h3>
-        <p className="text-sm text-gray-500 mb-4">
-          {platform === 'wechat'
-            ? '请填写 Cookie 和 Token，每个占一行'
-            : `请填写 ${config.label}（从浏览器开发者工具 Cookie 中复制）`}
-        </p>
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative mx-4 w-full max-w-md overflow-hidden rounded-2xl bg-bg-secondary shadow-2xl">
+        <div className="border-b border-border-color px-6 py-4">
+          <h3 className="text-lg font-semibold text-text-primary">手动填写{config.name}凭证</h3>
+          <p className="mt-1 text-sm text-text-secondary">
+            {platform === 'wechat'
+              ? '请填写 Cookie 和 Token，每个占一行。'
+              : `请填写 ${config.label}，通常从浏览器开发者工具 Cookie 中复制。`}
+          </p>
+        </div>
 
-        {platform === 'wechat' ? (
-          <textarea
+        <div className="p-6">
+          <TextAreaField
+            label={config.label}
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            placeholder={"Cookie\nToken"}
+            placeholder={platform === 'wechat' ? 'Cookie\nToken' : config.placeholder}
             rows={4}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+            disabled={saving}
+            className="font-mono"
           />
-        ) : (
-          <textarea
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            placeholder={config.placeholder}
-            rows={4}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        )}
+        </div>
 
-        <div className="flex justify-end gap-2 mt-4">
-          <button
+        <div className="flex justify-end gap-2 border-t border-border-color bg-bg-primary px-6 py-4">
+          <ActionButton
             onClick={onClose}
-            className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            variant="subtle"
+            disabled={saving}
           >
             取消
-          </button>
-          <button
+          </ActionButton>
+          <ActionButton
             onClick={handleSave}
             disabled={!value.trim() || saving}
-            className="px-4 py-2 text-sm bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white rounded-lg transition-colors"
+            variant="primary"
           >
             {saving ? '保存中…' : '保存'}
-          </button>
+          </ActionButton>
         </div>
       </div>
     </div>

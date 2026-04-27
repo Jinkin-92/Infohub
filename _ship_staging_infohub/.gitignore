@@ -1,0 +1,51 @@
+# Environment files
+.env
+.env.local
+.env.*.local
+!.env.example
+!rsshub-local/.env.example
+
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build outputs
+dist/
+build/
+.next/
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime files
+*.pid
+*.seed
+*.pid.lock
+tmp/
+temp/
+*.tmp
+
+# Local data
+postgres_data/
+backend/data/
+rsshub-local/.tmp/
+rsshub-local/logs/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+.gstack/

@@ -9,6 +9,9 @@ import { SearchBar } from './components/SearchBar'
 import { AddSourceModal } from './components/AddSourceModal'
 import { SettingsModal } from './components/SettingsModal'
 import { FavoriteFilter } from './components/FavoriteFilter'
+import { StatusBanner } from './components/StatusBanner'
+import { ActionButton } from './components/ActionButton'
+import { SourceChip } from './components/SourceChip'
 import { feedApi, favoritesApi, settingsApi, sourcesApi } from './lib/api'
 import { FavoriteTag } from './types'
 import { cn } from './lib/utils'
@@ -191,33 +194,33 @@ export default function Home() {
 
       <div className="mx-auto max-w-content px-4 pb-2 pt-4 sm:px-6 lg:px-8">
         {collectorIssue && (
-          <div className="mb-4 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-4 text-amber-900 shadow-sm">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm font-semibold">{collectorIssue.title}</p>
-                <p className="mt-1 text-sm text-amber-800">{collectorIssue.description}</p>
-              </div>
-              <button
-                onClick={() => void handleRepairCollector()}
-                disabled={repairingCollector}
-                className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {repairingCollector ? '修复中...' : '一键修复'}
-              </button>
-            </div>
-          </div>
+          <StatusBanner
+            variant="warning"
+            title={collectorIssue.title}
+            description={collectorIssue.description}
+            actionLabel={repairingCollector ? '修复中...' : '一键修复'}
+            actionDisabled={repairingCollector}
+            onAction={() => void handleRepairCollector()}
+            className="mb-4"
+          />
         )}
 
         {loadingFreshContent && !collectorIssue && (
-          <div className="mb-4 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900 shadow-sm">
-            正在后台刷新订阅源。当前先显示上次同步内容，最新内容会在刷新完成后自动更新。
-          </div>
+          <StatusBanner
+            variant="info"
+            title="正在后台刷新订阅源"
+            description="当前先显示上次同步内容，刷新完成后会自动更新到最新内容。"
+            className="mb-4"
+          />
         )}
 
         {refreshMessage && !loadingFreshContent && !collectorIssue && (
-          <div className="mb-4 rounded-2xl border border-border-color bg-bg-secondary px-4 py-3 text-sm text-text-secondary shadow-sm">
-            {refreshMessage}
-          </div>
+          <StatusBanner
+            variant="success"
+            title="刷新状态"
+            description={refreshMessage}
+            className="mb-4"
+          />
         )}
 
         <div className="flex flex-col gap-3 sm:flex-row">
@@ -238,16 +241,19 @@ export default function Home() {
       <div className="mx-auto max-w-content px-4 py-4 sm:px-6 lg:px-8">
         {activeTab.sourceType === 'custom' && (
           <div className="mb-4 flex items-center justify-end">
-            <button
+            <ActionButton
               onClick={() => setIsAddModalOpen(true)}
               data-testid="open-add-source-modal"
-              className="flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-accent-hover"
+              variant="primary"
+              size="md"
+              icon={
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+              }
             >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
               添加定制订阅源
-            </button>
+            </ActionButton>
           </div>
         )}
 
@@ -255,33 +261,34 @@ export default function Home() {
           <div className="mb-4 flex items-center justify-between">
             <div className="scrollbar-hide flex items-center gap-2 overflow-x-auto pb-2">
               {PUBLIC_CATEGORIES.map((category) => (
-                <button
+                <SourceChip
                   key={category}
                   onClick={() => {
                     setActiveTab({ sourceType: 'public', category })
                     setTabVersion((v) => v + 1)
                   }}
-                  className={cn(
-                    'whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-all',
-                    activeTab.category === category
-                      ? 'bg-accent text-white shadow-sm'
-                      : 'bg-bg-tertiary text-text-secondary hover:bg-bg-secondary hover:text-text-primary'
-                  )}
+                  selected={activeTab.category === category}
+                  accentColor={category === 'all' ? undefined : '#0EA5E9'}
+                  className="px-4 py-2 text-sm"
                 >
                   {PUBLIC_CATEGORY_LABELS[category]}
-                </button>
+                </SourceChip>
               ))}
             </div>
-            <button
+            <ActionButton
               onClick={() => setIsPublicSourcesOpen(true)}
               data-testid="open-public-sources-panel"
-              className="flex-shrink-0 flex items-center gap-1.5 rounded-lg bg-accent px-3 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-accent-hover"
+              variant="primary"
+              size="sm"
+              className="flex-shrink-0"
+              icon={
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+              }
             >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
               添加公开 RSS
-            </button>
+            </ActionButton>
           </div>
         )}
 

@@ -425,6 +425,9 @@ export class WeiboLoginService {
           targetUrl: session.targetUrl,
           cookiePreview: session.cookiePreview,
         });
+        if (!weiboProfileStore.hasActiveProfile()) {
+          throw new Error('Weibo login did not produce a reusable browser profile');
+        }
 
         if (!session.cookieConfigured) {
           try {

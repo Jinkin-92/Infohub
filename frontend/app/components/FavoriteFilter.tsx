@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { FavoriteTag } from '../types'
 import { cn } from '../lib/utils'
+import { ActionButton } from './ActionButton'
+import { SourceChip } from './SourceChip'
 
 interface FavoriteFilterProps {
   tags: FavoriteTag[]
@@ -32,15 +34,11 @@ export function FavoriteFilter({ tags, selectedTagId, onSelectTag, className }: 
 
   return (
     <div ref={containerRef} className={cn('relative', className)}>
-      <button
+      <ActionButton
         onClick={() => setIsOpen(!isOpen)}
-        className={cn(
-          'flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium',
-          'border border-border-color transition-colors',
-          selectedTagId
-            ? 'bg-red-50 text-red-500 border-red-200'
-            : 'bg-bg-secondary text-text-secondary hover:bg-bg-tertiary'
-        )}
+        variant={selectedTagId ? 'secondary' : 'secondary'}
+        size="sm"
+        className={cn(selectedTagId && 'border-red-200 bg-red-50 text-red-500 hover:bg-red-100')}
       >
         <svg
           className="w-4 h-4"
@@ -64,7 +62,7 @@ export function FavoriteFilter({ tags, selectedTagId, onSelectTag, className }: 
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
-      </button>
+      </ActionButton>
 
       {isOpen && (
         <div
@@ -75,39 +73,34 @@ export function FavoriteFilter({ tags, selectedTagId, onSelectTag, className }: 
             'py-1'
           )}
         >
-          <button
+          <SourceChip
             onClick={() => {
               onSelectTag(null)
               setIsOpen(false)
             }}
-            className={cn(
-              'w-full flex items-center gap-2 px-3 py-2 text-left',
-              'hover:bg-bg-secondary transition-colors',
-              !selectedTagId && 'bg-accent/5'
-            )}
+            selected={!selectedTagId}
+            className="w-full justify-start rounded-lg px-3 py-2 text-sm"
+            dot={<span className="h-2.5 w-2.5 rounded-full bg-gray-300 flex-shrink-0" />}
           >
-            <span className="w-2.5 h-2.5 rounded-full bg-gray-300 flex-shrink-0" />
-            <span className="text-sm text-text-secondary">全部内容</span>
-          </button>
+            全部内容
+          </SourceChip>
 
           {tags.length > 0 && <div className="h-px bg-border-color my-1" />}
 
           {tags.map((tag) => (
-            <button
+            <SourceChip
               key={tag.id}
               onClick={() => {
                 onSelectTag(tag.id)
                 setIsOpen(false)
               }}
-              className={cn(
-                'w-full flex items-center gap-2 px-3 py-2 text-left',
-                'hover:bg-bg-secondary transition-colors',
-                selectedTagId === tag.id && 'bg-accent/5'
-              )}
+              selected={selectedTagId === tag.id}
+              className="w-full justify-start rounded-lg px-3 py-2 text-sm"
+              accentColor="#EF4444"
+              dot={<span className="h-2.5 w-2.5 rounded-full bg-red-400 flex-shrink-0" />}
             >
-              <span className="w-2.5 h-2.5 rounded-full bg-red-400 flex-shrink-0" />
-              <span className="text-sm text-text-secondary truncate">{tag.name}</span>
-            </button>
+              <span className="truncate">{tag.name}</span>
+            </SourceChip>
           ))}
 
           {tags.length === 0 && (

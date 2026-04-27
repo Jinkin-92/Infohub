@@ -1,8 +1,3 @@
-/**
- * 微博认证 Provider
- * 封装现有 WeiboLoginService
- */
-
 import { WeiboLoginService, type WeiboLoginSessionSnapshot } from '../../weiboLogin.js';
 import { credentialStore } from '../credentialStore.js';
 import { weiboProfileStore } from '../../weiboProfileStore.js';
@@ -85,18 +80,18 @@ function getProfileHealth(meta: ReturnType<typeof weiboProfileStore.getMeta>): {
   };
 }
 
-function sessionToStatus(session: WeiboLoginSessionSnapshot | null, cred: { hasValue: boolean; verifiedAt: string | null } | null | undefined): PlatformStatus['status'] {
+function sessionToStatus(
+  session: WeiboLoginSessionSnapshot | null,
+  cred: { hasValue: boolean; verifiedAt: string | null } | null | undefined
+): PlatformStatus['status'] {
   if (!cred?.hasValue) return 'disconnected';
+  if (!weiboProfileStore.hasActiveProfile()) return 'invalid';
   if (session?.state === 'failed') return 'invalid';
-  if (session?.state === 'cookie_saved') {
-    // credential was verified through QR login
-    return 'connected';
-  }
-  // No active session - check credential age
+  if (session?.state === 'cookie_saved') return 'connected';
   if (!cred.verifiedAt) return 'invalid';
+
   const ageDays = (Date.now() - new Date(cred.verifiedAt).getTime()) / (1000 * 60 * 60 * 24);
   if (ageDays >= 7) return 'expired';
-  if (ageDays >= 3) return 'connected'; // stale but not yet expired
   return 'connected';
 }
 
@@ -104,13 +99,17 @@ export async function getWeiboStatus(): Promise<PlatformStatus> {
   const cred = await credentialStore.getAllStatus();
   const weiboCred = cred.find((c) => c.platform === 'weibo');
   const profileMeta = weiboProfileStore.getMeta();
+  const hasActiveProfile = weiboProfileStore.hasActiveProfile();
   const health = getProfileHealth(profileMeta);
   const sourcesCount = 0;
+  const fallbackWarning = weiboCred?.hasValue
+    ? '微博当前只有桌面站 cookie，没有可复用的浏览器登录态，因此无法稳定刷新时间线。请重新连接微博。'
+    : undefined;
 
   return {
     platform: 'weibo',
     displayName: '微博',
-    icon: '📮',
+    icon: '📰',
     color: '#E6162D',
     capability: {
       qrLogin: true,
@@ -118,13 +117,13 @@ export async function getWeiboStatus(): Promise<PlatformStatus> {
       needsVerification: true,
     },
     status: sessionToStatus(null, weiboCred ?? null),
-    cookiePreview: profileMeta?.cookiePreview || (weiboCred?.hasValue ? '●●●●●●' : undefined),
+    cookiePreview: profileMeta?.cookiePreview || (weiboCred?.hasValue ? '•••' : undefined),
     verifiedAt: profileMeta?.verifiedAt || weiboCred?.verifiedAt || undefined,
     lastCheckedAt: health.lastCheckedAt,
     lastSuccessfulUseAt: health.lastSuccessfulUseAt,
-    healthState: health.healthState,
-    warningMessage: health.warningMessage,
-    reconnectRecommended: health.reconnectRecommended,
+    healthState: hasActiveProfile ? health.healthState : (weiboCred?.hasValue ? 'expired' : health.healthState),
+    warningMessage: hasActiveProfile ? health.warningMessage : fallbackWarning,
+    reconnectRecommended: hasActiveProfile ? health.reconnectRecommended : Boolean(weiboCred?.hasValue),
     dependentSources: sourcesCount,
   };
 }

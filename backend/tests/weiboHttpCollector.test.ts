@@ -160,8 +160,8 @@ describe('weibo http collector', () => {
     const result = await weiboHttpCollector.verifyConnection('https://weibo.com/1788911247');
 
     expect(result.success).toBe(false);
-    expect(result.message).toMatch(/no post cards/i);
-    expect(mocks.browserVerifyConnection).toHaveBeenCalledTimes(1);
+    expect(result.message).toMatch(/no reusable browser profile/i);
+    expect(mocks.browserVerifyConnection).not.toHaveBeenCalled();
   });
 
   it('fails clearly when timeline api returns non-200', async () => {
@@ -188,5 +188,41 @@ describe('weibo http collector', () => {
         platform_id: '1788911247',
       } as never)
     ).rejects.toThrow(/returned 503/i);
+  });
+
+  it('uses browser fallback only when a reusable profile exists', async () => {
+    mocks.hasActiveProfile.mockReturnValue(true);
+    mocks.browserVerifyConnection.mockResolvedValue({
+      success: true,
+      message: 'Weibo connected. 谷大白话 rendered 10 posts.',
+      resolvedUid: '1788911247',
+    });
+
+    vi.mocked(global.fetch)
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            ok: 1,
+            data: { user: { screen_name: '谷大白话' } },
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        )
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            ok: 1,
+            data: { cards: [] },
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        )
+      );
+
+    const { weiboHttpCollector } = await import('../src/services/weiboHttpCollector.js');
+    const result = await weiboHttpCollector.verifyConnection('https://weibo.com/1788911247');
+
+    expect(result.success).toBe(true);
+    expect(result.message).toMatch(/browser fallback used/i);
+    expect(mocks.browserVerifyConnection).toHaveBeenCalledTimes(1);
   });
 });

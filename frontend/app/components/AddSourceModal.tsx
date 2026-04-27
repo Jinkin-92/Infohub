@@ -4,6 +4,8 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import { cn } from '../lib/utils'
 import { sourcesApi } from '../lib/api'
 import { PLATFORM_CONFIG } from '../types'
+import { ActionButton } from './ActionButton'
+import { SourceChip } from './SourceChip'
 
 interface DetectionResult {
   platform: string
@@ -338,83 +340,62 @@ export function AddSourceModal({ isOpen, onClose, onSuccess }: AddSourceModalPro
               快速示例
             </label>
             <div className="flex flex-wrap gap-2">
-              <button
+              <SourceChip
                 type="button"
                 onClick={() => fillExample('https://www.zhihu.com/people/example')}
-                className="px-3 py-1.5 text-sm bg-bg-tertiary hover:bg-bg-primary text-text-secondary hover:text-text-primary rounded-lg transition-colors"
+                accentColor={PLATFORM_CONFIG.zhihu.color}
+                className="px-3 py-1.5 text-sm"
               >
-                <span
-                  className="inline-block w-1.5 h-1.5 rounded-full mr-1.5"
-                  style={{ backgroundColor: PLATFORM_CONFIG.zhihu.color }}
-                />
                 知乎用户
-              </button>
-              <button
+              </SourceChip>
+              <SourceChip
                 type="button"
                 onClick={() => fillExample('https://x.com/example')}
-                className="px-3 py-1.5 text-sm bg-bg-tertiary hover:bg-bg-primary text-text-secondary hover:text-text-primary rounded-lg transition-colors"
+                accentColor={PLATFORM_CONFIG.x.color}
+                className="px-3 py-1.5 text-sm"
               >
-                <span
-                  className="inline-block w-1.5 h-1.5 rounded-full mr-1.5"
-                  style={{ backgroundColor: PLATFORM_CONFIG.x.color }}
-                />
                 X 用户
-              </button>
-              <button
+              </SourceChip>
+              <SourceChip
                 type="button"
                 onClick={() => fillExample('https://space.bilibili.com/435931665/upload/video')}
-                className="px-3 py-1.5 text-sm bg-bg-tertiary hover:bg-bg-primary text-text-secondary hover:text-text-primary rounded-lg transition-colors"
+                accentColor={PLATFORM_CONFIG.bilibili.color}
+                className="px-3 py-1.5 text-sm"
               >
-                <span
-                  className="inline-block w-1.5 h-1.5 rounded-full mr-1.5"
-                  style={{ backgroundColor: PLATFORM_CONFIG.bilibili.color }}
-                />
                 B站 UP主
-              </button>
-              <button
+              </SourceChip>
+              <SourceChip
                 type="button"
                 onClick={() => fillExample('https://youtube.com/@example')}
-                className="px-3 py-1.5 text-sm bg-bg-tertiary hover:bg-bg-primary text-text-secondary hover:text-text-primary rounded-lg transition-colors"
+                accentColor={PLATFORM_CONFIG.youtube.color}
+                className="px-3 py-1.5 text-sm"
               >
-                <span
-                  className="inline-block w-1.5 h-1.5 rounded-full mr-1.5"
-                  style={{ backgroundColor: PLATFORM_CONFIG.youtube.color }}
-                />
                 YouTube 频道
-              </button>
-              <button
+              </SourceChip>
+              <SourceChip
                 type="button"
                 onClick={() => fillExample('https://mp.weixin.qq.com/s/rkU039BJIpkGe0ntrOG76g')}
-                className="px-3 py-1.5 text-sm bg-bg-tertiary hover:bg-bg-primary text-text-secondary hover:text-text-primary rounded-lg transition-colors"
+                accentColor={PLATFORM_CONFIG.wechat.color}
+                className="px-3 py-1.5 text-sm"
               >
-                <span
-                  className="inline-block w-1.5 h-1.5 rounded-full mr-1.5"
-                  style={{ backgroundColor: PLATFORM_CONFIG.wechat.color }}
-                />
                 微信公众号
-              </button>
-              <button
+              </SourceChip>
+              <SourceChip
                 type="button"
                 onClick={() => fillExample('https://weibo.com/u/1234567890')}
-                className="px-3 py-1.5 text-sm bg-bg-tertiary hover:bg-bg-primary text-text-secondary hover:text-text-primary rounded-lg transition-colors"
+                accentColor={PLATFORM_CONFIG.weibo.color}
+                className="px-3 py-1.5 text-sm"
               >
-                <span
-                  className="inline-block w-1.5 h-1.5 rounded-full mr-1.5"
-                  style={{ backgroundColor: PLATFORM_CONFIG.weibo.color }}
-                />
                 微博用户
-              </button>
-              <button
+              </SourceChip>
+              <SourceChip
                 type="button"
                 onClick={() => fillExample('https://example.com/feed.xml')}
-                className="px-3 py-1.5 text-sm bg-bg-tertiary hover:bg-bg-primary text-text-secondary hover:text-text-primary rounded-lg transition-colors"
+                accentColor={PLATFORM_CONFIG.custom.color}
+                className="px-3 py-1.5 text-sm"
               >
-                <span
-                  className="inline-block w-1.5 h-1.5 rounded-full mr-1.5"
-                  style={{ backgroundColor: PLATFORM_CONFIG.custom.color }}
-                />
                 RSS 订阅
-              </button>
+              </SourceChip>
             </div>
           </div>
 
@@ -433,25 +414,21 @@ export function AddSourceModal({ isOpen, onClose, onSuccess }: AddSourceModalPro
 
           {/* 操作按钮 */}
           <div className="flex items-center justify-end gap-3 pt-2">
-            <button
+            <ActionButton
               type="button"
               onClick={handleClose}
               disabled={isLoading}
-              className="px-5 py-2.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-bg-tertiary rounded-xl transition-colors disabled:opacity-50"
+              variant="subtle"
+              size="md"
             >
               取消
-            </button>
-            <button
+            </ActionButton>
+            <ActionButton
               type="submit"
               disabled={isLoading || !url.trim()}
               data-testid="submit-add-source"
-              className={cn(
-                'px-5 py-2.5 text-sm font-medium text-white rounded-xl',
-                'bg-accent hover:bg-accent-hover',
-                'transition-all duration-150',
-                'disabled:opacity-50 disabled:cursor-not-allowed',
-                'flex items-center gap-2'
-              )}
+              variant="primary"
+              size="md"
             >
               {isLoading ? (
                 <>
@@ -469,7 +446,7 @@ export function AddSourceModal({ isOpen, onClose, onSuccess }: AddSourceModalPro
                   添加订阅
                 </>
               )}
-            </button>
+            </ActionButton>
           </div>
         </form>
       </div>

@@ -44,6 +44,7 @@ export class Collector {
         throw new ServiceUnavailableError(`Source not found: ${sourceId}`);
       }
       source = await this.maybeRepairWeChatSource(source);
+      source = await this.maybeRepairKnownPublicSource(source);
       sourceUrl = this.resolveSourceUrl(source);
       source = await this.maybeRepairZhihuSource(source, sourceUrl);
       sourceUrl = this.resolveSourceUrl(source);
@@ -349,6 +350,82 @@ export class Collector {
     return updated ?? source;
   }
 
+  private async maybeRepairKnownPublicSource(source: Source): Promise<Source> {
+    if (!source.is_public) {
+      return source;
+    }
+
+    if (source.public_source_id) {
+      const publicSourceMeta = await sql.get<{ enabled: number }>(
+        'SELECT enabled FROM public_sources WHERE id = ?',
+        [source.public_source_id]
+      );
+
+      if (publicSourceMeta && Number(publicSourceMeta.enabled) === 0 && source.enabled) {
+        await sql.execute(
+          `UPDATE sources
+           SET enabled = 0, status = 'disabled', last_error = NULL, last_error_at = NULL, updated_at = CURRENT_TIMESTAMP
+           WHERE id = ?`,
+          [source.id]
+        );
+
+        const disabled = await sourcesQueries.getById(source.id);
+        return disabled ?? { ...source, enabled: false, status: 'disabled', last_error: null, last_error_at: null };
+      }
+    }
+
+    let patch: Partial<Source> | null = null;
+    let publicPatch: Record<string, string> | null = null;
+
+    if (/^https:\/\/www\.zhihu\.com\/rss\/?$/i.test(source.rss_url) || /^https:\/\/www\.zhihu\.com\/rss\/?$/i.test(source.input_url)) {
+      const rsshubDailyUrl = `${env.RSSHUB_URL.replace(/\/$/, '')}/zhihu/daily`;
+      patch = {
+        input_url: 'https://daily.zhihu.com',
+        rss_url: rsshubDailyUrl,
+      };
+      publicPatch = {
+        url: 'https://daily.zhihu.com',
+        rss_url: rsshubDailyUrl,
+      };
+    } else if (/https:\/\/www\.v2ex\.com\/feed\/tab\/hot\.xml/i.test(source.rss_url) || /https:\/\/www\.v2ex\.com\/feed\/tab\/hot\.xml/i.test(source.input_url)) {
+      patch = {
+        name: 'V2EX 最新',
+        platform: 'custom',
+        input_url: 'https://www.v2ex.com/index.xml',
+        rss_url: 'https://www.v2ex.com/index.xml',
+      };
+      publicPatch = {
+        name: 'V2EX 最新',
+        platform: 'custom',
+        url: 'https://www.v2ex.com/index.xml',
+        rss_url: 'https://www.v2ex.com/index.xml',
+      };
+    }
+
+    if (!patch) {
+      return source;
+    }
+
+    const sourceFields = Object.keys(patch);
+    const sourceValues = Object.values(patch);
+    await sql.execute(
+      `UPDATE sources SET ${sourceFields.map((field) => `${field} = ?`).join(', ')}, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+      [...sourceValues, source.id]
+    );
+
+    if (source.public_source_id && publicPatch) {
+      const fields = Object.keys(publicPatch);
+      const values = Object.values(publicPatch);
+      await sql.execute(
+        `UPDATE public_sources SET ${fields.map((field) => `${field} = ?`).join(', ')} WHERE id = ?`,
+        [...values, source.public_source_id]
+      );
+    }
+
+    const updated = await sourcesQueries.getById(source.id);
+    return updated ?? source;
+  }
+
   private async ensureWeChatSourceConfigured(source: Source): Promise<string> {
     const existingWechatExt = await sql.get<{ faker_id: string }>(
       'SELECT faker_id FROM sources_wechat_ext WHERE source_id = ?',
@@ -498,10 +575,8 @@ export class Collector {
       const feed = await this.parser.parseURL(sourceUrl);
       return feed.items as RSSItem[];
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      if (!/fetch failed|ECONNRESET|ETIMEDOUT|Status code \d+|certificate|socket hang up|aborted/i.test(message)) {
-        throw error;
-      }
+      // Fall through to raw fetch parsing below. Many public feeds now return
+      // empty bodies, malformed XML, or anti-bot HTML that parseURL cannot handle.
     }
 
     const { stdout } = await execFileAsync(
@@ -513,6 +588,14 @@ export class Collector {
     const trimmed = stdout.trim();
     if (!trimmed) {
       return [];
+    }
+
+    if (/\.well-known\/sgcaptcha|SG-Captcha|<meta[^>]+refresh/i.test(trimmed) || /^<html[\s>]/i.test(trimmed)) {
+      return [];
+    }
+
+    if (trimmed.startsWith('{')) {
+      return this.parseRsshubJson(trimmed);
     }
 
     const feed = await this.parser.parseString(trimmed);

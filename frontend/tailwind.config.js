@@ -9,6 +9,16 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        canvas: 'var(--color-bg-canvas)',
+        surface: 'var(--color-bg-surface)',
+        'surface-muted': 'var(--color-bg-surface-muted)',
+        'surface-strong': 'var(--color-bg-surface-strong)',
+
+        'content-primary': 'var(--color-text-primary)',
+        'content-secondary': 'var(--color-text-secondary)',
+        'content-tertiary': 'var(--color-text-tertiary)',
+        'content-muted': 'var(--color-text-muted)',
+
         // 背景色 - 使用 CSS 变量
         'bg-primary': 'var(--bg-primary)',
         'bg-secondary': 'var(--bg-secondary)',
@@ -20,16 +30,18 @@ module.exports = {
         'text-tertiary': 'var(--text-tertiary)',
         'text-muted': 'var(--text-muted)',
 
-        // 强调色（保持不变，不随主题变化）
-        'accent': '#4CA6E1',
-        'accent-hover': '#3D95D0',
-        'accent-active': '#2E84BF',
+        // 强调色
+        'accent': 'var(--color-accent-primary)',
+        'accent-hover': 'var(--color-accent-hover)',
+        'accent-active': 'var(--color-accent-active)',
+        'accent-soft': 'var(--color-accent-soft)',
 
         // 功能色
-        'success': '#52C41A',
-        'warning': '#FAAD14',
-        'error': '#F5222D',
-        'unread': '#FF4D4F',
+        'success': 'var(--color-feedback-success)',
+        'warning': 'var(--color-feedback-warning)',
+        'error': 'var(--color-feedback-error)',
+        'info': 'var(--color-feedback-info)',
+        'unread': 'var(--color-unread-dot)',
 
         // 平台色（保持不变）
         'platform-zhihu': '#0084FF',
@@ -73,10 +85,10 @@ module.exports = {
       },
       boxShadow: {
         'card': '0 1px 3px var(--shadow-color)',
-        'card-hover': '0 4px 12px var(--shadow-color-hover)',
+        'card-hover': '0 8px 24px var(--shadow-color-hover)',
       },
       maxWidth: {
-        'content': '1440px',
+        'content': '1280px',
       },
       borderColor: {
         DEFAULT: 'var(--border-color)',

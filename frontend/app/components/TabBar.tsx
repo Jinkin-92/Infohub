@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { cn } from '../lib/utils'
 import { PLATFORM_CONFIG, PUBLIC_CATEGORY_CONFIG } from '../types'
 import type { TabState, SourceType, CustomPlatform, PublicCategory } from '../page'
+import { SourceChip } from './SourceChip'
 
 interface TabBarProps {
   activeTab: TabState
@@ -154,27 +155,26 @@ export function TabBar({
                       const isActive = isCustomActive && activeTab.platform === platform.id
                       const color = platform.id !== 'all' ? platformColors[platform.id] : '#4CA6E1'
                       return (
-                        <button
+                        <SourceChip
                           key={platform.id}
                           onClick={() => handleCustomPlatformSelect(platform.id)}
                           data-testid={`custom-platform-${platform.id}`}
-                          className={cn(
-                            'w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-left transition-colors',
-                            isActive
-                              ? 'bg-accent/10 text-accent font-medium'
-                              : 'text-text-secondary hover:bg-bg-tertiary hover:text-text-primary'
-                          )}
+                          selected={isActive}
+                          accentColor={platform.id !== 'all' ? color : undefined}
+                          className="w-full justify-start rounded-lg px-3 py-2 text-sm"
+                          dot={
+                            platform.id !== 'all' ? (
+                              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: isActive ? '#FFFFFF' : color }} />
+                            ) : undefined
+                          }
                         >
-                          {platform.id !== 'all' && (
-                            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: color }} />
-                          )}
-                          <span>{platform.name}</span>
+                          {platform.name}
                           {isActive && (
                             <svg className="ml-auto h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                             </svg>
                           )}
-                        </button>
+                        </SourceChip>
                       )
                     })}
                   </div>
@@ -211,27 +211,26 @@ export function TabBar({
                       const isActive = isPublicActive && activeTab.category === category.id
                       const config = PUBLIC_CATEGORY_CONFIG[category.id]
                       return (
-                        <button
+                        <SourceChip
                           key={category.id}
                           onClick={() => handlePublicCategorySelect(category.id)}
                           data-testid={`public-category-${category.id}`}
-                          className={cn(
-                            'w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-left transition-colors',
-                            isActive
-                              ? 'bg-accent/10 text-accent font-medium'
-                              : 'text-text-secondary hover:bg-bg-tertiary hover:text-text-primary'
-                          )}
+                          selected={isActive}
+                          accentColor={category.id !== 'all' ? config?.color : undefined}
+                          className="w-full justify-start rounded-lg px-3 py-2 text-sm"
+                          dot={
+                            category.id !== 'all' && config ? (
+                              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: isActive ? '#FFFFFF' : config.color }} />
+                            ) : undefined
+                          }
                         >
-                          {category.id !== 'all' && config && (
-                            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: config.color }} />
-                          )}
-                          <span>{category.name}</span>
+                          {category.name}
                           {isActive && (
                             <svg className="ml-auto h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                             </svg>
                           )}
-                        </button>
+                        </SourceChip>
                       )
                     })}
                   </div>
