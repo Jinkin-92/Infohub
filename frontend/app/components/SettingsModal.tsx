@@ -6,7 +6,7 @@ import { cn, getSourceColor } from '../lib/utils'
 import { settingsApi, sourcesApi, favoritesApi, wechatApi } from '../lib/api'
 import { PlatformConnectionsPanel } from './PlatformConnectionsPanel'
 import { IntegrationSetting, PLATFORM_CONFIG, PUBLIC_CATEGORY_CONFIG, Source, FavoriteTag } from '../types'
-import { useTheme } from './ThemeProvider'
+import { useTheme, type DisplaySettings } from './ThemeProvider'
 import { EmptyState } from './EmptyState'
 import { SourceHealthBadge } from './SourceHealthBadge'
 import { StatusBanner } from './StatusBanner'
@@ -578,7 +578,7 @@ function IconButton({
 }
 
 function GeneralTab() {
-  const { theme, setTheme, resolvedTheme } = useTheme()
+  const { theme, setTheme, resolvedTheme, displaySettings, setDisplaySettings } = useTheme()
   const { data, mutate, isLoading } = useSWR('settings-integrations', () => settingsApi.getIntegrations(), {
     revalidateOnFocus: false,
   })
@@ -634,6 +634,37 @@ function GeneralTab() {
             <ThemeOption label="跟随系统" selected={theme === 'system'} onClick={() => setTheme('system')} />
           </div>
           <p className="mt-3 text-sm text-text-muted">当前生效：{resolvedTheme === 'dark' ? '暗色' : '亮色'}</p>
+        </div>
+
+        <div className="rounded-xl border border-border-color bg-bg-primary p-4">
+          <h4 className="mb-4 font-medium text-text-primary">显示</h4>
+
+          <div className="mb-4">
+            <label className="mb-2 block text-sm text-text-secondary">字号</label>
+            <div className="grid grid-cols-3 gap-3">
+              <DisplayOption label="小" selected={displaySettings.fontSize === 'sm'} onClick={() => setDisplaySettings({ ...displaySettings, fontSize: 'sm' })} />
+              <DisplayOption label="中" selected={displaySettings.fontSize === 'md'} onClick={() => setDisplaySettings({ ...displaySettings, fontSize: 'md' })} />
+              <DisplayOption label="大" selected={displaySettings.fontSize === 'lg'} onClick={() => setDisplaySettings({ ...displaySettings, fontSize: 'lg' })} />
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <label className="mb-2 block text-sm text-text-secondary">卡片密度</label>
+            <div className="grid grid-cols-3 gap-3">
+              <DisplayOption label="紧凑" selected={displaySettings.cardDensity === 'compact'} onClick={() => setDisplaySettings({ ...displaySettings, cardDensity: 'compact' })} />
+              <DisplayOption label="标准" selected={displaySettings.cardDensity === 'normal'} onClick={() => setDisplaySettings({ ...displaySettings, cardDensity: 'normal' })} />
+              <DisplayOption label="宽松" selected={displaySettings.cardDensity === 'relaxed'} onClick={() => setDisplaySettings({ ...displaySettings, cardDensity: 'relaxed' })} />
+            </div>
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm text-text-secondary">行间距</label>
+            <div className="grid grid-cols-3 gap-3">
+              <DisplayOption label="紧凑" selected={displaySettings.lineHeight === 'compact'} onClick={() => setDisplaySettings({ ...displaySettings, lineHeight: 'compact' })} />
+              <DisplayOption label="标准" selected={displaySettings.lineHeight === 'normal'} onClick={() => setDisplaySettings({ ...displaySettings, lineHeight: 'normal' })} />
+              <DisplayOption label="宽松" selected={displaySettings.lineHeight === 'relaxed'} onClick={() => setDisplaySettings({ ...displaySettings, lineHeight: 'relaxed' })} />
+            </div>
+          </div>
         </div>
 
         <div className="rounded-xl border border-border-color bg-bg-primary p-4">
@@ -724,6 +755,31 @@ function ThemeOption({
   )
 }
 
+function DisplayOption({
+  label,
+  selected,
+  onClick,
+}: {
+  label: string
+  selected: boolean
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'rounded-lg border px-3 py-2 text-sm font-medium transition-all duration-150',
+        selected
+          ? 'border-accent bg-accent/5 text-accent'
+          : 'border-border-color text-text-secondary hover:border-text-tertiary hover:text-text-primary'
+      )}
+    >
+      {label}
+    </button>
+  )
+}
+
 function IntegrationFieldEditor({
   setting,
   value,
@@ -756,6 +812,28 @@ function IntegrationFieldEditor({
 }
 
 function AboutTab() {
+  const [updateStatus, setUpdateStatus] = useState<'idle' | 'checking' | 'latest' | 'available' | 'error'>('idle')
+  const [latestVersion, setLatestVersion] = useState<string | null>(null)
+
+  const checkForUpdate = useCallback(async () => {
+    setUpdateStatus('checking')
+    try {
+      const response = await fetch('https://api.github.com/repos/Jinkin-92/infohub/releases/latest', {
+        headers: { 'Accept': 'application/vnd.github.v3+json' }
+      })
+      if (!response.ok) throw new Error('Failed to fetch')
+      const data = await response.json()
+      const tag = data.tag_name?.replace(/^v/, '') || '0.0.0'
+      setLatestVersion(tag)
+
+      const currentVersion = '1.0.0'
+      const isLatest = compareVersions(tag, currentVersion) <= 0
+      setUpdateStatus(isLatest ? 'latest' : 'available')
+    } catch {
+      setUpdateStatus('error')
+    }
+  }, [])
+
   return (
     <div className="p-6">
       <h3 className="mb-6 text-lg font-semibold text-text-primary">关于</h3>
@@ -768,6 +846,28 @@ function AboutTab() {
         <p className="text-sm text-text-secondary">
           一个面向个人内容聚合与筛选的本地优先信息中枢。
         </p>
+
+        <div className="flex items-center gap-3">
+          <button
+            onClick={checkForUpdate}
+            disabled={updateStatus === 'checking'}
+            className="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-accent-hover disabled:opacity-50"
+          >
+            {updateStatus === 'checking' ? '检查中...' : '检查更新'}
+          </button>
+          {updateStatus === 'latest' && (
+            <span className="text-sm text-green-600">已是最新版本</span>
+          )}
+          {updateStatus === 'available' && (
+            <span className="text-sm text-accent">
+              发现新版本 v{latestVersion}！请前往 GitHub 下载。
+            </span>
+          )}
+          {updateStatus === 'error' && (
+            <span className="text-sm text-red-500">检查更新失败</span>
+          )}
+        </div>
+
         <div className="flex flex-wrap gap-2">
           {['Next.js 14', 'Hono', 'SQLite', 'RSSHub', 'Tailwind CSS'].map((label) => (
             <span
@@ -781,6 +881,18 @@ function AboutTab() {
       </div>
     </div>
   )
+}
+
+function compareVersions(v1: string, v2: string): number {
+  const parts1 = v1.split('.').map(Number)
+  const parts2 = v2.split('.').map(Number)
+  for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
+    const p1 = parts1[i] || 0
+    const p2 = parts2[i] || 0
+    if (p1 > p2) return 1
+    if (p1 < p2) return -1
+  }
+  return 0
 }
 
 function TagsTab({ tags, onMutate }: { tags: FavoriteTag[]; onMutate: () => void }) {

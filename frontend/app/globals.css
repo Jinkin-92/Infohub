@@ -34,6 +34,11 @@
   --shadow-card-color: rgba(15, 23, 42, 0.08);
   --shadow-hover-color: rgba(15, 23, 42, 0.10);
 
+  /* Display settings scales */
+  --font-scale: 1;
+  --card-density-scale: 1;
+  --line-height-scale: 1;
+
   /* Legacy aliases kept for compatibility */
   --bg-primary: var(--color-bg-canvas);
   --bg-secondary: var(--color-bg-surface);
@@ -55,8 +60,8 @@
 
   --color-text-primary: #F3F4F6;
   --color-text-secondary: #D1D5DB;
-  --color-text-tertiary: #9CA3AF;
-  --color-text-muted: #6B7280;
+  --color-text-tertiary: #D1D5DB;
+  --color-text-muted: #9CA3AF;
 
   --color-border-subtle: #374151;
   --color-border-strong: #4B5563;
