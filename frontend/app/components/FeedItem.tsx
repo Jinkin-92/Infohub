@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { cn, formatDate, truncate } from '../lib/utils'
 import { Item, PLATFORM_CONFIG } from '../types'
+import { translateApi } from '../lib/api'
 
 interface FeedItemProps {
   item: Item
@@ -15,6 +16,9 @@ export function FeedItem({
 }: FeedItemProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [imageError, setImageError] = useState(false)
+  const [translatedSummary, setTranslatedSummary] = useState<string | null>(null)
+  const [isTranslating, setIsTranslating] = useState(false)
+  const [showTranslation, setShowTranslation] = useState(false)
 
   const platform = PLATFORM_CONFIG[item.platform] || PLATFORM_CONFIG.custom
   const isRead = item.is_read
@@ -32,6 +36,28 @@ export function FeedItem({
       onMarkAsRead(item.id)
     }
   }
+
+  const handleTranslate = useCallback(async (event: React.MouseEvent) => {
+    event.stopPropagation()
+    if (showTranslation) {
+      setShowTranslation(false)
+      return
+    }
+    if (translatedSummary) {
+      setShowTranslation(true)
+      return
+    }
+    setIsTranslating(true)
+    try {
+      const result = await translateApi.translate(item.summary || '', 'zh-CN', 'en')
+      if (result.ok && result.translatedText) {
+        setTranslatedSummary(result.translatedText)
+        setShowTranslation(true)
+      }
+    } finally {
+      setIsTranslating(false)
+    }
+  }, [item.summary, translatedSummary, showTranslation])
 
   return (
     <article
@@ -94,6 +120,12 @@ export function FeedItem({
             {isExpanded ? item.summary : truncate(item.summary, 200)}
           </p>
 
+          {showTranslation && translatedSummary && (
+            <p className="mt-2 border-l-2 border-accent pl-3 text-base leading-relaxed italic text-text-tertiary">
+              {translatedSummary}
+            </p>
+          )}
+
           {item.summary.length > 200 && (
             <button
               onClick={handleExpand}
@@ -141,6 +173,24 @@ export function FeedItem({
               />
             </svg>
             标记已读
+          </button>
+        )}
+
+        {item.summary && (
+          <button
+            onClick={handleTranslate}
+            disabled={isTranslating}
+            className="flex items-center gap-1 text-sm text-text-tertiary transition-colors hover:text-accent disabled:opacity-50"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
+              />
+            </svg>
+            {isTranslating ? '翻译中...' : showTranslation ? '隐藏译文' : '翻译'}
           </button>
         )}
       </div>

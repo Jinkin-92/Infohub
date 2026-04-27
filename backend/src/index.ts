@@ -18,6 +18,7 @@ import wechatRouter from './routes/wechat.js';
 import authRouter from './routes/auth.js';
 import publicSourcesRouter from './routes/publicSources.js';
 import favoritesRouter from './routes/favorites.js';
+import translateRouter from './routes/translate.js';
 import { localIntegrationsService } from './services/localIntegrations.js';
 
 function createApp(): Hono {
@@ -73,6 +74,7 @@ function createApp(): Hono {
   app.route('/api/auth', authRouter);
   app.route('/api/public-sources', publicSourcesRouter);
   app.route('/api/favorites', favoritesRouter);
+  app.route('/api/translate', translateRouter);
 
   app.notFound(() => {
     return new Response(
