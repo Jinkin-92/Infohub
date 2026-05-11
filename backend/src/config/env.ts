@@ -42,6 +42,10 @@ const envSchema = z.object({
   // 可选：Cookie配置（用于需要登录的平台）
   ZHIHU_COOKIES: z.string().optional(),
   TWITTER_COOKIE: z.string().optional(),
+
+  // 加密密钥（用于凭证存储 AES-256-GCM）
+  // 生成方式: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+  ENCRYPTION_KEY: z.string().optional(),
 });
 
 /**

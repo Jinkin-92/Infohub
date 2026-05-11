@@ -271,6 +271,41 @@ function initSQLiteTables() {
 
     CREATE INDEX IF NOT EXISTS idx_public_sources_category ON public_sources(category);
     CREATE INDEX IF NOT EXISTS idx_public_source_subscriptions_user ON public_source_subscriptions(user_id);
+
+    -- 采集任务记录表（替代纯内存状态，支持重试追踪）
+    CREATE TABLE IF NOT EXISTS collection_jobs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      source_id INTEGER NOT NULL REFERENCES sources(id) ON DELETE CASCADE,
+      status TEXT NOT NULL DEFAULT 'pending',
+      scheduled_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      started_at TEXT,
+      completed_at TEXT,
+      attempts INTEGER NOT NULL DEFAULT 0,
+      max_attempts INTEGER NOT NULL DEFAULT 3,
+      next_retry_at TEXT,
+      last_error TEXT,
+      item_count INTEGER,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_jobs_status ON collection_jobs(status);
+    CREATE INDEX IF NOT EXISTS idx_jobs_next_retry ON collection_jobs(next_retry_at);
+    CREATE INDEX IF NOT EXISTS idx_jobs_source ON collection_jobs(source_id);
+
+    -- Webhook 订阅表（Phase 4: 内容分发）
+    CREATE TABLE IF NOT EXISTS webhooks (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      url TEXT NOT NULL,
+      events TEXT NOT NULL, -- JSON: ["item.created", "source.error"]
+      secret TEXT, -- HMAC-SHA256 密钥
+      active INTEGER NOT NULL DEFAULT 1,
+      last_sent_at TEXT,
+      last_error TEXT,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_webhooks_active ON webhooks(active);
   `);
 
   // SQLite 现有库的增量字段迁移
@@ -292,6 +327,10 @@ function initSQLiteTables() {
   ensureColumn('sources', 'description', 'TEXT');
   ensureColumn('sources', 'is_public', 'INTEGER NOT NULL DEFAULT 0');
   ensureColumn('sources', 'public_source_id', 'INTEGER REFERENCES public_sources(id)');
+
+  // 凭证表增量字段（Phase 3: 凭证生命周期）
+  ensureColumn('platform_credentials', 'expires_at', 'TEXT');
+  ensureColumn('platform_credentials', 'refresh_token', 'TEXT');
 
   // Seed default favorite tags
   const defaultFavoriteTags = [

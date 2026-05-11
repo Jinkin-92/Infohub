@@ -1,6 +1,7 @@
 ﻿import { Hono } from 'hono';
 import { z } from 'zod';
 import { sourcesQueries } from '../db/queries.js';
+import { itemsQueries } from '../db/queries.js';
 import { sql } from '../db/client.js';
 import { collector } from '../services/collector.js';
 import { cronManager } from '../services/cron.js';
@@ -10,6 +11,7 @@ import { resolveZhihuSourceName } from '../services/zhihuSourceName.js';
 import { getValidatedBody, validateBody } from '../middleware/validation.js';
 import { BadRequestError, ConflictError, NotFoundError } from '../middleware/error.js';
 import type { CreateSourceInput } from '../types/index.js';
+import { zhihuBrowserCollector } from '../services/zhihuBrowserCollector.js';
 
 const sourcesRouter = new Hono();
 
@@ -96,6 +98,70 @@ sourcesRouter.post('/collect/all', async (c) => {
       ? 'A refresh is already running'
       : 'Manual refresh started in the background',
   }, refresh.alreadyRunning ? 200 : 202);
+});
+
+// Get error diagnosis for a source
+sourcesRouter.get('/:id/diagnose', async (c) => {
+  const id = parseId(c.req.param('id'));
+  const source = await sourcesQueries.getById(id);
+  if (!source) {
+    throw new NotFoundError('Source not found');
+  }
+
+  if (!source.last_error) {
+    return c.json({
+      ok: true,
+      diagnosis: {
+        hasError: false,
+        category: null,
+        action: null,
+        label: null,
+        fixLabel: null,
+        errorMessage: null,
+      },
+    });
+  }
+
+  const diagnosis = collector.classifyError(source, source.last_error);
+  return c.json({
+    ok: true,
+    diagnosis: {
+      hasError: true,
+      ...diagnosis,
+      errorMessage: source.last_error,
+    },
+  });
+});
+
+// Get diagnoses for all failed sources
+sourcesRouter.get('/diagnose/all', async (c) => {
+  const sources = await sourcesQueries.getAll();
+  const failedSources = sources.filter(s => s.status === 'error' && s.last_error);
+
+  const diagnoses = failedSources.map(source => {
+    const diagnosis = collector.classifyError(source, source.last_error!);
+    return {
+      sourceId: source.id,
+      sourceName: source.name,
+      platform: source.platform,
+      ...diagnosis,
+      errorMessage: source.last_error,
+    };
+  });
+
+  // Group by action type for batch operations
+  const byAction = diagnoses.reduce((acc, d) => {
+    if (!acc[d.action]) acc[d.action] = [];
+    acc[d.action].push(d);
+    return acc;
+  }, {} as Record<string, typeof diagnoses>);
+
+  return c.json({
+    ok: true,
+    totalFailed: failedSources.length,
+    diagnoses,
+    byAction,
+  });
 });
 
 sourcesRouter.get('/:id', async (c) => {
@@ -221,6 +287,60 @@ sourcesRouter.post('/:id/collect', async (c) => {
 
   const result = await collector.collectSource(id, { force: true });
   return c.json({ ok: result.success, result });
+});
+
+// 知乎采集专用端点 - 带重试机制
+sourcesRouter.post('/zhihu/collect', async (c) => {
+  const { sourceId } = await c.req.json<{ sourceId: number }>();
+
+  if (!sourceId) {
+    return c.json({ ok: false, error: 'sourceId is required' }, 400);
+  }
+
+  const source = await sourcesQueries.getById(sourceId);
+  if (!source) {
+    return c.json({ ok: false, error: 'Source not found' }, 404);
+  }
+
+  if (source.platform !== 'zhihu') {
+    return c.json({ ok: false, error: 'Not a zhihu source' }, 400);
+  }
+
+  try {
+    // 知乎采集器内部已经有重试机制
+    const rssItems = await zhihuBrowserCollector.collectItems(source);
+
+    // 处理 items (存储到数据库等) - 使用与 collector.processItem 一致的逻辑
+    let successCount = 0;
+    for (const item of rssItems) {
+      try {
+        // 使用 collector 的 processItem 方法处理数据
+        const processedItem = {
+          source_id: sourceId,
+          guid: item.guid || item.link || item.title || '',
+          title: item.title || 'Untitled',
+          summary: item.description?.slice(0, 500) || null,
+          url: item.link || '',
+          author: item.author || null,
+          cover_url: null,
+          platform: 'zhihu',
+          published_at: item.isoDate || item.pubDate || new Date().toISOString(),
+          raw_json: null,
+        };
+        await itemsQueries.upsert(processedItem);
+        successCount += 1;
+      } catch (err) {
+        console.error('[Zhihu Collect] Failed to store item:', err);
+      }
+    }
+
+    await sourcesQueries.updateSuccess(sourceId);
+    return c.json({ ok: true, itemCount: successCount });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Zhihu collection failed';
+    await sourcesQueries.updateError(sourceId, errorMessage);
+    return c.json({ ok: false, error: errorMessage });
+  }
 });
 
 export default sourcesRouter;

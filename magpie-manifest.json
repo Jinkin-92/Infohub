@@ -1,0 +1,906 @@
+{
+  "project": {
+    "ownerRepo": "Jinkin-92/infohub",
+    "thesis": "InfoHub - 本地订阅聚合中枢，支持多平台集中追踪，极简高效信息流",
+    "generatedAt": "2026-05-09T10:24:55+08:00",
+    "coreObject": "可复用代码资产",
+    "totalAssets": 15
+  },
+  "architectureLayers": [
+    {
+      "id": "surface",
+      "name": "Surface",
+      "description": "User-facing commands, pages, entry points",
+      "files": [
+        "backend/src/index.ts",
+        "backend/src/routes/*.ts",
+        "frontend/app/page.tsx",
+        "frontend/app/layout.tsx",
+        "frontend/app/components/*.tsx"
+      ]
+    },
+    {
+      "id": "engine",
+      "name": "Engine",
+      "description": "Core rules, processing, and domain logic",
+      "files": [
+        "backend/src/services/collector.ts",
+        "backend/src/services/urlDetector.ts",
+        "backend/src/services/rssGenerator.ts",
+        "backend/src/services/rsshubAdapter.ts",
+        "backend/src/middleware/error.ts",
+        "backend/src/middleware/logger.ts",
+        "backend/src/middleware/validation.ts"
+      ]
+    },
+    {
+      "id": "orchestration",
+      "name": "Orchestration",
+      "description": "Workflows, triggers, queues, process management",
+      "files": [
+        "backend/src/services/cron.ts",
+        "backend/src/services/localIntegrations.ts",
+        "backend/src/services/auth/*.ts",
+        "backend/src/services/auth/platforms/*.ts",
+        "backend/src/services/wechat/*.ts"
+      ]
+    },
+    {
+      "id": "interface",
+      "name": "Interface",
+      "description": "External APIs, schemas, documentation, database abstraction",
+      "files": [
+        "backend/src/db/client.ts",
+        "backend/src/db/queries.ts",
+        "backend/src/config/env.ts",
+        "frontend/app/lib/api.ts",
+        "frontend/app/types/index.ts"
+      ]
+    }
+  ],
+  "assetClusters": [
+    {
+      "id": "CL-001",
+      "name": "内容采集引擎 (Content Collection Engine)",
+      "layer": "engine",
+      "confidence": 0.92,
+      "description": "多平台统一内容采集、URL解析、RSS生成的核心引擎",
+      "assets": [
+        "C-001",
+        "C-002",
+        "C-003",
+        "C-013"
+      ]
+    },
+    {
+      "id": "CL-002",
+      "name": "数据库基础设施 (Database Infrastructure)",
+      "layer": "interface",
+      "confidence": 0.88,
+      "description": "SQLite/PostgreSQL双兼容抽象层与完整查询模式",
+      "assets": [
+        "C-005",
+        "C-006"
+      ]
+    },
+    {
+      "id": "CL-003",
+      "name": "错误处理框架 (Error Handling Framework)",
+      "layer": "engine",
+      "confidence": 0.95,
+      "description": "结构化应用错误类体系与统一响应格式化",
+      "assets": [
+        "C-004"
+      ]
+    },
+    {
+      "id": "CL-004",
+      "name": "平台认证系统 (Platform Auth System)",
+      "layer": "orchestration",
+      "confidence": 0.78,
+      "description": "多平台统一凭证存储与认证流程管理",
+      "assets": [
+        "C-007",
+        "C-014",
+        "C-015"
+      ]
+    },
+    {
+      "id": "CL-005",
+      "name": "本地服务编排 (Local Service Orchestration)",
+      "layer": "orchestration",
+      "confidence": 0.82,
+      "description": "RSSHub进程生命周期管理与采集任务调度",
+      "assets": [
+        "C-008",
+        "C-009"
+      ]
+    },
+    {
+      "id": "CL-006",
+      "name": "前端基础设施 (Frontend Infrastructure)",
+      "layer": "surface",
+      "confidence": 0.75,
+      "description": "类型化API客户端与共享类型系统",
+      "assets": [
+        "C-010",
+        "C-011"
+      ]
+    },
+    {
+      "id": "CL-007",
+      "name": "测试与运维工具 (Testing & Operations)",
+      "layer": "surface",
+      "confidence": 0.7,
+      "description": "冒烟测试与全链路自测脚本",
+      "assets": [
+        "C-012"
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "C-001",
+      "type": "Framework",
+      "name": "Collector",
+      "oneLiner": "多平台统一内容采集器，含错误分类与自动修复",
+      "sourceRepo": "Jinkin-92/infohub",
+      "sourceFile": "backend/src/services/collector.ts",
+      "sourceLines": [
+        1,
+        931
+      ],
+      "code": "",
+      "confidence": 0.85,
+      "confidenceLevel": "high",
+      "evidence": {
+        "apparentType": "Framework",
+        "apparentRole": "多平台内容采集协调器",
+        "apparentLayer": "engine",
+        "apparentCluster": "内容采集引擎",
+        "reasoning": "931行核心模块，支持微信/微博/X/B站/知乎/YouTube等8个平台的统一采集。包含源自动修复(maybeRepairWeChatSource/maybeRepairZhihuSource/maybeRepairKnownPublicSource)、错误分类(errorCategories + classifyError)、并发批处理(processBatch)、内容过滤(isZhihuVoteActivity)等高级功能。"
+      },
+      "generated": {
+        "architectureLayer": "engine",
+        "assetCluster": "CL-001",
+        "productRole": "内容采集核心引擎",
+        "reuseMode": "service",
+        "reuseReason": "高度耦合于项目数据库模式和特定平台适配器，但作为服务整体抽取价值高",
+        "reuseReasonStructured": {
+          "trigger": "需要为多平台(RSS/微信/微博/X/知乎/B站/YouTube)构建统一内容采集系统",
+          "basis": "已验证的错误分类体系、源自动修复机制、并发worker pool采集模式",
+          "risk": "与db/queries.ts和多个平台collector强耦合，抽取需抽象平台接口"
+        },
+        "reuseAgainst": "不要直接复制到非Node.js项目；错误分类中的平台特定正则需要按需调整",
+        "integrationEffort": "high",
+        "opportunities": [
+          "错误分类体系(errorCategories)可提取为独立npm包用于任何采集系统",
+          "Worker pool并发模式(runManualCollection中的runNext)可复用于批量任务调度",
+          "源自动修复逻辑是订阅系统数据一致性的最佳实践参考"
+        ],
+        "ioContract": {
+          "inputs": [
+            "sourceId: number",
+            "options?: { force?: boolean }"
+          ],
+          "outputs": [
+            "CollectionResult: { sourceId, success, itemCount, skipped?, error? }"
+          ]
+        }
+      }
+    },
+    {
+      "id": "C-002",
+      "type": "Tooling",
+      "name": "URLDetector",
+      "oneLiner": "智能URL解析器，自动识别平台并生成RSS链接",
+      "sourceRepo": "Jinkin-92/infohub",
+      "sourceFile": "backend/src/services/urlDetector.ts",
+      "sourceLines": [
+        1,
+        521
+      ],
+      "code": "",
+      "confidence": 0.91,
+      "confidenceLevel": "high",
+      "evidence": {
+        "apparentType": "Tooling",
+        "apparentRole": "平台链接检测与RSS链接生成工具",
+        "apparentLayer": "engine",
+        "apparentCluster": "内容采集引擎",
+        "reasoning": "521行专用工具类，支持微信公众号文章/主页、微博UID/用户名、X/Twitter用户名、B站UID、YouTube Handle/Channel、知乎用户等6+平台的URL解析。包含页面抓取(fetchWechatPageInfo/fetchYouTubePageHtml)、用户名解析(resolveWeiboUsername)等高级功能。"
+      },
+      "generated": {
+        "architectureLayer": "engine",
+        "assetCluster": "CL-001",
+        "productRole": "订阅源发现与配置工具",
+        "reuseMode": "skill",
+        "reuseReason": "独立工具类，仅依赖RSSHubAdapter和wechatAuth，封装为skill调用价值极高",
+        "reuseReasonStructured": {
+          "trigger": "需要自动识别内容平台URL并生成对应RSS/采集配置",
+          "basis": "覆盖国内主流平台(微信/微博/B站/知乎)和国际平台(X/YouTube)的完整解析逻辑",
+          "risk": "页面抓取逻辑依赖平台页面结构，可能随平台改版失效"
+        },
+        "reuseAgainst": "不要将页面抓取逻辑用于高频调用场景（应缓存结果），微信平台解析依赖登录态",
+        "integrationEffort": "low",
+        "opportunities": [
+          "可作为独立的URL-to-RSS微服务部署",
+          "平台适配器模式可扩展至小红书/抖音/快手等新兴平台",
+          "wechat页面信息提取逻辑(fetchWechatPageInfo)是反爬策略的实战参考"
+        ],
+        "ioContract": {
+          "inputs": [
+            "inputUrl: string"
+          ],
+          "outputs": [
+            "DetectionResult: { platform, platformId, rssUrl, displayName }"
+          ]
+        }
+      }
+    },
+    {
+      "id": "C-003",
+      "type": "Framework",
+      "name": "RSSGenerator",
+      "oneLiner": "零依赖多格式RSS生成器，支持RSS2.0/Atom/JSON",
+      "sourceRepo": "Jinkin-92/infohub",
+      "sourceFile": "backend/src/services/rssGenerator.ts",
+      "sourceLines": [
+        1,
+        236
+      ],
+      "code": "",
+      "confidence": 0.94,
+      "confidenceLevel": "high",
+      "evidence": {
+        "apparentType": "Framework",
+        "apparentRole": "RSS/Atom/JSON Feed生成器",
+        "apparentLayer": "engine",
+        "apparentCluster": "内容采集引擎",
+        "reasoning": "236行零外部依赖模块，完全自包含。实现RSS 2.0、Atom、JSON Feed三种格式，含RFC 822日期格式化(toRFC822)、XML转义(escapeXml)、内容嵌入(CDATA)等完整功能。"
+      },
+      "generated": {
+        "architectureLayer": "engine",
+        "assetCluster": "CL-001",
+        "productRole": "Feed格式转换与输出引擎",
+        "reuseMode": "clone",
+        "reuseReason": "零依赖、自包含、直接复制即可使用，是最理想的clone资产",
+        "reuseReasonStructured": {
+          "trigger": "需要在Node.js/Browser环境中生成RSS/Atom/JSON Feed",
+          "basis": "完整的格式实现、正确的日期处理、安全的XML转义、enclosure和content:encoded支持",
+          "risk": "无风险，零依赖且代码清晰"
+        },
+        "reuseAgainst": "不要用于生成极大feed（>1000 items），当前实现是字符串拼接非流式",
+        "integrationEffort": "low",
+        "opportunities": [
+          "可直接发布为轻量级npm包 '@infohub/rss-gen'",
+          "RFC 822日期格式化函数是东八区RSS服务的精确实现参考",
+          "可作为任何需要RSS输出功能的项目的起始代码"
+        ],
+        "ioContract": {
+          "inputs": [
+            "items: RSSItem[]",
+            "options: RSSOptions & { ext: string }"
+          ],
+          "outputs": [
+            "feedXml: string"
+          ]
+        }
+      }
+    },
+    {
+      "id": "C-004",
+      "type": "Framework",
+      "name": "AppError",
+      "oneLiner": "结构化应用错误类体系与统一响应格式化",
+      "sourceRepo": "Jinkin-92/infohub",
+      "sourceFile": "backend/src/middleware/error.ts",
+      "sourceLines": [
+        1,
+        135
+      ],
+      "code": "",
+      "confidence": 0.96,
+      "confidenceLevel": "high",
+      "evidence": {
+        "apparentType": "Framework",
+        "apparentRole": "错误处理基础设施",
+        "apparentLayer": "engine",
+        "apparentCluster": "错误处理框架",
+        "reasoning": "135行零外部依赖模块。包含基类AppError(statusCode/code/isOperational)和6个具体子类(NotFoundError/BadRequestError/UnauthorizedError/ForbiddenError/ConflictError/ValidationError/ServiceUnavailableError)，以及formatError和getStatusCode工具函数。"
+      },
+      "generated": {
+        "architectureLayer": "engine",
+        "assetCluster": "CL-003",
+        "productRole": "全应用错误处理基础",
+        "reuseMode": "clone",
+        "reuseReason": "零依赖、框架无关、直接复制到任何Node.js后端项目即可工作",
+        "reuseReasonStructured": {
+          "trigger": "需要为Node.js后端建立结构化错误处理机制",
+          "basis": "完整的错误类层次结构、HTTP状态码映射、开发环境堆栈返回、验证错误字段支持",
+          "risk": "无风险，已验证的设计模式"
+        },
+        "reuseAgainst": "ValidationError的errors字段类型(Record<string, string[]>)可能需要根据前端需求调整",
+        "integrationEffort": "low",
+        "opportunities": [
+          "可直接复制到Hono/Express/Fastify/Nest.js任何项目",
+          "isOperational标记是区分业务错误和程序错误的优雅方案",
+          "Error.captureStackTrace的使用是Node.js错误类的最佳实践"
+        ],
+        "ioContract": {
+          "inputs": [
+            "message?: string",
+            "errors?: Record<string, string[]>"
+          ],
+          "outputs": [
+            "ErrorResponse: { ok: false, error, code, errors?, stack? }"
+          ]
+        }
+      }
+    },
+    {
+      "id": "C-005",
+      "type": "Framework",
+      "name": "DBClient",
+      "oneLiner": "SQLite/PostgreSQL双兼容数据库抽象层，含自动建表与迁移",
+      "sourceRepo": "Jinkin-92/infohub",
+      "sourceFile": "backend/src/db/client.ts",
+      "sourceLines": [
+        1,
+        565
+      ],
+      "code": "",
+      "confidence": 0.87,
+      "confidenceLevel": "high",
+      "evidence": {
+        "apparentType": "Framework",
+        "apparentRole": "数据库连接与查询抽象层",
+        "apparentLayer": "interface",
+        "apparentCluster": "数据库基础设施",
+        "reasoning": "565行核心基础设施。实现SQLite(better-sqlite3)和PostgreSQL(postgres)双驱动统一接口(query/execute/get)。包含完整的自动建表逻辑(initSQLiteTables)、增量字段迁移(ensureColumn)、默认数据种子(seed tags/sources/columns/categories/public sources)。"
+      },
+      "generated": {
+        "architectureLayer": "interface",
+        "assetCluster": "CL-002",
+        "productRole": "数据库访问基础设施",
+        "reuseMode": "clone",
+        "reuseReason": "双数据库兼容抽象是项目基础设施的核心价值，但高度定制化",
+        "reuseReasonStructured": {
+          "trigger": "需要同时支持SQLite(开发/本地)和PostgreSQL(生产)的项目",
+          "basis": "统一的query/execute/get接口、自动参数转换(?→$n)、WAL模式、连接池管理",
+          "risk": "已绑定项目特定的表结构，直接复制后需要清理表定义"
+        },
+        "reuseAgainst": "不要将自动建表逻辑直接用于生产环境，应使用专业迁移工具(Prisma/Knex)管理schema变更",
+        "integrationEffort": "medium",
+        "opportunities": [
+          "SQL参数适配器(?→$n自动转换)可提取为通用工具",
+          "ensureColumn增量迁移模式是小型项目的实用方案",
+          "SQLite WAL模式 + foreign_keys配置是本地应用的最佳实践"
+        ],
+        "ioContract": {
+          "inputs": [
+            "queryString: string",
+            "params?: unknown[]"
+          ],
+          "outputs": [
+            "T[] | void | T | undefined"
+          ]
+        }
+      }
+    },
+    {
+      "id": "C-006",
+      "type": "CodeSnippet",
+      "name": "QueryLayer",
+      "oneLiner": "完整的CRUD查询模式：源管理、内容管理、标签、收藏、公开源订阅",
+      "sourceRepo": "Jinkin-92/infohub",
+      "sourceFile": "backend/src/db/queries.ts",
+      "sourceLines": [
+        1,
+        956
+      ],
+      "code": "",
+      "confidence": 0.83,
+      "confidenceLevel": "high",
+      "evidence": {
+        "apparentType": "CodeSnippet",
+        "apparentRole": "数据访问层查询模式集合",
+        "apparentLayer": "interface",
+        "apparentCluster": "数据库基础设施",
+        "reasoning": "956行完整的查询层。包含sourcesQueries(8个方法)、itemsQueries(8个方法)、tagsQueries(8个方法)、favoriteTagsQueries(3个方法)、favoritesQueries(5个方法)、publicSourcesQueries(7个方法)。覆盖项目的全部数据访问需求，含双数据库兼容逻辑(PostgreSQL RETURNING vs SQLite last_insert_rowid)。"
+      },
+      "generated": {
+        "architectureLayer": "interface",
+        "assetCluster": "CL-002",
+        "productRole": "数据访问模式参考",
+        "reuseMode": "clone",
+        "reuseReason": "查询模式是高度项目特定的，但attachTags批量关联查询和upsert模式是通用参考",
+        "reuseReasonStructured": {
+          "trigger": "需要为SQLite/PostgreSQL项目设计数据访问层",
+          "basis": "完整的CRUD模式、批量关联查询(attachTags)、双数据库INSERT/UPDATE兼容",
+          "risk": "直接复制会导致多余表和查询，应按需提取"
+        },
+        "reuseAgainst": "不要直接复制整个文件，应按需提取特定查询模式",
+        "integrationEffort": "medium",
+        "opportunities": [
+          "attachTags模式(先查关联再Map合并)是N+1问题的实用解决方案",
+          "upsert逻辑(先查存在→UPDATE/INSERT)是 SQLite/PostgreSQL 兼容方案",
+          "buildInClause动态参数构建是SQL查询拼接的安全模式"
+        ],
+        "ioContract": {
+          "inputs": [
+            " varies by query method "
+          ],
+          "outputs": [
+            " typed entities or boolean "
+          ]
+        }
+      }
+    },
+    {
+      "id": "C-007",
+      "type": "Framework",
+      "name": "CredentialStore",
+      "oneLiner": "多平台统一凭证存储，含简单加密与状态管理",
+      "sourceRepo": "Jinkin-92/infohub",
+      "sourceFile": "backend/src/services/auth/credentialStore.ts",
+      "sourceLines": [
+        1,
+        124
+      ],
+      "code": "",
+      "confidence": 0.89,
+      "confidenceLevel": "high",
+      "evidence": {
+        "apparentType": "Framework",
+        "apparentRole": "平台凭证统一存储管理器",
+        "apparentLayer": "orchestration",
+        "apparentCluster": "平台认证系统",
+        "reasoning": "124行轻量级模块。实现PlatformCredential接口、简单base64加密(simpleEncrypt/simpleDecrypt)、完整的CRUD操作(get/save/updateStatus/delete/getAllStatus)。使用SQLite的UPSERT语法(INSERT OR REPLACE / ON CONFLICT)。"
+      },
+      "generated": {
+        "architectureLayer": "orchestration",
+        "assetCluster": "CL-004",
+        "productRole": "平台OAuth凭证管理",
+        "reuseMode": "clone",
+        "reuseReason": "轻量级、自包含、可立即用于任何需要多平台凭证管理的项目",
+        "reuseReasonStructured": {
+          "trigger": "需要为多个第三方平台(OAuth/Cookie/Token)统一存储和管理凭证",
+          "basis": "简单的加密存储、状态跟踪(active/expired/invalid)、upsert更新、安全摘要查询",
+          "risk": "simpleEncrypt仅使用base64混淆，不适合高安全场景，应替换为AES加密"
+        },
+        "reuseAgainst": "生产环境中必须将simpleEncrypt替换为真正的加密(AES-256-GCM或类似)",
+        "integrationEffort": "low",
+        "opportunities": [
+          "可作为任何多平台集成项目的凭证管理起点",
+          "getAllStatus(不返回具体值只返回元数据)是隐私保护的最佳实践",
+          "UPSERT模式(SQLite ON CONFLICT/PostgreSQL DO UPDATE)是双数据库兼容的参考"
+        ],
+        "ioContract": {
+          "inputs": [
+            "platform: string",
+            "credentialType: 'cookie' | 'token'",
+            "value: string"
+          ],
+          "outputs": [
+            "PlatformCredential | null | void | status summary[]"
+          ]
+        }
+      }
+    },
+    {
+      "id": "C-008",
+      "type": "Tooling",
+      "name": "LocalIntegrations",
+      "oneLiner": "RSSHub本地进程全生命周期管理：启动/停止/看门狗/端口冲突检测",
+      "sourceRepo": "Jinkin-92/infohub",
+      "sourceFile": "backend/src/services/localIntegrations.ts",
+      "sourceLines": [
+        1,
+        426
+      ],
+      "code": "",
+      "confidence": 0.81,
+      "confidenceLevel": "high",
+      "evidence": {
+        "apparentType": "Tooling",
+        "apparentRole": "本地子进程生命周期管理服务",
+        "apparentLayer": "orchestration",
+        "apparentCluster": "本地服务编排",
+        "reasoning": "426行专门工具。实现RSSHub本地实例的完整管理：env文件读写(readEnvMap/writeEnvMap)、端口可达性检测(isPortReachable)、Windows进程查找(findListeningPids/parseListeningPids/readProcessCommandLine/isManagedRsshubPid)、Node版本兼容启动(buildRsshubLaunchCommand)、进程启动/停止/看门狗。"
+      },
+      "generated": {
+        "architectureLayer": "orchestration",
+        "assetCluster": "CL-005",
+        "productRole": "本地RSSHub实例管理器",
+        "reuseMode": "service",
+        "reuseReason": "高度特定于RSSHub和Windows环境，但进程管理模式通用",
+        "reuseReasonStructured": {
+          "trigger": "需要管理本地Node.js子进程的生命周期（特别是Windows环境）",
+          "basis": "端口冲突检测、PID文件管理、SIGTERM优雅关闭、taskkill强制终止、看门狗自动恢复",
+          "risk": "Windows特定的进程管理逻辑(netstat/taskkill/PowerShell)在其他平台需要替换"
+        },
+        "reuseAgainst": "不要直接复制到非Windows项目而不修改进程管理逻辑",
+        "integrationEffort": "medium",
+        "opportunities": [
+          "Windows Node.js进程管理模式(netstat→taskkill→SIGKILL降级)是平台特定的最佳实践",
+          "waitForPortState轮询检测是服务健康检查的简单可靠方案",
+          "Node版本兼容性启动(node≥25时使用npx node@24)是运行时适配的创新方案"
+        ],
+        "ioContract": {
+          "inputs": [
+            "values?: Record<string, string>",
+            "force?: boolean"
+          ],
+          "outputs": [
+            "settings: { running, port, envPath, settings[] } | void"
+          ]
+        }
+      }
+    },
+    {
+      "id": "C-009",
+      "type": "Framework",
+      "name": "CronManager",
+      "oneLiner": "并发控制的采集调度器，支持手动/自动触发与worker pool",
+      "sourceRepo": "Jinkin-92/infohub",
+      "sourceFile": "backend/src/services/cron.ts",
+      "sourceLines": [
+        1,
+        151
+      ],
+      "code": "",
+      "confidence": 0.84,
+      "confidenceLevel": "high",
+      "evidence": {
+        "apparentType": "Framework",
+        "apparentRole": "定时/手动任务调度器",
+        "apparentLayer": "orchestration",
+        "apparentCluster": "本地服务编排",
+        "reasoning": "151行精炼模块。实现手动采集调度(startManualCollection/runManualCollection)、worker pool并发控制(maxConcurrentCollections=4, runNext递归模式)、采集间隔保护(minRefreshIntervalMs=5min)、状态跟踪(lastRunAt/lastSuccessAt/lastError)。"
+      },
+      "generated": {
+        "architectureLayer": "orchestration",
+        "assetCluster": "CL-005",
+        "productRole": "采集任务调度器",
+        "reuseMode": "reference",
+        "reuseReason": "worker pool模式是通用设计参考，但整体耦合于collector和localIntegrations",
+        "reuseReasonStructured": {
+          "trigger": "需要实现并发控制的批量任务调度",
+          "basis": "worker pool递归分配模式、运行状态单例保护、错误分类清除机制",
+          "risk": "与collector和localIntegrationsService直接耦合"
+        },
+        "reuseAgainst": "runNext递归模式在极大任务量时可能导致调用栈问题，应考虑迭代实现",
+        "integrationEffort": "medium",
+        "opportunities": [
+          "worker pool模式(Promise.all + Array.from + 递归runNext)是批量任务调度的优雅实现",
+          "isSourceDue时间间隔检查逻辑是任何轮询系统的通用组件",
+          "clearRecoveredIntegrationError是错误恢复后状态清理的最佳实践"
+        ],
+        "ioContract": {
+          "inputs": [
+            "force?: boolean"
+          ],
+          "outputs": [
+            "ManualCollectionSummary: { totalSources, succeeded, failed }"
+          ]
+        }
+      }
+    },
+    {
+      "id": "C-010",
+      "type": "CodeSnippet",
+      "name": "APIClient",
+      "oneLiner": "完整的类型化前端API客户端，按领域分组",
+      "sourceRepo": "Jinkin-92/infohub",
+      "sourceFile": "frontend/app/lib/api.ts",
+      "sourceLines": [
+        1,
+        883
+      ],
+      "code": "",
+      "confidence": 0.76,
+      "confidenceLevel": "medium",
+      "evidence": {
+        "apparentType": "CodeSnippet",
+        "apparentRole": "前端HTTP API客户端",
+        "apparentLayer": "surface",
+        "apparentCluster": "前端基础设施",
+        "reasoning": "883行完整API客户端。包含fetchApi通用封装、7个领域API对象(feedApi/sourcesApi/tagsApi/itemTagsApi/favoritesApi/settingsApi/cookieApi/wechatApi/authApi/publicSourcesApi/translateApi)、完整的TypeScript类型定义(CookieStatusResponse/CookieExtractResponse/WeiboLoginSession/WeChatAuthStatus/PlatformStatus/LoginSession等)。"
+      },
+      "generated": {
+        "architectureLayer": "surface",
+        "assetCluster": "CL-006",
+        "productRole": "前端数据层API客户端",
+        "reuseMode": "reference",
+        "reuseReason": "高度项目特定的API封装，但领域分组模式和类型设计是通用参考",
+        "reuseReasonStructured": {
+          "trigger": "需要为大型前端项目组织类型化API客户端",
+          "basis": "按领域分组的API对象模式、通用fetchApi错误处理、运行时API_BASE动态解析",
+          "risk": "所有方法签名和类型都绑定于项目特定的后端API"
+        },
+        "reuseAgainst": "直接复制会导致大量无用代码，应参考其组织模式而非具体内容",
+        "integrationEffort": "high",
+        "opportunities": [
+          "API对象分组模式(feedApi/sourcesApi/tagsApi...)是前端API组织的清晰方案",
+          "resolveApiBase(开发/生产环境自动切换)是本地开发友好的配置模式",
+          "fetchApi的统一错误处理(JSON解析失败/连接错误/HTTP错误)是健壮客户端的参考"
+        ],
+        "ioContract": {
+          "inputs": [
+            " varies by API method "
+          ],
+          "outputs": [
+            " typed ApiResponse<T> "
+          ]
+        }
+      }
+    },
+    {
+      "id": "C-011",
+      "type": "Knowledge",
+      "name": "TypeSystem",
+      "oneLiner": "前后端共享类型定义与平台配置常量",
+      "sourceRepo": "Jinkin-92/infohub",
+      "sourceFile": "frontend/app/types/index.ts",
+      "sourceLines": [
+        1,
+        161
+      ],
+      "code": "",
+      "confidence": 0.79,
+      "confidenceLevel": "medium",
+      "evidence": {
+        "apparentType": "Knowledge",
+        "apparentRole": "共享类型与配置定义",
+        "apparentLayer": "surface",
+        "apparentCluster": "前端基础设施",
+        "reasoning": "161行类型定义文件。包含核心实体类型(Source/Item/Tag/FavoriteTag)、API响应类型(ApiResponse/FeedListResponse/UnreadBreakdownResponse)、平台配置(PLATFORM_CONFIG)和公开源分类配置(PUBLIC_CATEGORY_CONFIG)。是前后端契约的单一事实来源。"
+      },
+      "generated": {
+        "architectureLayer": "surface",
+        "assetCluster": "CL-006",
+        "productRole": "前后端类型契约",
+        "reuseMode": "reference",
+        "reuseReason": "类型定义是项目特定的，但PLATFORM_CONFIG的平台元数据模式是通用设计参考",
+        "reuseReasonStructured": {
+          "trigger": "需要为聚合应用定义多平台元数据和类型系统",
+          "basis": "平台配置常量模式(id/name/color/icon)、分类配置枚举、前后端共享类型",
+          "risk": "类型直接绑定项目数据库schema"
+        },
+        "reuseAgainst": "不要将Item/Source等实体类型直接复制到不同schema的项目",
+        "integrationEffort": "low",
+        "opportunities": [
+          "PLATFORM_CONFIG的Record<string, PlatformConfig>模式是任何多平台UI的最佳实践",
+          "前后端共享类型文件是TypeScript全栈项目的推荐组织方式",
+          "ApiResponse<T>的泛型响应包装是API类型安全的标准模式"
+        ],
+        "ioContract": {
+          "inputs": [],
+          "outputs": [
+            " Type definitions and configuration constants "
+          ]
+        }
+      }
+    },
+    {
+      "id": "C-012",
+      "type": "Tooling",
+      "name": "SmokeTestLib",
+      "oneLiner": "参数解析与目标选择的小型CLI工具模式",
+      "sourceRepo": "Jinkin-92/infohub",
+      "sourceFile": "scripts/local-smoke-lib.mjs",
+      "sourceLines": [
+        1,
+        49
+      ],
+      "code": "",
+      "confidence": 0.72,
+      "confidenceLevel": "medium",
+      "evidence": {
+        "apparentType": "Tooling",
+        "apparentRole": "CLI参数解析与目标选择工具",
+        "apparentLayer": "surface",
+        "apparentCluster": "测试与运维工具",
+        "reasoning": "49行小型工具库。实现parseArgs(--deep/--source-id参数解析)和selectTargetSource(显式目标→启用源→回退选择)逻辑。零依赖，自包含。"
+      },
+      "generated": {
+        "architectureLayer": "surface",
+        "assetCluster": "CL-007",
+        "productRole": "测试脚本辅助库",
+        "reuseMode": "reference",
+        "reuseReason": "小型工具模式有价值，但规模太小不适合直接作为资产提取",
+        "reuseReasonStructured": {
+          "trigger": "需要为Node.js CLI脚本实现参数解析和目标选择",
+          "basis": "简洁的参数解析模式、带fallback的目标选择逻辑",
+          "risk": "功能简单，建议直接使用成熟的CLI库(commander/minimist)"
+        },
+        "reuseAgainst": "不要用于复杂的CLI需求，当前实现仅支持基本标志和单一数值参数",
+        "integrationEffort": "low",
+        "opportunities": [
+          "selectTargetSource的显式→启用→回退选择逻辑是CLI工具的目标解析参考",
+          "parseArgs的防御性编程(检查next存在、验证数值)是小型CLI的健壮模式"
+        ],
+        "ioContract": {
+          "inputs": [
+            "argv: string[]",
+            "sources: Source[]",
+            "sourceId?: number"
+          ],
+          "outputs": [
+            "args: { deep, sourceId } | { explicitSource, targetSource, fallbackUsed }"
+          ]
+        }
+      }
+    },
+    {
+      "id": "C-013",
+      "type": "Tooling",
+      "name": "RSSHubAdapter",
+      "oneLiner": "RSSHub URL格式封装，隔离直接依赖",
+      "sourceRepo": "Jinkin-92/infohub",
+      "sourceFile": "backend/src/services/rsshubAdapter.ts",
+      "sourceLines": [
+        1,
+        90
+      ],
+      "code": "",
+      "confidence": 0.86,
+      "confidenceLevel": "high",
+      "evidence": {
+        "apparentType": "Tooling",
+        "apparentRole": "RSSHub路由URL构建器",
+        "apparentLayer": "engine",
+        "apparentCluster": "内容采集引擎",
+        "reasoning": "90行轻量级适配器。封装7个平台的RSSHub路由构建(zhihu/twitter/bilibili/youtube/custom/wechat/weibo)，含健康检查(healthCheck)。隔离了env.RSSHUB_URL的直接使用。"
+      },
+      "generated": {
+        "architectureLayer": "engine",
+        "assetCluster": "CL-001",
+        "productRole": "RSSHub路由抽象层",
+        "reuseMode": "clone",
+        "reuseReason": "轻量、自包含、是适配器模式的清晰实现",
+        "reuseReasonStructured": {
+          "trigger": "需要封装第三方服务(RSSHub)的URL格式，便于切换基础URL或迁移",
+          "basis": "统一的buildXxxUrl接口、健康检查、基础URL可注入",
+          "risk": "RSSHub路由格式可能随版本变化"
+        },
+        "reuseAgainst": "不要假设RSSHub路由格式永久不变，应预留版本适配空间",
+        "integrationEffort": "low",
+        "opportunities": [
+          "适配器模式封装外部服务URL是降低耦合的标准做法",
+          "healthCheck方法(HEAD请求+超时)是服务健康检查的最小实现"
+        ],
+        "ioContract": {
+          "inputs": [
+            "platform-specific id: string",
+            "baseUrl?: string"
+          ],
+          "outputs": [
+            "rssUrl: string | { healthy: boolean, latency: number }"
+          ]
+        }
+      }
+    },
+    {
+      "id": "C-014",
+      "type": "CodeSnippet",
+      "name": "WeChatArticleCollector",
+      "oneLiner": "微信公众号文章采集与存储，含内容抓取",
+      "sourceRepo": "Jinkin-92/infohub",
+      "sourceFile": "backend/src/services/wechat/articleCollector.ts",
+      "sourceLines": [
+        1,
+        452
+      ],
+      "code": "",
+      "confidence": 0.74,
+      "confidenceLevel": "medium",
+      "evidence": {
+        "apparentType": "CodeSnippet",
+        "apparentRole": "微信特定采集实现",
+        "apparentLayer": "orchestration",
+        "apparentCluster": "平台认证系统",
+        "reasoning": "452行微信专用采集器。实现公众号文章列表获取、详情抓取、内容提取、图片处理、数据库存储。依赖微信特定的Cookie/Token认证和页面结构解析。"
+      },
+      "generated": {
+        "architectureLayer": "orchestration",
+        "assetCluster": "CL-004",
+        "productRole": "微信公众号内容采集器",
+        "reuseMode": "reference",
+        "reuseReason": "高度特定于微信平台和项目数据库模式，但页面抓取和内容处理模式通用",
+        "reuseReasonStructured": {
+          "trigger": "需要采集微信公众号内容",
+          "basis": "微信API调用序列、HTML内容提取、图片代理处理",
+          "risk": "强依赖微信页面结构和认证机制，容易失效"
+        },
+        "reuseAgainst": "微信采集逻辑受平台反爬和认证限制，不应作为长期稳定方案",
+        "integrationEffort": "high",
+        "opportunities": [
+          "内容抓取后的HTML清理和文本提取逻辑是通用的",
+          "图片代理和封面提取模式可复用于其他内容采集场景"
+        ],
+        "ioContract": {
+          "inputs": [
+            "fakerId: string",
+            "sourceId: number"
+          ],
+          "outputs": [
+            "count: number"
+          ]
+        }
+      }
+    },
+    {
+      "id": "C-015",
+      "type": "CodeSnippet",
+      "name": "WeChatAuth",
+      "oneLiner": "微信公众号平台认证与账号搜索",
+      "sourceRepo": "Jinkin-92/infohub",
+      "sourceFile": "backend/src/services/wechat/auth.ts",
+      "sourceLines": [
+        1,
+        259
+      ],
+      "code": "",
+      "confidence": 0.76,
+      "confidenceLevel": "medium",
+      "evidence": {
+        "apparentType": "CodeSnippet",
+        "apparentRole": "微信认证与搜索服务",
+        "apparentLayer": "orchestration",
+        "apparentCluster": "平台认证系统",
+        "reasoning": "259行微信认证模块。实现Cookie/Token验证、公众号搜索(searchBiz)、Cookie有效性检测、页面token提取。是微信生态集成的完整认证参考。"
+      },
+      "generated": {
+        "architectureLayer": "orchestration",
+        "assetCluster": "CL-004",
+        "productRole": "微信平台认证服务",
+        "reuseMode": "reference",
+        "reuseReason": "微信特定的认证逻辑，但搜索和验证模式有参考价值",
+        "reuseReasonStructured": {
+          "trigger": "需要集成微信公众平台API",
+          "basis": "Cookie/Token验证流程、公众号搜索API封装、认证状态检测",
+          "risk": "依赖微信未公开的内部API，稳定性和合法性存在风险"
+        },
+        "reuseAgainst": "微信内部API可能随时变更或受限，应有替代方案",
+        "integrationEffort": "high",
+        "opportunities": [
+          "搜索API的分页和结果解析模式是通用设计",
+          "认证状态机(active/expired/invalid)可复用于其他平台"
+        ],
+        "ioContract": {
+          "inputs": [
+            "credentials: { cookie, token, userAgent? }"
+          ],
+          "outputs": [
+            "authResult: { valid, accounts[], status }"
+          ]
+        }
+      }
+    }
+  ],
+  "summary": {
+    "byReuseMode": {
+      "clone": 5,
+      "service": 2,
+      "skill": 1,
+      "reference": 7
+    },
+    "byType": {
+      "Framework": 6,
+      "Tooling": 5,
+      "CodeSnippet": 3,
+      "Knowledge": 1
+    },
+    "byLayer": {
+      "engine": 5,
+      "orchestration": 5,
+      "interface": 2,
+      "surface": 3
+    },
+    "highConfidence": 10,
+    "mediumConfidence": 5,
+    "lowConfidence": 0
+  }
+}

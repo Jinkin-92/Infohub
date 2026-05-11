@@ -1,4 +1,4 @@
-import { sourcesQueries } from '../db/queries.js';
+import { sourcesQueries, collectionJobsQueries } from '../db/queries.js';
 import { collector } from '../services/collector.js';
 import { localIntegrationsService } from './localIntegrations.js';
 
@@ -87,6 +87,21 @@ export class CronManager {
       let succeeded = 0;
       let failed = 0;
 
+      // 为每个待采集源创建 job 记录
+      const jobMap = new Map<number, number>();
+      for (const source of dueSources) {
+        try {
+          const job = await collectionJobsQueries.create({
+            source_id: source.id,
+            status: 'pending',
+            scheduled_at: new Date().toISOString(),
+          });
+          jobMap.set(source.id, job.id);
+        } catch (err) {
+          console.warn(`[Cron] Failed to create job for source ${source.id}:`, err);
+        }
+      }
+
       const workerCount = Math.max(1, Math.min(this.maxConcurrentCollections, dueSources.length));
       let nextIndex = 0;
 
@@ -99,16 +114,40 @@ export class CronManager {
         }
 
         const source = dueSources[currentIndex];
+        const jobId = jobMap.get(source.id);
+
+        // 标记 job 为 running
+        if (jobId) {
+          try {
+            await collectionJobsQueries.start(jobId);
+          } catch (err) {
+            console.warn(`[Cron] Failed to start job ${jobId}:`, err);
+          }
+        }
+
         try {
           const result = await collector.collectSource(source.id, { force });
           if (result.success) {
             succeeded += 1;
+            if (jobId) {
+              await collectionJobsQueries.succeed(jobId, result.itemCount);
+            }
           } else {
             failed += 1;
+            if (jobId) {
+              const errorMsg = result.error ?? 'Collection failed without error message';
+              const nextRetry = this.calculateNextRetry(1);
+              await collectionJobsQueries.fail(jobId, errorMsg, nextRetry);
+            }
           }
         } catch (error) {
           failed += 1;
-          console.error(`[Cron] Failed to collect source ${source.id}:`, error);
+          const errorMsg = error instanceof Error ? error.message : String(error);
+          console.error(`[Cron] Failed to collect source ${source.id}:`, errorMsg);
+          if (jobId) {
+            const nextRetry = this.calculateNextRetry(1);
+            await collectionJobsQueries.fail(jobId, errorMsg, nextRetry);
+          }
         }
 
         await runNext();
@@ -130,6 +169,45 @@ export class CronManager {
     } finally {
       this.isCollecting = false;
     }
+  }
+
+  /**
+   * 重试失败的采集任务（指数退避）
+   */
+  async retryFailedJobs(): Promise<{ retried: number; succeeded: number; failed: number }> {
+    const pendingJobs = await collectionJobsQueries.getFailedPending(50);
+    let retried = 0;
+    let succeeded = 0;
+    let failed = 0;
+
+    for (const job of pendingJobs) {
+      retried++;
+      try {
+        await collectionJobsQueries.start(job.id);
+        const result = await collector.collectSource(job.source_id, { force: true });
+        if (result.success) {
+          await collectionJobsQueries.succeed(job.id, result.itemCount);
+          succeeded++;
+        } else {
+          const nextRetry = this.calculateNextRetry(job.attempts + 1);
+          await collectionJobsQueries.fail(job.id, result.error ?? 'Retry failed', nextRetry);
+          failed++;
+        }
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        const nextRetry = this.calculateNextRetry(job.attempts + 1);
+        await collectionJobsQueries.fail(job.id, errorMsg, nextRetry);
+        failed++;
+      }
+    }
+
+    return { retried, succeeded, failed };
+  }
+
+  private calculateNextRetry(attempts: number): string {
+    // 指数退避: 1min, 2min, 4min, 8min... 上限 1小时
+    const delayMs = Math.min(60000 * Math.pow(2, attempts - 1), 3600000);
+    return new Date(Date.now() + delayMs).toISOString();
   }
 
   private isSourceDue(lastFetchedAt: string | null, fetchIntervalMinutes: number): boolean {

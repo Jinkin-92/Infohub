@@ -187,21 +187,45 @@ function cardToItem(sourceName: string, card: ZhihuCard): RSSItem | null {
   };
 }
 
-export async function collectZhihuBrowserItems(source: Source): Promise<RSSItem[]> {
-  const handle = resolveZhihuHandle(source);
-  const cookie = await getZhihuCookie();
-  const cards = await scrapeZhihuCards(handle, cookie);
-  const items = cards
-    .map((card) => cardToItem(source.name || handle, card))
-    .filter((item): item is RSSItem => Boolean(item));
+async function collectWithRetry(source: Source, maxRetries = 3, delayMs = 2000): Promise<RSSItem[]> {
+  let lastError: Error | null = null;
 
-  if (!items.length) {
-    throw new Error('Zhihu activity page returned cards but no usable items');
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const items = await scrapeAndConvert(source);
+      return items;
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+
+      // 判断是否可重试的错误
+      const isRetryable = /timeout|ECONNREFUSED|ETIMEDOUT|network|cookie/i.test(lastError.message);
+
+      if (!isRetryable || attempt === maxRetries - 1) {
+        throw lastError;
+      }
+
+      console.warn(`[Zhihu] Attempt ${attempt + 1} failed, retrying in ${delayMs}ms:`, lastError.message);
+      await sleep(delayMs);
+    }
   }
 
-  return items;
+  throw lastError || new Error('Zhihu collection failed');
+}
+
+async function scrapeAndConvert(source: Source): Promise<RSSItem[]> {
+  const handle = resolveZhihuHandle(source);
+  const cookie = await getZhihuCookie();
+  const sourceName = source.name || handle;
+  const cards = await scrapeZhihuCards(handle, cookie);
+  return cards
+    .map((card) => cardToItem(sourceName, card))
+    .filter((item): item is RSSItem => item !== null);
+}
+
+export async function collectZhihuBrowserItems(source: Source): Promise<RSSItem[]> {
+  return collectWithRetry(source);
 }
 
 export const zhihuBrowserCollector = {
-  collectItems: collectZhihuBrowserItems,
+  collectItems: (source: Source) => collectWithRetry(source),
 };

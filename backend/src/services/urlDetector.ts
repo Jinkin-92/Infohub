@@ -4,6 +4,7 @@ import { BadRequestError } from '../middleware/error.js';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { wechatAuth } from './wechat/index.js';
+import { validateUrlSync, SecurityError } from '../middleware/security.js';
 
 const execFileAsync = promisify(execFile);
 
@@ -16,6 +17,16 @@ export class URLDetector {
 
   async detect(inputUrl: string): Promise<DetectionResult> {
     this.validateUrl(inputUrl);
+
+    // SSRF 安全检查
+    try {
+      validateUrlSync(inputUrl, { strict: false });
+    } catch (error) {
+      if (error instanceof SecurityError) {
+        throw new BadRequestError(`URL security check failed: ${error.message}`);
+      }
+      throw error;
+    }
 
     if (/\/feed\/MP_WXS_/.test(inputUrl)) {
       const feedMatch = inputUrl.match(/\/feed\/([^\/\?]+)/);

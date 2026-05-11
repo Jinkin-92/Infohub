@@ -16,6 +16,7 @@ export function FeedItem({
 }: FeedItemProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [imageError, setImageError] = useState(false)
+  const [translatedTitle, setTranslatedTitle] = useState<string | null>(null)
   const [translatedSummary, setTranslatedSummary] = useState<string | null>(null)
   const [isTranslating, setIsTranslating] = useState(false)
   const [showTranslation, setShowTranslation] = useState(false)
@@ -43,21 +44,29 @@ export function FeedItem({
       setShowTranslation(false)
       return
     }
-    if (translatedSummary) {
+    // 如果已有译文，直接显示
+    if (translatedSummary && translatedTitle) {
       setShowTranslation(true)
       return
     }
     setIsTranslating(true)
     try {
-      const result = await translateApi.translate(item.summary || '', 'zh-CN', 'en')
-      if (result.ok && result.translatedText) {
-        setTranslatedSummary(result.translatedText)
-        setShowTranslation(true)
+      // 并行翻译标题和摘要
+      const [titleResult, summaryResult] = await Promise.all([
+        translateApi.translate(item.title, 'zh-CN', 'en'),
+        translateApi.translate(item.summary || '', 'zh-CN', 'en')
+      ])
+      if (titleResult.ok && titleResult.translatedText) {
+        setTranslatedTitle(titleResult.translatedText)
       }
+      if (summaryResult.ok && summaryResult.translatedText) {
+        setTranslatedSummary(summaryResult.translatedText)
+      }
+      setShowTranslation(true)
     } finally {
       setIsTranslating(false)
     }
-  }, [item.summary, translatedSummary, showTranslation])
+  }, [item.title, item.summary, translatedSummary, translatedTitle, showTranslation])
 
   return (
     <article
@@ -95,6 +104,9 @@ export function FeedItem({
         )}
       >
         {item.title}
+        {showTranslation && translatedTitle && (
+          <span className="ml-2 text-sm font-normal text-text-muted">/ {translatedTitle}</span>
+        )}
       </h3>
 
       {item.cover_url && !imageError && (
@@ -111,28 +123,42 @@ export function FeedItem({
 
       {item.summary && (
         <div className="relative">
-          <p
-            className={cn(
-              'text-base leading-relaxed text-text-secondary',
-              !isExpanded && 'line-clamp-3'
-            )}
-          >
-            {isExpanded ? item.summary : truncate(item.summary, 200)}
-          </p>
-
-          {showTranslation && translatedSummary && (
-            <p className="mt-2 border-l-2 border-accent pl-3 text-base leading-relaxed italic text-text-tertiary">
-              {translatedSummary}
-            </p>
-          )}
-
-          {item.summary.length > 200 && (
-            <button
-              onClick={handleExpand}
-              className="mt-2 text-sm font-medium text-accent transition-colors hover:text-accent-hover"
-            >
-              {isExpanded ? '收起' : '展开阅读'}
-            </button>
+          {showTranslation && translatedSummary ? (
+            <div className="space-y-2">
+              <p className="text-base leading-relaxed text-text-secondary">
+                {isExpanded ? item.summary : truncate(item.summary, 200)}
+              </p>
+              <p className="text-base leading-relaxed text-text-muted italic border-l-2 border-accent pl-3">
+                {isExpanded ? translatedSummary : truncate(translatedSummary, 200)}
+              </p>
+              {item.summary.length > 200 && !isExpanded && (
+                <button
+                  onClick={handleExpand}
+                  className="text-sm font-medium text-accent transition-colors hover:text-accent-hover"
+                >
+                  展开阅读
+                </button>
+              )}
+            </div>
+          ) : (
+            <>
+              <p
+                className={cn(
+                  'text-base leading-relaxed text-text-secondary',
+                  !isExpanded && 'line-clamp-3'
+                )}
+              >
+                {isExpanded ? item.summary : truncate(item.summary, 200)}
+              </p>
+              {item.summary.length > 200 && (
+                <button
+                  onClick={handleExpand}
+                  className="mt-2 text-sm font-medium text-accent transition-colors hover:text-accent-hover"
+                >
+                  {isExpanded ? '收起' : '展开阅读'}
+                </button>
+              )}
+            </>
           )}
         </div>
       )}
@@ -190,7 +216,7 @@ export function FeedItem({
                 d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
               />
             </svg>
-            {isTranslating ? '翻译中...' : showTranslation ? '隐藏译文' : '翻译'}
+            {isTranslating ? '翻译中...' : showTranslation ? '原文' : '翻译'}
           </button>
         )}
       </div>

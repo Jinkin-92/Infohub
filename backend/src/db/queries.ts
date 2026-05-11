@@ -165,6 +165,15 @@ export const sourcesQueries = {
     if (input.enabled !== undefined) {
       updates.push('enabled = ?');
       values.push(enabledParam(input.enabled));
+      // When disabling a source, clear error state
+      if (!input.enabled) {
+        updates.push('status = ?');
+        values.push('disabled');
+        updates.push('last_error = ?');
+        values.push(null as any);
+        updates.push('last_error_at = ?');
+        values.push(null as any);
+      }
     }
     if (input.fetch_interval_min !== undefined) {
       updates.push('fetch_interval_min = ?');
@@ -943,5 +952,142 @@ export const publicSourcesQueries = {
       throw new Error('Failed to create public source');
     }
     return created;
+  },
+};
+
+// ============================================
+// 采集任务查询（Phase 2: 任务持久化）
+// ============================================
+
+export interface CollectionJob {
+  id: number;
+  source_id: number;
+  status: 'pending' | 'running' | 'succeeded' | 'failed' | 'cancelled';
+  scheduled_at: string;
+  started_at: string | null;
+  completed_at: string | null;
+  attempts: number;
+  max_attempts: number;
+  next_retry_at: string | null;
+  last_error: string | null;
+  item_count: number | null;
+  created_at: string;
+}
+
+export interface CreateJobInput {
+  source_id: number;
+  status?: string;
+  scheduled_at?: string;
+  max_attempts?: number;
+}
+
+export const collectionJobsQueries = {
+  async create(input: CreateJobInput): Promise<CollectionJob> {
+    await sql.execute(
+      `INSERT INTO collection_jobs (source_id, status, scheduled_at, max_attempts)
+       VALUES (?, ?, ?, ?)`,
+      [
+        input.source_id,
+        input.status ?? 'pending',
+        input.scheduled_at ?? new Date().toISOString(),
+        input.max_attempts ?? 3,
+      ]
+    );
+    const created = await sql.get<CollectionJob>('SELECT * FROM collection_jobs WHERE id = last_insert_rowid()');
+    if (!created) {
+      throw new Error('Failed to create collection job');
+    }
+    return created;
+  },
+
+  async start(jobId: number): Promise<void> {
+    await sql.execute(
+      `UPDATE collection_jobs
+       SET status = 'running', started_at = CURRENT_TIMESTAMP, attempts = attempts + 1
+       WHERE id = ?`,
+      [jobId]
+    );
+  },
+
+  async succeed(jobId: number, itemCount: number): Promise<void> {
+    await sql.execute(
+      `UPDATE collection_jobs
+       SET status = 'succeeded', completed_at = CURRENT_TIMESTAMP, item_count = ?
+       WHERE id = ?`,
+      [itemCount, jobId]
+    );
+  },
+
+  async fail(jobId: number, errorMessage: string, nextRetryAt?: string): Promise<void> {
+    await sql.execute(
+      `UPDATE collection_jobs
+       SET status = 'failed', last_error = ?, next_retry_at = ?
+       WHERE id = ?`,
+      [errorMessage, nextRetryAt ?? null, jobId]
+    );
+  },
+
+  async cancel(jobId: number): Promise<void> {
+    await sql.execute(
+      `UPDATE collection_jobs SET status = 'cancelled', completed_at = CURRENT_TIMESTAMP WHERE id = ?`,
+      [jobId]
+    );
+  },
+
+  async getById(id: number): Promise<CollectionJob | null> {
+    return (await sql.get<CollectionJob>('SELECT * FROM collection_jobs WHERE id = ?', [id])) ?? null;
+  },
+
+  async getRecentBySource(sourceId: number, limit = 10): Promise<CollectionJob[]> {
+    return sql.query<CollectionJob>(
+      `SELECT * FROM collection_jobs WHERE source_id = ? ORDER BY created_at DESC LIMIT ?`,
+      [sourceId, limit]
+    );
+  },
+
+  async getFailedPending(limit = 50): Promise<CollectionJob[]> {
+    return sql.query<CollectionJob>(
+      `SELECT * FROM collection_jobs
+       WHERE status = 'failed'
+         AND next_retry_at IS NOT NULL
+         AND next_retry_at <= datetime('now')
+         AND attempts < max_attempts
+       ORDER BY next_retry_at ASC
+       LIMIT ?`,
+      [limit]
+    );
+  },
+
+  async getStats(): Promise<{
+    total: number;
+    pending: number;
+    running: number;
+    succeeded: number;
+    failed: number;
+    failedPermanent: number;
+  }> {
+    const rows = await sql.query<{ status: string; count: number }>(
+      `SELECT status, COUNT(*) as count FROM collection_jobs GROUP BY status`
+    );
+
+    const map = new Map<string, number>();
+    for (const row of rows) {
+      map.set(row.status, Number(row.count));
+    }
+
+    const total = Array.from(map.values()).reduce((a, b) => a + b, 0);
+
+    const failedPermanent = await sql.get<{ count: number }>(
+      `SELECT COUNT(*) as count FROM collection_jobs WHERE status = 'failed' AND attempts >= max_attempts`
+    );
+
+    return {
+      total,
+      pending: map.get('pending') ?? 0,
+      running: map.get('running') ?? 0,
+      succeeded: map.get('succeeded') ?? 0,
+      failed: map.get('failed') ?? 0,
+      failedPermanent: Number(failedPermanent?.count ?? 0),
+    };
   },
 };

@@ -4,11 +4,22 @@ const mocks = vi.hoisted(() => ({
   getDueForFetch: vi.fn(),
   collectSource: vi.fn(),
   ensureRsshubRunning: vi.fn(),
+  jobCreate: vi.fn(),
+  jobStart: vi.fn(),
+  jobSucceed: vi.fn(),
+  jobFail: vi.fn(),
 }));
 
 vi.mock('../src/db/queries.js', () => ({
   sourcesQueries: {
     getDueForFetch: mocks.getDueForFetch,
+  },
+  collectionJobsQueries: {
+    create: mocks.jobCreate,
+    start: mocks.jobStart,
+    succeed: mocks.jobSucceed,
+    fail: mocks.jobFail,
+    getFailedPending: vi.fn(),
   },
 }));
 
@@ -28,6 +39,12 @@ describe('cron manager manual collection', () => {
   beforeEach(() => {
     Object.values(mocks).forEach((mockFn) => mockFn.mockReset());
     mocks.ensureRsshubRunning.mockResolvedValue(undefined);
+    mocks.jobCreate.mockImplementation(async (input: { source_id: number }) => ({
+      id: input.source_id * 1000,
+    }));
+    mocks.jobStart.mockResolvedValue(undefined);
+    mocks.jobSucceed.mockResolvedValue(undefined);
+    mocks.jobFail.mockResolvedValue(undefined);
   });
 
   it('collects sources with bounded concurrency and counts success:false as failures', async () => {

@@ -297,6 +297,60 @@ function SourcesTab({
 }: SourcesTabProps) {
   const [sourceType, setSourceType] = useState<'custom' | 'public'>('custom')
   const [platformFilter, setPlatformFilter] = useState<string>('all')
+  const [diagnosing, setDiagnosing] = useState<number | null>(null)
+  const [diagnoses, setDiagnoses] = useState<Record<number, {
+    category: string
+    action: string
+    label: string
+    fixLabel: string
+    errorMessage: string
+  }>>({})
+
+  const handleDiagnose = async (source: Source) => {
+    if (!source.last_error) return
+    setDiagnosing(source.id)
+    try {
+      const response = await sourcesApi.diagnose(source.id)
+      if (response.ok && response.diagnosis.hasError) {
+        setDiagnoses(prev => ({ ...prev, [source.id]: response.diagnosis as any }))
+      }
+    } finally {
+      setDiagnosing(null)
+    }
+  }
+
+  const handleFixAction = async (source: Source, action: string) => {
+    switch (action) {
+      case 'retry':
+        await onCollect(source)
+        // Refresh diagnosis after retry
+        setDiagnoses(prev => {
+          const next = { ...prev }
+          delete next[source.id]
+          return next
+        })
+        break
+      case 'disable_temporarily':
+        onToggleEnabled(source)
+        // Clear diagnosis after disable (error will be cleared by backend)
+        setDiagnoses(prev => {
+          const next = { ...prev }
+          delete next[source.id]
+          return next
+        })
+        break
+      case 'configure_proxy':
+      case 'relogin':
+      case 'retry_later':
+        // Open settings or platform connections
+        break
+      case 'restart_rsshub':
+        // Trigger restart will be handled by parent
+        break
+      default:
+        await onCollect(source)
+    }
+  }
 
   const customSources = sources.filter(s => !s.is_public)
   const publicSources = sources.filter(s => s.is_public)
@@ -397,6 +451,10 @@ function SourcesTab({
               onDelete={() => setConfirmDelete(source.id)}
               onCancelDelete={() => setConfirmDelete(null)}
               onConfirmDelete={() => onDelete(source.id)}
+              diagnosis={diagnoses[source.id]}
+              onDiagnose={() => handleDiagnose(source)}
+              onFixAction={(action) => handleFixAction(source, action)}
+              isDiagnosing={diagnosing === source.id}
             />
           ))}
         </div>
@@ -414,6 +472,16 @@ interface SourceItemProps {
   onDelete: () => void
   onCancelDelete: () => void
   onConfirmDelete: () => void
+  diagnosis?: {
+    category: string
+    action: string
+    label: string
+    fixLabel: string
+    errorMessage: string
+  }
+  onDiagnose?: () => void
+  onFixAction?: (action: string) => void
+  isDiagnosing?: boolean
 }
 
 function SourceItem({
@@ -425,6 +493,10 @@ function SourceItem({
   onDelete,
   onCancelDelete,
   onConfirmDelete,
+  diagnosis,
+  onDiagnose,
+  onFixAction,
+  isDiagnosing,
 }: SourceItemProps) {
   const color = getSourceColor(source)
   const displayName = source.is_public && source.category
@@ -476,6 +548,31 @@ function SourceItem({
           </p>
           {source.last_error && (
             <p className="mt-2 line-clamp-2 text-xs text-red-500">{source.last_error}</p>
+          )}
+          {source.last_error && source.status === 'error' && (
+            <div className="mt-2 flex items-center gap-2">
+              {!diagnosis ? (
+                <button
+                  onClick={onDiagnose}
+                  disabled={isDiagnosing}
+                  className="rounded px-2 py-1 text-xs font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 disabled:opacity-50"
+                >
+                  {isDiagnosing ? '诊断中...' : '诊断问题'}
+                </button>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <span className="rounded px-2 py-1 text-xs font-medium bg-amber-50 text-amber-700">
+                    {diagnosis.label}
+                  </span>
+                  <button
+                    onClick={() => onFixAction?.(diagnosis.action)}
+                    className="rounded px-2 py-1 text-xs font-medium bg-accent text-white hover:bg-accent-hover"
+                  >
+                    {diagnosis.fixLabel}
+                  </button>
+                </div>
+              )}
+            </div>
           )}
         </div>
 
@@ -817,10 +914,21 @@ function AboutTab() {
 
   const checkForUpdate = useCallback(async () => {
     setUpdateStatus('checking')
+    setLatestVersion(null)
     try {
       const response = await fetch('https://api.github.com/repos/Jinkin-92/infohub/releases/latest', {
         headers: { 'Accept': 'application/vnd.github.v3+json' }
       })
+
+      // 检查是否被限速
+      if (response.status === 403) {
+        const data = await response.json().catch(() => ({}))
+        if (data.message?.includes('rate limit')) {
+          setUpdateStatus('error')
+          return
+        }
+      }
+
       if (!response.ok) throw new Error('Failed to fetch')
       const data = await response.json()
       const tag = data.tag_name?.replace(/^v/, '') || '0.0.0'
@@ -864,7 +972,17 @@ function AboutTab() {
             </span>
           )}
           {updateStatus === 'error' && (
-            <span className="text-sm text-red-500">检查更新失败</span>
+            <span className="text-sm text-red-500">
+              检查更新失败（API 限速）
+              <a
+                href="https://github.com/Jinkin-92/infohub/releases"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ml-1 underline hover:text-accent"
+              >
+                前往 GitHub 查看
+              </a>
+            </span>
           )}
         </div>
 

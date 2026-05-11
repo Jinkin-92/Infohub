@@ -4,6 +4,7 @@
  */
 
 import { sql } from '../../db/client.js';
+import { encrypt, decrypt } from '../../lib/crypto.js';
 
 export interface PlatformCredential {
   platform: string;
@@ -14,17 +15,40 @@ export interface PlatformCredential {
   updatedAt: string;
 }
 
-function simpleEncrypt(text: string): string {
-  // 简单的 base64 混淆，不做高强度加密（凭证本身已有其他保护层）
-  return Buffer.from(text).toString('base64');
+/**
+ * 加密凭证值（AES-256-GCM）
+ * 如果 ENCRYPTION_KEY 未设置，回退到 base64（开发环境兼容）
+ */
+function credentialEncrypt(text: string): string {
+  try {
+    return encrypt(text);
+  } catch {
+    // ENCRYPTION_KEY 未设置时的降级处理
+    return Buffer.from(text).toString('base64');
+  }
 }
 
-function simpleDecrypt(encoded: string): string {
+/**
+ * 解密凭证值
+ * 自动兼容旧版 base64 格式（自动迁移）
+ */
+function credentialDecrypt(encoded: string): string {
   try {
-    return Buffer.from(encoded, 'base64').toString('utf8');
+    return decrypt(encoded);
   } catch {
-    return encoded;
+    // 解密失败时尝试旧版 base64
+    try {
+      return Buffer.from(encoded, 'base64').toString('utf8');
+    } catch {
+      return encoded;
+    }
   }
+}
+
+export interface CredentialHealth {
+  valid: boolean;
+  message?: string;
+  expiresAt?: string | null;
 }
 
 export class CredentialStore {
@@ -39,8 +63,9 @@ export class CredentialStore {
       status: string;
       verified_at: string | null;
       updated_at: string;
+      expires_at: string | null;
     }>(
-      'SELECT platform, credential_type, credential_value, status, verified_at, updated_at FROM platform_credentials WHERE platform = ?',
+      'SELECT platform, credential_type, credential_value, status, verified_at, updated_at, expires_at FROM platform_credentials WHERE platform = ?',
       [platform]
     );
 
@@ -49,7 +74,7 @@ export class CredentialStore {
     return {
       platform: row.platform,
       credentialType: row.credential_type as 'cookie' | 'token',
-      value: simpleDecrypt(row.credential_value),
+      value: credentialDecrypt(row.credential_value),
       status: row.status as 'active' | 'expired' | 'invalid',
       verifiedAt: row.verified_at,
       updatedAt: row.updated_at,
@@ -59,18 +84,21 @@ export class CredentialStore {
   /**
    * 保存或更新凭证
    */
-  async save(platform: string, credentialType: 'cookie' | 'token', value: string): Promise<void> {
-    const encrypted = simpleEncrypt(value);
+  async save(platform: string, credentialType: 'cookie' | 'token', value: string, options?: { expiresAt?: string; refreshToken?: string }): Promise<void> {
+    const encrypted = credentialEncrypt(value);
+    const encryptedRefresh = options?.refreshToken ? credentialEncrypt(options.refreshToken) : null;
     await sql.execute(
-      `INSERT INTO platform_credentials (platform, credential_type, credential_value, status, verified_at, updated_at)
-       VALUES (?, ?, ?, 'active', datetime('now'), datetime('now'))
+      `INSERT INTO platform_credentials (platform, credential_type, credential_value, status, verified_at, updated_at, expires_at, refresh_token)
+       VALUES (?, ?, ?, 'active', datetime('now'), datetime('now'), ?, ?)
        ON CONFLICT (platform) DO UPDATE SET
          credential_type = excluded.credential_type,
          credential_value = excluded.credential_value,
          status = 'active',
          verified_at = datetime('now'),
-         updated_at = datetime('now')`,
-      [platform, credentialType, encrypted]
+         updated_at = datetime('now'),
+         expires_at = COALESCE(excluded.expires_at, expires_at),
+         refresh_token = COALESCE(excluded.refresh_token, refresh_token)`,
+      [platform, credentialType, encrypted, options?.expiresAt ?? null, encryptedRefresh]
     );
   }
 
@@ -118,6 +146,60 @@ export class CredentialStore {
       hasValue: r.credential_value.length > 0,
       verifiedAt: r.verified_at,
     }));
+  }
+
+  /**
+   * 检测凭证是否即将过期
+   */
+  async isExpired(platform: string, thresholdMs = 300000): Promise<boolean> {
+    const row = await sql.get<{ expires_at: string | null; status: string }>(
+      'SELECT expires_at, status FROM platform_credentials WHERE platform = ?',
+      [platform]
+    );
+
+    if (!row) return true; // 无凭证视为过期
+    if (row.status === 'expired' || row.status === 'invalid') return true;
+    if (!row.expires_at) return false; // 无过期时间视为有效
+
+    const expiresAt = new Date(row.expires_at).getTime();
+    if (Number.isNaN(expiresAt)) return false;
+
+    return Date.now() + thresholdMs >= expiresAt;
+  }
+
+  /**
+   * 凭证健康检查
+   */
+  async healthCheck(platform: string): Promise<CredentialHealth> {
+    const row = await sql.get<{
+      status: string;
+      expires_at: string | null;
+      verified_at: string | null;
+    }>(
+      'SELECT status, expires_at, verified_at FROM platform_credentials WHERE platform = ?',
+      [platform]
+    );
+
+    if (!row) {
+      return { valid: false, message: 'No credential found for platform' };
+    }
+
+    if (row.status === 'expired') {
+      return { valid: false, message: 'Credential has expired', expiresAt: row.expires_at };
+    }
+
+    if (row.status === 'invalid') {
+      return { valid: false, message: 'Credential is invalid' };
+    }
+
+    if (row.expires_at) {
+      const expiresAt = new Date(row.expires_at).getTime();
+      if (!Number.isNaN(expiresAt) && Date.now() >= expiresAt) {
+        return { valid: false, message: 'Credential expired', expiresAt: row.expires_at };
+      }
+    }
+
+    return { valid: true, expiresAt: row.expires_at };
   }
 }
 

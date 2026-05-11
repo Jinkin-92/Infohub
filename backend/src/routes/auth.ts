@@ -126,11 +126,40 @@ async function fetchRssHealth(rssUrl: string): Promise<{ ok: boolean; status: nu
     };
   }
 
+  // Check for JSON error payloads (RSSHub returns JSON errors with HTTP 200 sometimes)
   if (/"error"\s*:\s*\{/i.test(body)) {
     return {
       ok: false,
       status: response.status,
       message: body.slice(0, 300) || 'Endpoint returned an error payload',
+    };
+  }
+
+  // Check if response is actually valid RSS/XML, not a plain error
+  const trimmedBody = body.trim();
+  if (trimmedBody.startsWith('{') || trimmedBody.startsWith('[')) {
+    // Response is JSON, not RSS — likely an error
+    try {
+      const parsed = JSON.parse(trimmedBody);
+      const errorMsg = parsed?.error?.message || parsed?.message || parsed?.error;
+      if (errorMsg) {
+        return {
+          ok: false,
+          status: response.status,
+          message: String(errorMsg).slice(0, 300),
+        };
+      }
+    } catch {
+      // Not valid JSON, ignore
+    }
+  }
+
+  // Detect common RSSHub runtime errors in RSS content
+  if (/__name is not defined|Cannot read propert|TypeError:|ReferenceError:/i.test(body)) {
+    return {
+      ok: false,
+      status: response.status,
+      message: body.slice(0, 300) || 'RSS endpoint returned runtime error',
     };
   }
 

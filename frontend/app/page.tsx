@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import useSWR from 'swr'
 import { TabBar } from './components/TabBar'
 import { FeedList } from './components/FeedList'
+import { ErrorBoundary } from './components/ErrorBoundary'
 import { PublicSourcesPanel } from './components/PublicSourcesPanel'
 import { SearchBar } from './components/SearchBar'
 import { AddSourceModal } from './components/AddSourceModal'
@@ -292,20 +293,22 @@ export default function Home() {
           </div>
         )}
 
-        <FeedList
-          key={`${activeTab.sourceType}-${activeTab.sourceType === 'public' ? activeTab.category : activeTab.platform}-${tabVersion}`}
-          platform={activeTab.sourceType === 'public' ? undefined : activeTab.platform === 'all' ? undefined : activeTab.platform}
-          isPublic={activeTab.sourceType === 'public'}
-          category={activeTab.sourceType === 'public' ? (activeTab.category === 'all' ? undefined : activeTab.category) : undefined}
-          searchQuery={searchQuery}
-          tagId={selectedTagId}
-          refreshTrigger={refreshTrigger}
-          tabVersion={tabVersion}
-          sourceUnreadCounts={unreadData?.by_source}
-          onCountsChange={() => {
-            void mutateUnread()
-          }}
-        />
+        <ErrorBoundary>
+          <FeedList
+            key={`${activeTab.sourceType}-${activeTab.sourceType === 'public' ? activeTab.category : activeTab.platform}-${tabVersion}`}
+            platform={activeTab.sourceType === 'public' ? undefined : activeTab.platform === 'all' ? undefined : activeTab.platform}
+            isPublic={activeTab.sourceType === 'public'}
+            category={activeTab.sourceType === 'public' ? (activeTab.category === 'all' ? undefined : activeTab.category) : undefined}
+            searchQuery={searchQuery}
+            tagId={selectedTagId}
+            refreshTrigger={refreshTrigger}
+            tabVersion={tabVersion}
+            sourceUnreadCounts={unreadData?.by_source}
+            onCountsChange={() => {
+              void mutateUnread()
+            }}
+          />
+        </ErrorBoundary>
       </div>
 
       <PublicSourcesPanel

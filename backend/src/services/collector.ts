@@ -17,6 +17,9 @@ import { urlDetector } from './urlDetector.js';
 import { youtubePublicCollector } from './youtubePublicCollector.js';
 import { resolveZhihuSourceName } from './zhihuSourceName.js';
 import { zhihuBrowserCollector } from './zhihuBrowserCollector.js';
+import { credentialStore } from './auth/credentialStore.js';
+import { webhookService } from './webhookService.js';
+import { getPlatform } from './platformRegistry.js';
 
 const execFileAsync = promisify(execFile);
 
@@ -56,6 +59,26 @@ export class Collector {
       if (!force && this.isRecentlyFetched(source.last_fetched_at)) {
         console.log(`[Collector] Source ${sourceId} was fetched recently, skipping`);
         return { sourceId, success: true, itemCount: 0, skipped: true };
+      }
+
+      // 凭证健康检查：非公开平台在收集前验证凭证有效性
+      if (!source.is_public) {
+        const credHealth = await credentialStore.healthCheck(source.platform);
+        if (!credHealth.valid) {
+          const msg = `Credential health check failed for ${source.platform}: ${credHealth.message}`;
+          console.warn(`[Collector] ${msg}`);
+          await sourcesQueries.updateError(sourceId, msg);
+
+          // 异步通知 webhook
+          webhookService.notify('source.credential_failed', {
+            sourceId,
+            platform: source.platform,
+            error: msg,
+            timestamp: new Date().toISOString(),
+          }).catch((err) => console.error('[Collector] Webhook notify error:', err));
+
+          return { sourceId, success: false, itemCount: 0, error: msg };
+        }
       }
 
       if (source.platform === 'wechat' && !source.is_public) {
@@ -101,6 +124,15 @@ export class Collector {
       const duration = Date.now() - startTime;
       console.log(`[Collector] Source ${sourceId} collected ${successCount} items in ${duration}ms`);
 
+      // 异步通知 webhook：源收集成功
+      webhookService.notify('source.collected', {
+        sourceId,
+        platform: source.platform,
+        itemCount: successCount,
+        durationMs: duration,
+        timestamp: new Date().toISOString(),
+      }).catch((err) => console.error('[Collector] Webhook notify error:', err));
+
       return {
         sourceId,
         success: true,
@@ -111,6 +143,14 @@ export class Collector {
 
       await sourcesQueries.updateError(sourceId, errorMessage);
       console.error(`[Collector] Source ${sourceId} collection failed:`, errorMessage);
+
+      // 异步通知 webhook：源收集失败
+      webhookService.notify('source.collection_failed', {
+        sourceId,
+        platform: source?.platform,
+        error: errorMessage,
+        timestamp: new Date().toISOString(),
+      }).catch((err) => console.error('[Collector] Webhook notify error:', err));
 
       return {
         sourceId,
@@ -196,6 +236,78 @@ export class Collector {
     }
 
     return rawMessage;
+  }
+
+  /**
+   * Error categories and their fix actions
+   */
+  private errorCategories = {
+    NETWORK_TIMEOUT: {
+      patterns: [/ETIMEDOUT|fetch failed|Request timed out|getaddrinfo|ECONNRESET|ECONNREFUSED|Bilibili scraper timed out|Waiting failed/i, /Connect Timeout Error|Navigation timeout/i],
+      action: 'retry',
+      label: '网络超时',
+      fixLabel: '重试采集',
+    },
+    PROXY_REQUIRED: {
+      patterns: [/could not load the profile page|Connect Timeout|proxy|代理/i],
+      action: 'configure_proxy',
+      label: '需要代理',
+      fixLabel: '配置代理',
+    },
+    RSSHUB_BUG: {
+      patterns: [/__name is not defined|Zhihu public activity collection is currently blocked/i],
+      action: 'disable_temporarily',
+      label: 'RSSHub 路由问题',
+      fixLabel: '暂时停用',
+    },
+    LOGIN_REQUIRED: {
+      patterns: [/auth_token|ct0|credential is missing|did not render any post|重新登录|安全验证|Cookies expired|cookie.*expir|滑块/i],
+      action: 'relogin',
+      label: '需要重新登录',
+      fixLabel: '重新登录',
+    },
+    RSSHUB_UNAVAILABLE: {
+      patterns: [/RSSHub instance unavailable|rejected this request|rate-limited/i],
+      action: 'restart_rsshub',
+      label: 'RSSHub 服务异常',
+      fixLabel: '重启 RSSHub',
+    },
+    PLATFORM_BLOCKED: {
+      patterns: [/Bilibili public collection is currently blocked|blocked by platform|anti-crawler/i],
+      action: 'retry_later',
+      label: '平台反爬',
+      fixLabel: '稍后重试',
+    },
+    CHROME_ERROR: {
+      patterns: [/ERR_INSUFFICIENT_RESOURCES|spawn UNKNOWN|ERR_PROXY_CONNECTION_FAILED|Chrome executable not found|net::ERR_/i],
+      action: 'retry',
+      label: '浏览器进程异常',
+      fixLabel: '重试采集',
+    },
+  } as const
+
+  /**
+   * Classify error and return fix action
+   */
+  classifyError(_source: Source | null, errorMessage: string): { category: string; action: string; label: string; fixLabel: string } {
+    for (const [category, config] of Object.entries(this.errorCategories)) {
+      for (const pattern of config.patterns) {
+        if (pattern.test(errorMessage)) {
+          return {
+            category,
+            action: config.action,
+            label: config.label,
+            fixLabel: config.fixLabel,
+          }
+        }
+      }
+    }
+    return {
+      category: 'UNKNOWN',
+      action: 'retry',
+      label: '采集失败',
+      fixLabel: '重试采集',
+    }
   }
 
   private resolveSourceUrl(source: Source): string {
@@ -531,6 +643,20 @@ export class Collector {
       return this.collectStandardFeedItems(sourceUrl);
     }
 
+    // Phase 5: 优先使用平台注册表
+    const registrySource = getPlatform(source.platform);
+    if (registrySource) {
+      const result = await registrySource.collect(source);
+      if (result.items) {
+        return result.items;
+      }
+      // 适配器返回了结果但没有 items（异常路径），回退到现有逻辑
+      if (!result.success) {
+        throw new Error(result.error || 'Registry adapter failed');
+      }
+    }
+
+    // 回退到现有的 if/else 链（逐步迁移中）
     if (source.platform === 'bilibili') {
       const { items } = await bilibiliPublicCollector.collectItems(source);
       return items;

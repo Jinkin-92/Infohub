@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import useSWR from 'swr'
-import { feedApi, favoritesApi, sourcesApi } from '../lib/api'
+import { feedApi, favoritesApi, sourcesApi, translateApi } from '../lib/api'
 import { Item, Source, FavoriteTag } from '../types'
 import { cn, formatDate, getSourceColor, getSourceTone } from '../lib/utils'
 import { EmptyState } from './EmptyState'
@@ -152,6 +152,19 @@ export function FeedList({
   const [dayWindow, setDayWindow] = useState(INITIAL_DAY_WINDOW)
   // 是否在扩展窗口模式（窗口扩展阶段不用offset，每次从最新开始）
   const [isExpanding, setIsExpanding] = useState(true)
+  // 翻译相关状态
+  const [translatingItems, setTranslatingItems] = useState<Set<number>>(new Set())
+  const [translatedItems, setTranslatedItems] = useState<Record<number, { title: string; summary: string }>>({})
+  const [showTranslations, setShowTranslations] = useState<Set<number>>(new Set())
+  const [autoTranslateAll, setAutoTranslateAll] = useState(false)
+
+  // 需要自动翻译的平台（英文内容）
+  const ENGLISH_PLATFORMS = ['x', 'youtube']
+
+  // 判断平台是否需要翻译（跳过中文平台）
+  const needsTranslation = (platformType: string) => {
+    return ENGLISH_PLATFORMS.includes(platformType)
+  }
 
   const { data: tagsData } = useSWR('favorites', () => favoritesApi.getTags(), {
     revalidateOnFocus: false,
@@ -166,16 +179,23 @@ export function FeedList({
       revalidateOnFocus: false,
     }
   )
-  const sources = (sourcesData?.sources || []).filter(
-    (source) => source.enabled && (!platform || source.platform === platform) && (!activeSourceId || source.id === activeSourceId)
+  const rawSources = sourcesData?.sources || []
+  const sources = useMemo(
+    () => rawSources.filter(
+      (source) => source.enabled && (!platform || source.platform === platform) && (!activeSourceId || source.id === activeSourceId)
+    ),
+    [rawSources, platform, activeSourceId]
   )
 
   // 所有当前栏目下的订阅源（用于下拉选择器）
   // 定制源：按 platform 过滤；公开源：按 category 过滤
-  const allSourcesForTab = (sourcesData?.sources || []).filter(
-    (source) => source.enabled &&
-      (!platform || source.platform === platform) &&
-      (isPublic ? source.is_public && (!category || source.category === category) : !source.is_public)
+  const allSourcesForTab = useMemo(
+    () => rawSources.filter(
+      (source) => source.enabled &&
+        (!platform || source.platform === platform) &&
+        (isPublic ? source.is_public && (!category || source.category === category) : !source.is_public)
+    ),
+    [rawSources, platform, isPublic, category]
   )
 
   // Only show error if the current platform's sources are ALL in error state
@@ -268,15 +288,6 @@ export function FeedList({
     return () => clearTimeout(timer)
   }, [platform, category, searchQuery, tagId, tabVersion])
 
-  useEffect(() => {
-    setDayWindow(INITIAL_DAY_WINDOW)
-    setIsExpanding(true)
-    setIsTabSwitching(true)
-    setActiveSourceId(undefined)
-
-    const timer = setTimeout(() => setIsTabSwitching(false), 1000)
-    return () => clearTimeout(timer)
-  }, [platform, category, searchQuery, tagId, tabVersion])
 
   useEffect(() => {
     if (!refreshTrigger || refreshTrigger <= 0) {
@@ -287,7 +298,15 @@ export function FeedList({
     setOffset(0)
     setHasMore(true)
     void mutate()
-  }, [refreshTrigger, mutate])
+
+    // 触发知乎采集（异步，不阻塞 UI）
+    const zhihuSources = allSourcesForTab.filter(s => s.platform === 'zhihu' && s.enabled)
+    for (const source of zhihuSources) {
+      void sourcesApi.collectZhihu(source.id).catch(err => {
+        console.warn(`[FeedList] Zhihu collection failed for source ${source.id}:`, err)
+      })
+    }
+  }, [refreshTrigger, mutate, allSourcesForTab])
 
   const loadMore = useCallback(() => {
     if (!hasMore || isLoadingMore) {
@@ -398,6 +417,101 @@ export function FeedList({
     [availableTags]
   )
 
+  const handleTranslate = useCallback(
+    async (item: Item) => {
+      // 如果已经翻译过，切换显示
+      if (translatedItems[item.id]) {
+        setShowTranslations((prev) => {
+          const next = new Set(prev)
+          if (next.has(item.id)) {
+            next.delete(item.id)
+          } else {
+            next.add(item.id)
+          }
+          return next
+        })
+        return
+      }
+
+      // 开始翻译
+      setTranslatingItems((prev) => new Set(prev).add(item.id))
+      try {
+        const [titleResult, summaryResult] = await Promise.all([
+          translateApi.translate(item.title, 'en', 'zh-CN'),
+          translateApi.translate(item.summary || '', 'en', 'zh-CN')
+        ])
+        const translated: { title: string; summary: string } = {
+          title: titleResult.ok && titleResult.translatedText ? titleResult.translatedText : item.title,
+          summary: summaryResult.ok && summaryResult.translatedText ? summaryResult.translatedText : (item.summary || ''),
+        }
+        setTranslatedItems((prev) => ({ ...prev, [item.id]: translated }))
+        setShowTranslations((prev) => new Set(prev).add(item.id))
+      } finally {
+        setTranslatingItems((prev) => {
+          const next = new Set(prev)
+          next.delete(item.id)
+          return next
+        })
+      }
+    },
+    [translatedItems]
+  )
+
+  // 一键自动翻译所有英文平台的订阅源
+  const handleAutoTranslateAll = useCallback(async () => {
+    if (autoTranslateAll) {
+      // 已开启，关闭所有翻译
+      setShowTranslations(new Set())
+      return
+    }
+
+    setAutoTranslateAll(true)
+
+    // 获取当前 tab 下所有需要翻译的订阅源
+    const sourcesToTranslate = allSourcesForTab.filter(s => needsTranslation(s.platform))
+
+    for (const source of sourcesToTranslate) {
+      // 找到该订阅源下的所有 items
+      const sourceItems = items.filter(item => item.source_id === source.id)
+      for (const item of sourceItems) {
+        if (!translatedItems[item.id] && !translatingItems.has(item.id)) {
+          // 翻译单个 item
+          setTranslatingItems((prev) => new Set(prev).add(item.id))
+          try {
+            const [titleResult, summaryResult] = await Promise.all([
+              translateApi.translate(item.title, 'en', 'zh-CN'),
+              translateApi.translate(item.summary || '', 'en', 'zh-CN')
+            ])
+            // 只有成功时才保存翻译结果
+            if (titleResult.ok && titleResult.translatedText) {
+              const translated: { title: string; summary: string } = {
+                title: titleResult.translatedText,
+                summary: summaryResult.ok && summaryResult.translatedText ? summaryResult.translatedText : (item.summary || ''),
+              }
+              setTranslatedItems((prev) => ({ ...prev, [item.id]: translated }))
+              setShowTranslations((prev) => new Set(prev).add(item.id))
+            }
+          } catch (error) {
+            console.warn('Translation failed for item:', item.id, error)
+          } finally {
+            setTranslatingItems((prev) => {
+              const next = new Set(prev)
+              next.delete(item.id)
+              return next
+            })
+            // 添加延迟避免触发限流
+            await new Promise(resolve => setTimeout(resolve, 500))
+          }
+        }
+      }
+    }
+
+    setAutoTranslateAll(false)
+  }, [autoTranslateAll, allSourcesForTab, items, translatedItems, translatingItems])
+
+  // 判断当前 tab 是否包含需要翻译的平台
+  const hasEnglishPlatform = allSourcesForTab.some(s => needsTranslation(s.platform))
+
   if ((isLoading || isTabSwitching) && items.length === 0) {
     return (
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -418,7 +532,8 @@ export function FeedList({
     )
   }
 
-  if (error) {
+  // 有错误但没有内容时，显示完整错误页面
+  if (error && items.length === 0) {
     return (
       <EmptyState
         title="加载失败"
@@ -444,7 +559,7 @@ export function FeedList({
     )
   }
 
-  if (items.length === 0) {
+  if (items.length === 0 && !error) {
     const primaryError = erroredSources[0]
 
     return (
@@ -477,6 +592,24 @@ export function FeedList({
 
   return (
     <div className="space-y-8">
+      {/* 有内容时的内联错误提示 */}
+      {error && (
+        <div className="flex items-center gap-3 rounded-xl border border-yellow-500/30 bg-yellow-500/10 px-4 py-3 text-sm">
+          <svg className="h-5 w-5 flex-shrink-0 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <span className="text-text-secondary">
+            部分内容加载失败：{error instanceof Error ? error.message : '网络异常'}
+          </span>
+          <button
+            onClick={() => void mutate()}
+            className="ml-auto flex-shrink-0 rounded-md px-2 py-1 text-xs font-medium text-accent hover:bg-accent/10"
+          >
+            重试
+          </button>
+        </div>
+      )}
+
       {/* 订阅源选择器 */}
       {allSourcesForTab.length > 0 && (
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
@@ -542,6 +675,19 @@ export function FeedList({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
             全部标记已读
+          </button>
+        )}
+
+        {!searchQuery && hasEnglishPlatform && (
+          <button
+            onClick={() => void handleAutoTranslateAll()}
+            disabled={autoTranslateAll}
+            className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-text-secondary transition-colors hover:bg-accent/10 hover:text-accent disabled:opacity-50"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+            </svg>
+            {autoTranslateAll ? '翻译中...' : '翻译全部英文'}
           </button>
         )}
       </div>
@@ -611,13 +757,27 @@ export function FeedList({
                               className="flex-1 text-left text-sm font-semibold leading-6 text-text-primary transition-colors hover:text-accent"
                             >
                               {item.title}
+                              {showTranslations.has(item.id) && translatedItems[item.id]?.title && (
+                                <span className="ml-2 font-normal text-text-muted">/ {translatedItems[item.id].title}</span>
+                              )}
                             </button>
                           </div>
 
                           {item.summary && (
-                            <p className="line-clamp-3 text-sm leading-6 text-text-secondary">
-                              {item.summary}
-                            </p>
+                            showTranslations.has(item.id) && translatedItems[item.id]?.summary ? (
+                              <div className="space-y-1">
+                                <p className="line-clamp-2 text-sm leading-6 text-text-secondary">
+                                  {item.summary}
+                                </p>
+                                <p className="line-clamp-2 text-sm leading-6 text-text-muted italic border-l-2 border-accent pl-2">
+                                  {translatedItems[item.id].summary}
+                                </p>
+                              </div>
+                            ) : (
+                              <p className="line-clamp-3 text-sm leading-6 text-text-secondary">
+                                {item.summary}
+                              </p>
+                            )
                           )}
 
                           <div className="mt-3 flex items-center justify-between gap-3">
@@ -677,6 +837,20 @@ export function FeedList({
                                   </div>
                                 )}
                               </div>
+                              {/* 翻译按钮 */}
+                              {item.summary && (
+                                <button
+                                  onClick={() => void handleTranslate(item)}
+                                  disabled={translatingItems.has(item.id)}
+                                  className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs transition-colors text-text-muted hover:text-accent disabled:opacity-50"
+                                  title="翻译"
+                                >
+                                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+                                  </svg>
+                                  {translatingItems.has(item.id) ? '翻译中...' : showTranslations.has(item.id) ? '原文' : '翻译'}
+                                </button>
+                              )}
                               <a
                                 href={item.url}
                                 target="_blank"

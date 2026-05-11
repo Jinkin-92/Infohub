@@ -219,6 +219,67 @@ export const sourcesApi = {
       method: 'POST',
     })
   },
+
+  /**
+   * 知乎采集（带重试）
+   */
+  async collectZhihu(sourceId: number): Promise<{
+    ok: boolean
+    itemCount?: number
+    error?: string
+  }> {
+    return fetchApi(`${API_BASE}/sources/zhihu/collect`, {
+      method: 'POST',
+      body: JSON.stringify({ sourceId }),
+    })
+  },
+
+  /**
+   * 诊断订阅源错误
+   */
+  async diagnose(id: number): Promise<{
+    ok: boolean
+    diagnosis: {
+      hasError: boolean
+      category: string | null
+      action: string | null
+      label: string | null
+      fixLabel: string | null
+      errorMessage: string | null
+    }
+  }> {
+    return fetchApi(`${API_BASE}/sources/${id}/diagnose`)
+  },
+
+  /**
+   * 诊断所有失败的订阅源
+   */
+  async diagnoseAll(): Promise<{
+    ok: boolean
+    totalFailed: number
+    diagnoses: Array<{
+      sourceId: number
+      sourceName: string
+      platform: string
+      category: string
+      action: string
+      label: string
+      fixLabel: string
+      errorMessage: string
+    }>
+    byAction: Record<string, Array<{
+      sourceId: number
+      sourceName: string
+      platform: string
+      category: string
+      action: string
+      label: string
+      fixLabel: string
+      errorMessage: string
+    }>>
+  }> {
+    return fetchApi(`${API_BASE}/sources/diagnose/all`)
+  },
 }
 
 /**

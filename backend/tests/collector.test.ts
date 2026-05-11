@@ -108,6 +108,18 @@ vi.mock('../src/services/zhihuSourceName.js', () => ({
   resolveZhihuSourceName: vi.fn(),
 }));
 
+vi.mock('../src/services/auth/credentialStore.js', () => ({
+  credentialStore: {
+    healthCheck: vi.fn().mockResolvedValue({ valid: true }),
+  },
+}));
+
+vi.mock('../src/services/webhookService.js', () => ({
+  webhookService: {
+    notify: vi.fn().mockResolvedValue([]),
+  },
+}));
+
 describe('collector platform routing', () => {
   beforeEach(() => {
     vi.resetModules();

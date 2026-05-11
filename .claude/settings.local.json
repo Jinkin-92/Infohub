@@ -4,7 +4,9 @@
       "Bash(cd /d D:codeaggregationinfohub)",
       "Bash(docker-compose ps:*)",
       "Bash(docker compose:*)",
-      "Bash(curl -s -X POST \"http://localhost:3002/api/sources\" -H \"Content-Type: application/json\" -d '{\"\"url\"\":\"\"http://localhost:8001/feed/MP_WXS_3248194593.rss\"\"}')"
+      "Bash(curl -s -X POST \"http://localhost:3002/api/sources\" -H \"Content-Type: application/json\" -d '{\"\"url\"\":\"\"http://localhost:8001/feed/MP_WXS_3248194593.rss\"\"}')",
+      "Bash(bash ~/.claude/skills/web-access/scripts/check-deps.sh)",
+      "Bash(curl -s -X POST \"http://localhost:3002/api/translate\" -H \"Content-Type: application/json\" -d '{\"text\":\"Hello world\",\"from\":\"en\",\"to\":\"zh-CN\"}')"
     ]
   }
 }

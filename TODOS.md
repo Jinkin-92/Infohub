@@ -8,6 +8,10 @@
 ## P0 - 阻塞性（MVP前必须完成）
 
 ### 安全
+- [x] **S3-2: 添加Schema验证**
+  - 使用Zod为所有API端点添加输入验证
+  - 优先端点：/api/sources POST, /api/feed/*
+
 - [ ] **S3-1: 添加SSRF防护**
   - 在urlDetector中禁止内网IP、私有地址、非HTTP(S)协议
   - 参考：[私有地址列表](https://en.wikipedia.org/wiki/Private_network)
@@ -17,7 +21,7 @@
   - 优先端点：/api/sources POST, /api/feed/*
 
 ### 错误处理
-- [ ] **S2-1: 添加源状态跟踪**
+- [x] **S2-1: 添加源状态跟踪**
   - 修改schema：sources表添加error_count, last_error, status字段
   - 采集失败时更新状态，前端可查看源健康状况
 
@@ -25,7 +29,7 @@
   - 检测空值、无效格式、错误协议
   - 返回友好错误信息
 
-- [ ] **S5-1: 统一错误处理**
+- [x] **S5-1: 统一错误处理**
   - 创建AppError类和全局错误处理中间件
   - 统一响应格式：{ ok: false, error: string, code?: string }
 
