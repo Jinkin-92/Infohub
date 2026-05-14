@@ -100,8 +100,8 @@ export function TabBar({
   const unreadCount = getUnreadCount()
 
   return (
-    <div className="sticky top-0 z-40 border-b border-border-color bg-bg-secondary shadow-sm">
-      <div className="mx-auto max-w-content px-4 sm:px-6 lg:px-8">
+    <div className="sticky top-0 z-40 w-full border-b border-border-color bg-bg-secondary shadow-sm">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex h-14 items-center gap-1">
           {/* Logo */}
           <div className="mr-4 flex items-center gap-2">

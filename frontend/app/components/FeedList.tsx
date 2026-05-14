@@ -32,7 +32,7 @@ interface DateSection {
 }
 
 const PAGE_SIZE = 300
-const CARD_HEIGHT = 420
+const CARD_HEIGHT = 380
 const INITIAL_DAY_WINDOW = 3
 const MAX_DAY_WINDOW = 30
 
@@ -150,6 +150,8 @@ export function FeedList({
   const [dayWindow, setDayWindow] = useState(INITIAL_DAY_WINDOW)
   // 是否在扩展窗口模式（窗口扩展阶段不用offset，每次从最新开始）
   const [isExpanding, setIsExpanding] = useState(true)
+  // 展开的条目ID集合
+  const [expandedItemIds, setExpandedItemIds] = useState<Set<number>>(new Set())
 
   const { data: tagsData } = useSWR('favorites', () => favoritesApi.getTags(), {
     revalidateOnFocus: false,
@@ -396,6 +398,18 @@ export function FeedList({
     [availableTags]
   )
 
+  const handleToggleExpand = useCallback((itemId: number) => {
+    setExpandedItemIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(itemId)) {
+        next.delete(itemId)
+      } else {
+        next.add(itemId)
+      }
+      return next
+    })
+  }, [])
+
   if ((isLoading || isTabSwitching) && items.length === 0) {
     return (
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -564,7 +578,7 @@ export function FeedList({
             </span>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 2xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {section.groups.map((group) => {
               const tone = getSourceTone(group.source, group.source.id)
               const updateCount = sourceUnreadCounts[String(group.source.id)] ?? 0
@@ -572,7 +586,7 @@ export function FeedList({
               return (
                 <article
                   key={`${section.key}-${group.source.id}`}
-                  className="overflow-hidden rounded-2xl border shadow-card transition-shadow hover:shadow-card-hover"
+                  className="relative overflow-hidden rounded-2xl border shadow-card transition-all duration-150 hover:shadow-card-hover hover:-translate-y-0.5"
                   style={{
                     height: `${CARD_HEIGHT}px`,
                     borderColor: tone.border,
@@ -580,120 +594,135 @@ export function FeedList({
                   }}
                 >
                   <header
-                    className="flex items-start justify-between gap-3 border-b border-white/50 px-4 py-4"
+                    className="flex items-start justify-between gap-3 border-b border-white/50 px-4 py-3"
                     style={{ background: tone.header }}
                   >
                     <div>
-                      <h3 className="text-base font-semibold text-text-primary">{group.title}</h3>
-                      <p className="mt-1 text-xs text-text-secondary">{group.source.platform}</p>
+                      <h3 className="text-sm font-semibold text-text-primary">{group.title}</h3>
+                      <p className="mt-0.5 text-xs text-text-secondary">{group.source.platform}</p>
                     </div>
-                    <span className="rounded-full bg-bg-primary/75 px-2 py-1 text-xs font-semibold text-text-primary">
-                      {group.items.length} 条
-                    </span>
+                    {updateCount > 0 && (
+                      <span className="absolute top-2 right-2 rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-semibold text-white">
+                        {updateCount > 99 ? '99+' : updateCount}
+                      </span>
+                    )}
                   </header>
 
-                  <div className="flex items-center justify-between px-4 py-3 text-xs text-text-secondary">
-                    <span>总更新 {updateCount}</span>
+                  <div className="flex items-center justify-between px-4 py-2 text-xs text-text-secondary">
+                    <span className="flex items-center gap-1">
+                      {updateCount > 0 && (
+                        <span className="rounded bg-accent px-1.5 py-0.5 text-[10px] font-semibold text-white">
+                          {updateCount > 99 ? '99+' : updateCount}
+                        </span>
+                      )}
+                      <span>总更新 {updateCount}</span>
+                    </span>
                     <span>{group.source.status === 'active' ? '采集正常' : '采集中断'}</span>
                   </div>
 
-                  <div className="h-[calc(100%-112px)] overflow-y-auto px-3 pb-3">
-                    <div className="space-y-3">
-                      {group.items.map((item) => (
-                        <div
-                          key={item.id}
-                          className={cn(
-                            'rounded-xl border border-border-color bg-bg-secondary/85 p-3 transition-all',
-                            !item.is_read && 'border-accent/30 shadow-sm',
-                            item.is_read && 'opacity-70'
-                          )}
-                        >
-                          <div className="mb-2 flex items-start gap-2">
-                            {!item.is_read && <span className="mt-1 h-2 w-2 rounded-full bg-unread" />}
-                            <button
-                              onClick={() => void handleMarkAsRead(item.id)}
-                              className="flex-1 text-left text-sm font-semibold leading-6 text-text-primary transition-colors hover:text-accent"
+                  <div className="h-[calc(100%-100px)] overflow-y-auto px-2 pb-2">
+                    <div className="space-y-2">
+                      {group.items.map((item) => {
+                        const isExpanded = expandedItemIds.has(item.id)
+                        return (
+                          <div
+                            key={item.id}
+                            className={cn(
+                              'rounded-lg border border-border-color bg-bg-secondary/85 transition-all',
+                              !item.is_read && 'border-accent/30 shadow-sm',
+                              item.is_read && 'opacity-70',
+                              isExpanded && 'bg-bg-secondary'
+                            )}
+                            style={isExpanded ? { borderLeft: '3px solid #4CA6E1' } : undefined}
+                          >
+                            <div
+                              className="flex items-start gap-2 p-2 cursor-pointer hover:bg-accent/5"
+                              onClick={() => handleToggleExpand(item.id)}
                             >
-                              {item.title}
-                            </button>
-                          </div>
-
-                          {item.summary && (
-                            <p className="line-clamp-3 text-sm leading-6 text-text-secondary">
-                              {item.summary}
-                            </p>
-                          )}
-
-                          <div className="mt-3 flex items-center justify-between gap-3">
-                            <span className="text-xs text-text-muted">{formatDate(item.published_at)}</span>
-                            <div className="flex items-center gap-2">
-                              {/* 收藏按钮 */}
-                              <div className="relative">
-                                <button
-                                  onClick={() => void handleToggleFavorite(item)}
-                                  className={cn(
-                                    'flex items-center gap-1 rounded-lg px-2 py-1 text-xs transition-colors',
-                                    item.favorite
-                                      ? 'text-red-500 hover:text-red-600'
-                                      : 'text-text-muted hover:text-red-500'
-                                  )}
-                                  title={item.favorite ? item.favorite.name : '添加收藏'}
-                                >
-                                  <svg
-                                    className="h-4 w-4"
-                                    fill={item.favorite ? 'currentColor' : 'none'}
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                    strokeWidth={2}
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                                    />
-                                  </svg>
-                                  {item.favorite && (
-                                    <span className="font-medium">{item.favorite.name}</span>
-                                  )}
-                                </button>
-                                {/* 收藏下拉 */}
-                                {item.favorite && availableTags.length > 1 && (
-                                  <div className="absolute right-0 top-full mt-1 z-10 w-32 rounded-lg border border-border-color bg-bg-secondary shadow-lg">
-                                    <div className="p-1">
-                                      {availableTags
-                                        .filter((t) => t.id !== item.favorite?.id)
-                                        .map((tag) => (
-                                          <button
-                                            key={tag.id}
-                                            onClick={() => void handleToggleFavorite(item, tag.id)}
-                                            className="w-full rounded-md px-3 py-1.5 text-left text-xs text-text-secondary hover:bg-bg-tertiary"
-                                          >
-                                            改为{tag.name}
-                                          </button>
-                                        ))}
-                                      <button
-                                        onClick={() => void handleToggleFavorite(item)}
-                                        className="w-full rounded-md px-3 py-1.5 text-left text-xs text-red-500 hover:bg-red-50"
-                                      >
-                                        取消收藏
-                                      </button>
-                                    </div>
-                                  </div>
+                              {!item.is_read && <span className="mt-0.5 h-2 w-2 rounded-full bg-unread flex-shrink-0" />}
+                              <div className="flex-1 min-w-0">
+                                <div className="text-sm font-medium leading-5 text-text-primary hover:text-accent">
+                                  {item.title}
+                                </div>
+                                {item.summary && !isExpanded && (
+                                  <p className="line-clamp-2 text-xs leading-5 text-text-secondary">
+                                    {item.summary}
+                                  </p>
                                 )}
                               </div>
-                              <a
-                                href={item.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={() => void handleMarkAsRead(item.id)}
-                                className="text-xs font-medium text-accent transition-colors hover:text-accent-hover"
-                              >
-                                查看原文
-                              </a>
                             </div>
+
+                            {/* 展开区域 */}
+                            {isExpanded && (
+                              <div className="px-2 pb-2 border-t border-border-color bg-[#F8FBFF]">
+                                <div className="pt-2">
+                                  {item.summary ? (
+                                    <p className="text-sm leading-5 text-[#555555] mb-2">
+                                      {item.summary.length > 400 ? item.summary.slice(0, 400) + '...' : item.summary}
+                                    </p>
+                                  ) : (
+                                    <p className="text-sm text-text-muted mb-2">暂无摘要，请查看原文</p>
+                                  )}
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-xs text-[#AAAAAA]">
+                                      {new Date(item.published_at).toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                                    </span>
+                                    <div className="flex items-center gap-1">
+                                      <button
+                                        onClick={(e) => { e.stopPropagation(); handleToggleExpand(item.id); }}
+                                        className="px-2 py-1 text-xs text-text-muted hover:text-text-secondary"
+                                      >
+                                        ∧ 收起
+                                      </button>
+                                      <a
+                                        href={item.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        onClick={() => void handleMarkAsRead(item.id)}
+                                        className="px-2 py-1 text-xs font-medium text-accent hover:text-accent-hover"
+                                      >
+                                        ↗ 查看原文
+                                      </a>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* 未展开时的底部操作栏 */}
+                            {!isExpanded && (
+                              <div className="flex items-center justify-between gap-2 px-2 pb-2">
+                                <span className="text-xs text-text-muted">{formatDate(item.published_at)}</span>
+                                <div className="flex items-center gap-1">
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); void handleToggleFavorite(item); }}
+                                    className={cn(
+                                      'flex items-center gap-1 rounded px-1.5 py-0.5 text-xs transition-colors',
+                                      item.favorite
+                                        ? 'text-red-500 hover:text-red-600'
+                                        : 'text-text-muted hover:text-red-500'
+                                    )}
+                                    title={item.favorite ? item.favorite.name : '添加收藏'}
+                                  >
+                                    <svg className="h-3.5 w-3.5" fill={item.favorite ? 'currentColor' : 'none'} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                    </svg>
+                                  </button>
+                                  <a
+                                    href={item.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={() => void handleMarkAsRead(item.id)}
+                                    className="text-xs font-medium text-accent hover:text-accent-hover"
+                                  >
+                                    查看原文
+                                  </a>
+                                </div>
+                              </div>
+                            )}
                           </div>
-                        </div>
-                      ))}
+                        )
+                      })}
                     </div>
                   </div>
                 </article>

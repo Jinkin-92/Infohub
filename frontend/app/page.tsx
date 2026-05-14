@@ -184,7 +184,7 @@ export default function Home() {
         unreadCounts={unreadData?.by_platform ?? {}}
       />
 
-      <div className="mx-auto max-w-content px-4 pb-2 pt-4 sm:px-6 lg:px-8">
+      <div className="w-full px-4 pb-2 pt-4 sm:px-6 lg:px-8">
         {collectorIssue && (
           <div className="mb-4 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-4 text-amber-900 shadow-sm">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -230,7 +230,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-content px-4 py-4 sm:px-6 lg:px-8">
+      <div className="w-full px-4 py-4 sm:px-6 lg:px-8">
         {/* 定制订阅源：显示添加按钮 */}
         {activeTab.sourceType === 'custom' && (
           <div className="flex items-center justify-end mb-4">
