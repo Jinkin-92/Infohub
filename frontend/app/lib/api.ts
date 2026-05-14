@@ -461,6 +461,22 @@ export const settingsApi = {
   },
 }
 
+// ============================================
+// Translation API (MyMemory API)
+// ============================================
+export const translateApi = {
+  async translate(text: string, from = 'zh-CN', to = 'en'): Promise<{
+    ok: boolean
+    translatedText?: string
+    error?: string
+  }> {
+    return fetchApi(`${API_BASE}/translate`, {
+      method: 'POST',
+      body: JSON.stringify({ text, from, to }),
+    })
+  },
+}
+
 /**
  * Cookie API
  */

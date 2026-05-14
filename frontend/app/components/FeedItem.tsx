@@ -1,8 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { cn, formatDate, truncate } from '../lib/utils'
 import { Item, PLATFORM_CONFIG } from '../types'
+import { translateApi } from '../lib/api'
+import { useTranslation } from './TranslationContext'
 
 interface FeedItemProps {
   item: Item
@@ -15,6 +17,32 @@ export function FeedItem({
 }: FeedItemProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [imageError, setImageError] = useState(false)
+  const [translatedTitle, setTranslatedTitle] = useState<string | null>(null)
+  const [translatedSummary, setTranslatedSummary] = useState<string | null>(null)
+  const [isTranslating, setIsTranslating] = useState(false)
+  const [showTranslation, setShowTranslation] = useState(false)
+  const { translationTrigger, isTranslatingAll } = useTranslation()
+
+  // Auto-translate when translationTrigger changes (from "翻译全部" button)
+  useEffect(() => {
+    if (translationTrigger > 0 && !translatedSummary && !isTranslating && item.summary) {
+      setIsTranslating(true)
+      Promise.all([
+        translateApi.translate(item.title, 'en', 'zh-CN'),
+        translateApi.translate(item.summary || '', 'en', 'zh-CN')
+      ]).then(([titleResult, summaryResult]) => {
+        if (titleResult.ok && titleResult.translatedText) {
+          setTranslatedTitle(titleResult.translatedText)
+        }
+        if (summaryResult.ok && summaryResult.translatedText) {
+          setTranslatedSummary(summaryResult.translatedText)
+        }
+        setShowTranslation(true)
+      }).finally(() => {
+        setIsTranslating(false)
+      })
+    }
+  }, [translationTrigger, item.title, item.summary, translatedSummary, isTranslating])
 
   const platform = PLATFORM_CONFIG[item.platform] || PLATFORM_CONFIG.custom
   const isRead = item.is_read
@@ -32,6 +60,36 @@ export function FeedItem({
       onMarkAsRead(item.id)
     }
   }
+
+  const handleTranslate = useCallback(async (event: React.MouseEvent) => {
+    event.stopPropagation()
+    if (showTranslation) {
+      setShowTranslation(false)
+      return
+    }
+    // 如果已有译文，直接显示
+    if (translatedSummary && translatedTitle) {
+      setShowTranslation(true)
+      return
+    }
+    setIsTranslating(true)
+    try {
+      // 并行翻译标题和摘要
+      const [titleResult, summaryResult] = await Promise.all([
+        translateApi.translate(item.title, 'en', 'zh-CN'),
+        translateApi.translate(item.summary || '', 'en', 'zh-CN')
+      ])
+      if (titleResult.ok && titleResult.translatedText) {
+        setTranslatedTitle(titleResult.translatedText)
+      }
+      if (summaryResult.ok && summaryResult.translatedText) {
+        setTranslatedSummary(summaryResult.translatedText)
+      }
+      setShowTranslation(true)
+    } finally {
+      setIsTranslating(false)
+    }
+  }, [item.title, item.summary, translatedSummary, translatedTitle, showTranslation])
 
   return (
     <article
@@ -69,6 +127,9 @@ export function FeedItem({
         )}
       >
         {item.title}
+        {showTranslation && translatedTitle && (
+          <span className="ml-2 text-sm font-normal text-text-muted">/ {translatedTitle}</span>
+        )}
       </h3>
 
       {item.cover_url && !imageError && (
@@ -85,22 +146,42 @@ export function FeedItem({
 
       {item.summary && (
         <div className="relative">
-          <p
-            className={cn(
-              'text-base leading-relaxed text-text-secondary',
-              !isExpanded && 'line-clamp-3'
-            )}
-          >
-            {isExpanded ? item.summary : truncate(item.summary, 200)}
-          </p>
-
-          {item.summary.length > 200 && (
-            <button
-              onClick={handleExpand}
-              className="mt-2 text-sm font-medium text-accent transition-colors hover:text-accent-hover"
-            >
-              {isExpanded ? '收起' : '展开阅读'}
-            </button>
+          {showTranslation && translatedSummary ? (
+            <div className="space-y-2">
+              <p className="text-base leading-relaxed text-text-secondary">
+                {isExpanded ? item.summary : truncate(item.summary, 200)}
+              </p>
+              <p className="text-base leading-relaxed text-text-muted italic border-l-2 border-accent pl-3">
+                {isExpanded ? translatedSummary : truncate(translatedSummary, 200)}
+              </p>
+              {item.summary.length > 200 && !isExpanded && (
+                <button
+                  onClick={handleExpand}
+                  className="text-sm font-medium text-accent transition-colors hover:text-accent-hover"
+                >
+                  展开阅读
+                </button>
+              )}
+            </div>
+          ) : (
+            <>
+              <p
+                className={cn(
+                  'text-base leading-relaxed text-text-secondary',
+                  !isExpanded && 'line-clamp-3'
+                )}
+              >
+                {isExpanded ? item.summary : truncate(item.summary, 200)}
+              </p>
+              {item.summary.length > 200 && (
+                <button
+                  onClick={handleExpand}
+                  className="mt-2 text-sm font-medium text-accent transition-colors hover:text-accent-hover"
+                >
+                  {isExpanded ? '收起' : '展开阅读'}
+                </button>
+              )}
+            </>
           )}
         </div>
       )}
@@ -141,6 +222,24 @@ export function FeedItem({
               />
             </svg>
             标记已读
+          </button>
+        )}
+
+        {item.summary && (
+          <button
+            onClick={handleTranslate}
+            disabled={isTranslating}
+            className="flex items-center gap-1 text-sm text-text-tertiary transition-colors hover:text-accent disabled:opacity-50"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
+              />
+            </svg>
+            {isTranslating ? '翻译中...' : showTranslation ? '原文' : '翻译'}
           </button>
         )}
       </div>

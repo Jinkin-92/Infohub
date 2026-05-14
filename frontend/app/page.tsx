@@ -9,23 +9,18 @@ import { SearchBar } from './components/SearchBar'
 import { AddSourceModal } from './components/AddSourceModal'
 import { SettingsModal } from './components/SettingsModal'
 import { FavoriteFilter } from './components/FavoriteFilter'
+import { useTranslation } from './components/TranslationContext'
 import { feedApi, favoritesApi, settingsApi, sourcesApi } from './lib/api'
 import { FavoriteTag } from './types'
 import { cn } from './lib/utils'
 
-// 两层 Tab 结构：
-// - sourceType: 'custom' | 'public' (顶级：定制订阅源 / 公开订阅源)
-// - 对于 'custom': platform ('all' | 'zhihu' | 'x' | 'wechat' | 'weibo' | 'bilibili' | 'youtube')
-// - 对于 'public': category ('all' | 'tech' | 'news' | 'finance' | 'life' | 'design' | 'video' | 'aggregator')
 export type SourceType = 'custom' | 'public'
 export type CustomPlatform = 'all' | 'zhihu' | 'x' | 'wechat' | 'weibo' | 'bilibili' | 'youtube'
 export type PublicCategory = 'all' | 'tech' | 'news' | 'finance' | 'life' | 'design' | 'video' | 'aggregator'
 
 export interface TabState {
   sourceType: SourceType
-  // 平台过滤（定制订阅源）
   platform?: CustomPlatform
-  // 分类过滤（公开订阅源）
   category?: PublicCategory
 }
 
@@ -59,6 +54,8 @@ export default function Home() {
     logins: Array<{ platform: string; valid: boolean; sourceCount: number }>
   } | null>(null)
   const lastCompletedRefreshRef = useRef<string | null>(null)
+  const { translateAll, isTranslatingAll } = useTranslation()
+  const [selectedSourceId, setSelectedSourceId] = useState<number | undefined>(undefined)
 
   const { data: unreadData, mutate: mutateUnread } = useSWR(
     ['unread-breakdown', refreshTrigger],
@@ -79,6 +76,12 @@ export default function Home() {
     }
   )
 
+  const { data: sourcesData } = useSWR(
+    ['sources-status', refreshTrigger],
+    () => sourcesApi.getAll(),
+    { revalidateOnFocus: false }
+  )
+
   useEffect(() => {
     favoritesApi.getTags().then((response) => {
       if (response.ok) {
@@ -89,30 +92,39 @@ export default function Home() {
 
   useEffect(() => {
     let active = true
+    let timeoutId: ReturnType<typeof setTimeout>
 
     const refreshOnPageLoad = async () => {
       setLoadingFreshContent(true)
+      timeoutId = setTimeout(() => {
+        if (active) {
+          setLoadingFreshContent(false)
+        }
+      }, 30000)
+
       try {
         const response = await sourcesApi.collectAll()
+        if (!active) return
         setRefreshMessage(
           response.refresh.alreadyRunning
             ? '订阅源正在后台刷新，内容会在完成后自动更新。'
             : '已开始后台刷新订阅源，最新内容会在完成后自动显示。'
         )
       } catch (error) {
+        if (!active) return
         setRefreshMessage(error instanceof Error ? error.message : '启动刷新失败，请稍后重试。')
       } finally {
-        if (!active) {
-          return
-        }
+        if (!active) return
+        setLoadingFreshContent(false)
         void mutateIntegrations()
       }
     }
 
-    void refreshOnPageLoad()
+    refreshOnPageLoad()
 
     return () => {
       active = false
+      clearTimeout(timeoutId)
     }
   }, [mutateIntegrations, mutateUnread])
 
@@ -136,13 +148,10 @@ export default function Home() {
     }
   }, [integrationsData, mutateUnread])
 
-  // 根据当前 Tab 状态计算 API 参数
   const getFeedParams = useCallback(() => {
     if (activeTab.sourceType === 'public') {
-      // 公开订阅源：不过滤 platform，只过滤 is_public
       return { platform: undefined, isPublic: true as const, category: activeTab.category }
     }
-    // 定制订阅源
     return { platform: activeTab.platform === 'all' ? undefined : activeTab.platform, isPublic: false as const }
   }, [activeTab])
 
@@ -239,155 +248,327 @@ export default function Home() {
     return parts.join('；') + '。建议进入设置查看详情并处理。'
   }
 
+  // 获取当前栏目下的所有订阅源
+  const allSourcesForTab = (sourcesData?.sources || []).filter(
+    (source) => source.enabled &&
+      (!activeTab.platform || activeTab.platform === 'all' || source.platform === activeTab.platform || source.category === activeTab.platform) &&
+      (activeTab.sourceType === 'public' ? source.is_public && (!activeTab.category || source.category === activeTab.category) : !source.is_public)
+  )
+
+  // 按平台分组订阅源
+  const sourcesByPlatform = allSourcesForTab.reduce((acc, source) => {
+    const key = source.platform
+    if (!acc[key]) acc[key] = []
+    acc[key].push(source)
+    return acc
+  }, {} as Record<string, typeof allSourcesForTab>)
+
+  // 获取可用的日期分组
+  const getDateGroups = () => {
+    return [
+      { key: 'all', label: '全部' },
+      { key: 'today', label: '今天' },
+      { key: 'yesterday', label: '昨天' },
+      { key: 'week', label: '本周' },
+      { key: 'older', label: '更早' },
+    ]
+  }
+
   return (
-    <main className="min-h-screen bg-bg-primary" data-testid="home-root">
-      <TabBar
-        activeTab={activeTab}
-        onTabChange={(tab) => {
-          setActiveTab(tab)
-          setSelectedTagId(null)
-          setTabVersion((v) => v + 1)
-        }}
-        onSettingsClick={() => setIsSettingsOpen(true)}
-        unreadCounts={unreadData?.by_platform ?? {}}
-      />
-
-      <div className="w-full px-4 pb-2 pt-4 sm:px-6 lg:px-8">
-        {repairReport && repairReport.sources.totalFailed > 0 && (
-          <div className="mb-4 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-4 text-amber-900 shadow-sm">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm font-semibold">检测到 {repairReport.sources.totalFailed} 个订阅源需要处理</p>
-                <p className="mt-1 text-sm text-amber-800">{formatDiagnosisDescription(repairReport)}</p>
-              </div>
+    <div className="flex min-h-screen bg-bg-primary">
+      {/* 左侧边栏 - 固定宽度 */}
+      <aside className="sticky top-0 h-screen w-56 flex-shrink-0 overflow-y-auto border-r border-border-color bg-bg-primary px-3 py-4">
+        {/* 日期筛选 */}
+        <div className="mb-6">
+          <h3 className="mb-2 text-xs font-medium text-text-muted">日期</h3>
+          <div className="space-y-1">
+            {getDateGroups().map((date) => (
               <button
-                onClick={() => setIsSettingsOpen(true)}
-                disabled={repairingCollector}
-                className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-60"
+                key={date.key}
+                className="w-full rounded-lg px-3 py-1.5 text-left text-sm text-text-secondary hover:bg-bg-secondary hover:text-text-primary"
               >
-                去设置修复
+                {date.label}
               </button>
-            </div>
+            ))}
           </div>
-        )}
-
-        {collectorIssue && !repairReport && (
-          <div className="mb-4 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-4 text-amber-900 shadow-sm">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm font-semibold">{collectorIssue.title}</p>
-                <p className="mt-1 text-sm text-amber-800">{collectorIssue.description}</p>
-              </div>
-              <button
-                onClick={() => void handleRepairCollector()}
-                disabled={repairingCollector}
-                className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {repairingCollector ? '修复中...' : '一键修复'}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {loadingFreshContent && !collectorIssue && !repairReport && (
-          <div className="mb-4 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900 shadow-sm">
-            正在刷新订阅源并检查最新内容...
-          </div>
-        )}
-
-        {refreshMessage && !loadingFreshContent && !collectorIssue && !repairReport && (
-          <div className="mb-4 rounded-2xl border border-border-color bg-bg-secondary px-4 py-3 text-sm text-text-secondary shadow-sm">
-            {refreshMessage}
-          </div>
-        )}
-
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <SearchBar
-            value={searchQuery}
-            onSearch={handleSearch}
-            placeholder="搜索标题、摘要、作者..."
-            className="flex-1"
-          />
-          <FavoriteFilter
-            tags={availableTags}
-            selectedTagId={selectedTagId}
-            onSelectTag={handleTagSelect}
-          />
         </div>
-      </div>
 
-      <div className="w-full px-4 py-4 sm:px-6 lg:px-8">
-        {/* 定制订阅源：显示添加按钮 */}
-        {activeTab.sourceType === 'custom' && (
-          <div className="flex items-center justify-end mb-4">
-            <button
-              onClick={() => setIsAddModalOpen(true)}
-              data-testid="open-add-source-modal"
-              className="flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-accent-hover"
-            >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              添加定制订阅源
-            </button>
+        {/* 二级栏目 - 平台筛选 */}
+        <div className="mb-6">
+          <h3 className="mb-2 text-xs font-medium text-text-muted">平台</h3>
+          <div className="space-y-1">
+            {activeTab.sourceType === 'custom' ? (
+              <>
+                <button
+                  onClick={() => {
+                    setActiveTab({ sourceType: 'custom', platform: 'all' })
+                    setTabVersion((v) => v + 1)
+                  }}
+                  className={cn(
+                    'w-full rounded-lg px-3 py-1.5 text-left text-sm transition-colors',
+                    activeTab.platform === 'all'
+                      ? 'bg-accent text-white'
+                      : 'text-text-secondary hover:bg-bg-secondary hover:text-text-primary'
+                  )}
+                >
+                  全部
+                </button>
+                {['zhihu', 'x', 'wechat', 'weibo', 'bilibili', 'youtube'].map((platform) => {
+                  const platformLabels: Record<string, string> = {
+                    zhihu: '知乎',
+                    x: 'X',
+                    wechat: '微信',
+                    weibo: '微博',
+                    bilibili: 'B站',
+                    youtube: 'YouTube',
+                  }
+                  return (
+                    <button
+                      key={platform}
+                      onClick={() => {
+                        setActiveTab({ sourceType: 'custom', platform: platform as any })
+                        setTabVersion((v) => v + 1)
+                        setSelectedSourceId(undefined)
+                      }}
+                      className={cn(
+                        'w-full rounded-lg px-3 py-1.5 text-left text-sm transition-colors',
+                        activeTab.platform === platform
+                          ? 'bg-accent text-white'
+                          : 'text-text-secondary hover:bg-bg-secondary hover:text-text-primary'
+                      )}
+                    >
+                      {platformLabels[platform]}
+                    </button>
+                  )
+                })}
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => {
+                    setActiveTab({ sourceType: 'public', category: 'all' })
+                    setTabVersion((v) => v + 1)
+                  }}
+                  className={cn(
+                    'w-full rounded-lg px-3 py-1.5 text-left text-sm transition-colors',
+                    activeTab.category === 'all'
+                      ? 'bg-accent text-white'
+                      : 'text-text-secondary hover:bg-bg-secondary hover:text-text-primary'
+                  )}
+                >
+                  全部
+                </button>
+                {['tech', 'news', 'finance', 'life', 'design', 'video', 'aggregator'].map((cat) => {
+                  const catLabels: Record<string, string> = {
+                    tech: '科技',
+                    news: '新闻',
+                    finance: '财经',
+                    life: '生活',
+                    design: '设计',
+                    video: '视频',
+                    aggregator: '聚合',
+                  }
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => {
+                        setActiveTab({ sourceType: 'public', category: cat as any })
+                        setTabVersion((v) => v + 1)
+                        setSelectedSourceId(undefined)
+                      }}
+                      className={cn(
+                        'w-full rounded-lg px-3 py-1.5 text-left text-sm transition-colors',
+                        activeTab.category === cat
+                          ? 'bg-accent text-white'
+                          : 'text-text-secondary hover:bg-bg-secondary hover:text-text-primary'
+                      )}
+                    >
+                      {catLabels[cat]}
+                    </button>
+                  )
+                })}
+              </>
+            )}
           </div>
-        )}
+        </div>
 
-        {/* 公开订阅源时显示分类标签栏 */}
-        {activeTab.sourceType === 'public' && (
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
-              {['all', 'tech', 'news', 'finance', 'life', 'design', 'video', 'aggregator'].map((cat) => {
-                const label = cat === 'all' ? '全部' : cat === 'tech' ? '科技' : cat === 'news' ? '新闻' : cat === 'finance' ? '财经' : cat === 'life' ? '生活' : cat === 'design' ? '设计' : cat === 'video' ? '视频' : '聚合'
-                return (
+        {/* 订阅源选择 */}
+        <div className="mb-6">
+          <h3 className="mb-2 text-xs font-medium text-text-muted">订阅源</h3>
+          <div className="space-y-1">
+            <button
+              onClick={() => setSelectedSourceId(undefined)}
+              className={cn(
+                'w-full rounded-lg px-3 py-1.5 text-left text-sm transition-colors',
+                selectedSourceId === undefined
+                  ? 'bg-accent text-white'
+                  : 'text-text-secondary hover:bg-bg-secondary hover:text-text-primary'
+              )}
+            >
+              全部订阅源
+            </button>
+            {Object.entries(sourcesByPlatform).map(([platform, sources]) => (
+              <div key={platform} className="space-y-1">
+                <div className="px-3 py-1 text-xs font-medium text-text-muted">
+                  {platform}
+                </div>
+                {sources.map((source) => (
                   <button
-                    key={cat}
-                    onClick={() => {
-                      setActiveTab({ sourceType: 'public', category: cat as any })
-                      setTabVersion((v) => v + 1)
-                    }}
+                    key={source.id}
+                    onClick={() => setSelectedSourceId(source.id)}
                     className={cn(
-                      'whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-all',
-                      activeTab.category === cat
-                        ? 'bg-accent text-white shadow-sm'
-                        : 'bg-bg-tertiary text-text-secondary hover:bg-bg-secondary hover:text-text-primary'
+                      'w-full rounded-lg px-3 py-1.5 text-left text-sm transition-colors truncate',
+                      selectedSourceId === source.id
+                        ? 'bg-accent text-white'
+                        : 'text-text-secondary hover:bg-bg-secondary hover:text-text-primary'
                     )}
                   >
-                    {label}
+                    {source.name}
                   </button>
-                )
-              })}
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </aside>
+
+      {/* 主内容区 */}
+      <main className="flex-1">
+        <TabBar
+          activeTab={activeTab}
+          onTabChange={(tab) => {
+            setActiveTab(tab)
+            setSelectedTagId(null)
+            setTabVersion((v) => v + 1)
+            setSelectedSourceId(undefined)
+          }}
+          onSettingsClick={() => setIsSettingsOpen(true)}
+          unreadCounts={unreadData?.by_platform ?? {}}
+        />
+
+        <div className="w-full px-4 pb-2 pt-4 sm:px-6 lg:px-8">
+          {repairReport && repairReport.sources.totalFailed > 0 && (
+            <div className="mb-4 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-4 text-amber-900 shadow-sm">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm font-semibold">检测到 {repairReport.sources.totalFailed} 个订阅源需要处理</p>
+                  <p className="mt-1 text-sm text-amber-800">{formatDiagnosisDescription(repairReport)}</p>
+                </div>
+                <button
+                  onClick={() => setIsSettingsOpen(true)}
+                  disabled={repairingCollector}
+                  className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  去设置修复
+                </button>
+              </div>
             </div>
+          )}
+
+          {collectorIssue && !repairReport && (
+            <div className="mb-4 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-4 text-amber-900 shadow-sm">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm font-semibold">{collectorIssue.title}</p>
+                  <p className="mt-1 text-sm text-amber-800">{collectorIssue.description}</p>
+                </div>
+                <button
+                  onClick={() => void handleRepairCollector()}
+                  disabled={repairingCollector}
+                  className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {repairingCollector ? '修复中...' : '一键修复'}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {loadingFreshContent && !collectorIssue && !repairReport && (
+            <div className="mb-4 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900 shadow-sm">
+              正在刷新订阅源并检查最新内容...
+            </div>
+          )}
+
+          {refreshMessage && !loadingFreshContent && !collectorIssue && !repairReport && (
+            <div className="mb-4 rounded-2xl border border-border-color bg-bg-secondary px-4 py-3 text-sm text-text-secondary shadow-sm">
+              {refreshMessage}
+            </div>
+          )}
+
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <SearchBar
+              value={searchQuery}
+              onSearch={handleSearch}
+              placeholder="搜索标题、摘要、作者..."
+              className="flex-1"
+            />
+            <FavoriteFilter
+              tags={availableTags}
+              selectedTagId={selectedTagId}
+              onSelectTag={handleTagSelect}
+            />
             <button
-              onClick={() => setIsPublicSourcesOpen(true)}
-              data-testid="open-public-sources-panel"
-              className="flex-shrink-0 flex items-center gap-1.5 rounded-lg bg-accent px-3 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-accent-hover"
+              onClick={() => translateAll()}
+              disabled={isTranslatingAll}
+              className="flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-accent-hover disabled:opacity-50"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
               </svg>
-              添加公开RSS
+              {isTranslatingAll ? '翻译中...' : '翻译全部'}
             </button>
           </div>
-        )}
+        </div>
 
-        <FeedList
-          key={`${activeTab.sourceType}-${activeTab.sourceType === 'public' ? activeTab.category : activeTab.platform}-${tabVersion}`}
-          platform={activeTab.sourceType === 'public' ? undefined : (activeTab.platform === 'all' ? undefined : activeTab.platform)}
-          isPublic={activeTab.sourceType === 'public'}
-          category={activeTab.sourceType === 'public' ? (activeTab.category === 'all' ? undefined : activeTab.category) : undefined}
-          searchQuery={searchQuery}
-          tagId={selectedTagId}
-          refreshTrigger={refreshTrigger}
-          tabVersion={tabVersion}
-          sourceUnreadCounts={unreadData?.by_source}
-          onCountsChange={() => {
-            void mutateUnread()
-          }}
-        />
-      </div>
+        <div className="w-full px-4 py-4 sm:px-6 lg:px-8">
+          {activeTab.sourceType === 'custom' && (
+            <div className="flex items-center justify-end mb-4">
+              <button
+                onClick={() => setIsAddModalOpen(true)}
+                data-testid="open-add-source-modal"
+                className="flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-accent-hover"
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                添加定制订阅源
+              </button>
+            </div>
+          )}
 
-      {/* 公开订阅源添加面板 */}
+          {activeTab.sourceType === 'public' && (
+            <div className="mb-4 flex items-center justify-end">
+              <button
+                onClick={() => setIsPublicSourcesOpen(true)}
+                data-testid="open-public-sources-panel"
+                className="flex-shrink-0 flex items-center gap-1.5 rounded-lg bg-accent px-3 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-accent-hover"
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                添加公开RSS
+              </button>
+            </div>
+          )}
+
+          <FeedList
+            key={`${activeTab.sourceType}-${activeTab.sourceType === 'public' ? activeTab.category : activeTab.platform}-${tabVersion}`}
+            platform={activeTab.sourceType === 'public' ? undefined : (activeTab.platform === 'all' ? undefined : activeTab.platform)}
+            isPublic={activeTab.sourceType === 'public'}
+            category={activeTab.sourceType === 'public' ? (activeTab.category === 'all' ? undefined : activeTab.category) : undefined}
+            searchQuery={searchQuery}
+            tagId={selectedTagId}
+            refreshTrigger={refreshTrigger}
+            tabVersion={tabVersion}
+            sourceUnreadCounts={unreadData?.by_source}
+            onCountsChange={() => {
+              void mutateUnread()
+            }}
+            selectedSourceId={selectedSourceId}
+          />
+        </div>
+      </main>
+
       <PublicSourcesPanel
         isOpen={isPublicSourcesOpen}
         onClose={() => setIsPublicSourcesOpen(false)}
@@ -405,6 +586,6 @@ export default function Home() {
         onClose={() => setIsSettingsOpen(false)}
         onDataChange={handleRefresh}
       />
-    </main>
+    </div>
   )
 }

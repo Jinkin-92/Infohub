@@ -17,6 +17,7 @@ interface FeedListProps {
   tabVersion?: number
   sourceUnreadCounts?: Record<string, number>
   onCountsChange?: () => void
+  selectedSourceId?: number
 }
 
 interface SourceCardGroup {
@@ -140,13 +141,13 @@ export function FeedList({
   tabVersion = 0,
   sourceUnreadCounts = {},
   onCountsChange,
+  selectedSourceId,
 }: FeedListProps) {
   const [items, setItems] = useState<Item[]>([])
   const [offset, setOffset] = useState(0)
-  const [hasMore, setHasMore] = useState(false) // 默认不显示加载更多
+  const [hasMore, setHasMore] = useState(false)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [isTabSwitching, setIsTabSwitching] = useState(false)
-  const [activeSourceId, setActiveSourceId] = useState<number | undefined>(undefined)
   // dayWindow: 当前加载的天数窗口（3天起步，每次+3，直到30天）
   const [dayWindow, setDayWindow] = useState(INITIAL_DAY_WINDOW)
   // 是否在扩展窗口模式（窗口扩展阶段不用offset，每次从最新开始）
@@ -170,7 +171,7 @@ export function FeedList({
     }
   )
   const sources = (sourcesData?.sources || []).filter(
-    (source) => source.enabled && (!platform || source.platform === platform) && (!activeSourceId || source.id === activeSourceId)
+    (source) => source.enabled && (!platform || source.platform === platform) && (!selectedSourceId || source.id === selectedSourceId)
   )
 
   // 所有当前栏目下的订阅源（用于下拉选择器）
@@ -187,7 +188,7 @@ export function FeedList({
   const erroredSources = allSourcesErrored ? sources : []
 
   const { data, error, isLoading, mutate } = useSWR(
-    ['feed', platform, isPublic, category, activeSourceId, searchQuery, tagId, offset, dayWindow, isExpanding, tabVersion, refreshTrigger],
+    ['feed', platform, isPublic, category, selectedSourceId, searchQuery, tagId, offset, dayWindow, isExpanding, tabVersion, refreshTrigger],
     () => {
       if (tagId) {
         return favoritesApi.getItemsByTag(tagId, {
@@ -202,7 +203,7 @@ export function FeedList({
 
       return feedApi.getFeed({
         platform,
-        sourceId: activeSourceId,
+        sourceId: selectedSourceId,
         is_public: isPublic ? 'true' : 'false',
         category: isPublic ? (category ?? undefined) : undefined,
         search: searchQuery,
@@ -264,7 +265,6 @@ export function FeedList({
     setDayWindow(3) // 重置为初始 3 天窗口
     setIsExpanding(true) // 重置为扩展模式
     setIsTabSwitching(true)
-    setActiveSourceId(undefined) // 切换 tab 时重置源筛选
     // State changes will trigger useSWR to re-fetch with new offset=0
     // Just need to wait for the fetch to complete
     const timer = setTimeout(() => setIsTabSwitching(false), 1000)
@@ -275,7 +275,6 @@ export function FeedList({
     setDayWindow(INITIAL_DAY_WINDOW)
     setIsExpanding(true)
     setIsTabSwitching(true)
-    setActiveSourceId(undefined)
 
     const timer = setTimeout(() => setIsTabSwitching(false), 1000)
     return () => clearTimeout(timer)
@@ -500,41 +499,6 @@ export function FeedList({
 
   return (
     <div className="space-y-8">
-      {/* 订阅源选择器 */}
-      {allSourcesForTab.length > 0 && (
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          <button
-            onClick={() => setActiveSourceId(undefined)}
-            className={cn(
-              'flex-shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-all',
-              activeSourceId === undefined
-                ? 'bg-accent text-white shadow-sm'
-                : 'bg-bg-tertiary text-text-secondary hover:bg-bg-secondary hover:text-text-primary'
-            )}
-          >
-            全部
-          </button>
-          {allSourcesForTab.map((src) => {
-            const color = getSourceColor(src)
-            return (
-              <button
-                key={src.id}
-                onClick={() => setActiveSourceId(src.id)}
-                className={cn(
-                  'flex-shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-all',
-                  activeSourceId === src.id
-                    ? 'text-white shadow-sm'
-                    : 'text-text-secondary hover:bg-bg-secondary hover:text-text-primary'
-                )}
-                style={activeSourceId !== src.id ? { backgroundColor: color + '15', color } : { backgroundColor: color }}
-              >
-                {src.name}
-              </button>
-            )
-          })}
-        </div>
-      )}
-
       <div className="flex flex-col gap-3 py-2 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="text-sm text-text-secondary">

@@ -124,7 +124,7 @@ export function TabBar({
           </div>
 
           {/* 两级下拉导航 */}
-          <div className="relative flex flex-1 items-center gap-1" ref={dropdownRef}>
+          <div className="relative flex flex-1 items-center gap-1 flex-wrap" ref={dropdownRef}>
             {/* 定制订阅源 下拉按钮 */}
             <div className="relative">
               <button

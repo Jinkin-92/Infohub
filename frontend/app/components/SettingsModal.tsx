@@ -7,6 +7,7 @@ import { settingsApi, sourcesApi, favoritesApi, wechatApi } from '../lib/api'
 import { PlatformConnectionsPanel } from './PlatformConnectionsPanel'
 import { IntegrationSetting, PLATFORM_CONFIG, PUBLIC_CATEGORY_CONFIG, Source, FavoriteTag } from '../types'
 import { useTheme } from './ThemeProvider'
+import { useDisplaySettings } from './DisplaySettingsContext'
 
 interface SettingsModalProps {
   isOpen: boolean
@@ -563,6 +564,7 @@ function IconButton({
 
 function GeneralTab() {
   const { theme, setTheme, resolvedTheme } = useTheme()
+  const { settings: displaySettingsContext, updateSettings: updateDisplaySettingsContext } = useDisplaySettings()
   const { data, mutate, isLoading } = useSWR('settings-integrations', () => settingsApi.getIntegrations(), {
     revalidateOnFocus: false,
   })
@@ -633,7 +635,7 @@ function GeneralTab() {
   const handleSaveDisplay = useCallback(async () => {
     setIsSavingDisplay(true)
     try {
-      await settingsApi.updateDisplaySettings(displaySettings)
+      await updateDisplaySettingsContext(displaySettings)
       await mutateDisplay()
       setNotice('显示设置已保存。')
     } catch (error) {
@@ -641,7 +643,7 @@ function GeneralTab() {
     } finally {
       setIsSavingDisplay(false)
     }
-  }, [displaySettings, mutateDisplay])
+  }, [displaySettings, updateDisplaySettingsContext, mutateDisplay])
 
   return (
     <div className="p-6" data-testid="settings-general-tab">
