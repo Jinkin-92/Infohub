@@ -374,6 +374,12 @@ export const favoritesApi = {
   },
 }
 
+export interface DisplaySettings {
+  font_size: 'small' | 'medium' | 'large'
+  card_density: 'compact' | 'normal' | 'spacious'
+  line_spacing: 'tight' | 'normal' | 'relaxed'
+}
+
 export const settingsApi = {
   async getIntegrations(): Promise<RsshubSettingsResponse> {
     return fetchApi(`${API_BASE}/settings/integrations`)
@@ -389,6 +395,17 @@ export const settingsApi = {
   async restartIntegrations(): Promise<RsshubSettingsResponse> {
     return fetchApi(`${API_BASE}/settings/integrations/restart`, {
       method: 'POST',
+    })
+  },
+
+  async getDisplaySettings(): Promise<{ ok: boolean; settings: DisplaySettings | null }> {
+    return fetchApi(`${API_BASE}/settings/display`)
+  },
+
+  async updateDisplaySettings(settings: Partial<DisplaySettings>): Promise<{ ok: boolean; settings: DisplaySettings | null }> {
+    return fetchApi(`${API_BASE}/settings/display`, {
+      method: 'PATCH',
+      body: JSON.stringify(settings),
     })
   },
 }

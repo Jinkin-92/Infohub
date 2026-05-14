@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { ThemeProvider } from './components/ThemeProvider'
+import { DisplaySettingsProvider } from './components/DisplaySettingsContext'
 
 export const metadata: Metadata = {
   title: '个人信息中枢',
@@ -16,7 +17,9 @@ export default function RootLayout({
     <html lang="zh-CN" suppressHydrationWarning>
       <body className="antialiased min-h-screen bg-bg-primary">
         <ThemeProvider defaultTheme="system" storageKey="infohub-theme">
-          {children}
+          <DisplaySettingsProvider>
+            {children}
+          </DisplaySettingsProvider>
         </ThemeProvider>
       </body>
     </html>

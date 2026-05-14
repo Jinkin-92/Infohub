@@ -566,9 +566,24 @@ function GeneralTab() {
   const { data, mutate, isLoading } = useSWR('settings-integrations', () => settingsApi.getIntegrations(), {
     revalidateOnFocus: false,
   })
+  const { data: displayData, mutate: mutateDisplay } = useSWR(
+    'settings-display',
+    () => settingsApi.getDisplaySettings(),
+    { revalidateOnFocus: false }
+  )
   const [values, setValues] = useState<Record<string, string>>({})
   const [notice, setNotice] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
+  const [displaySettings, setDisplaySettings] = useState<{
+    font_size: 'small' | 'medium' | 'large'
+    card_density: 'compact' | 'normal' | 'spacious'
+    line_spacing: 'tight' | 'normal' | 'relaxed'
+  }>({
+    font_size: 'medium',
+    card_density: 'normal',
+    line_spacing: 'normal',
+  })
+  const [isSavingDisplay, setIsSavingDisplay] = useState(false)
 
   useEffect(() => {
     if (!data?.rsshub.settings) {
@@ -580,6 +595,16 @@ function GeneralTab() {
     )
     setValues(nextValues)
   }, [data])
+
+  useEffect(() => {
+    if (displayData?.settings) {
+      setDisplaySettings({
+        font_size: displayData.settings.font_size || 'medium',
+        card_density: displayData.settings.card_density || 'normal',
+        line_spacing: displayData.settings.line_spacing || 'normal',
+      })
+    }
+  }, [displayData])
 
   const configuredCount = useMemo(
     () => data?.rsshub.settings.filter((setting) => setting.configured).length ?? 0,
@@ -605,6 +630,19 @@ function GeneralTab() {
     }
   }, [mutate, values])
 
+  const handleSaveDisplay = useCallback(async () => {
+    setIsSavingDisplay(true)
+    try {
+      await settingsApi.updateDisplaySettings(displaySettings)
+      await mutateDisplay()
+      setNotice('显示设置已保存。')
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : '保存失败。')
+    } finally {
+      setIsSavingDisplay(false)
+    }
+  }, [displaySettings, mutateDisplay])
+
   return (
     <div className="p-6" data-testid="settings-general-tab">
       <h3 className="mb-6 text-lg font-semibold text-text-primary">通用设置</h3>
@@ -618,6 +656,85 @@ function GeneralTab() {
             <ThemeOption label="跟随系统" selected={theme === 'system'} onClick={() => setTheme('system')} />
           </div>
           <p className="mt-3 text-sm text-text-muted">当前生效：{resolvedTheme === 'dark' ? '暗色' : '亮色'}</p>
+        </div>
+
+        <div className="rounded-xl border border-border-color bg-bg-primary p-4">
+          <div className="mb-4">
+            <h4 className="font-medium text-text-primary">显示</h4>
+            <p className="text-sm text-text-secondary">调整内容卡片的显示密度和字体大小</p>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="mb-2 block text-sm text-text-secondary">字号</label>
+              <div className="grid grid-cols-3 gap-2">
+                {(['small', 'medium', 'large'] as const).map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => setDisplaySettings(prev => ({ ...prev, font_size: size }))}
+                    className={cn(
+                      'rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
+                      displaySettings.font_size === size
+                        ? 'border-accent bg-accent/5 text-accent'
+                        : 'border-border-color text-text-secondary hover:border-text-tertiary'
+                    )}
+                  >
+                    {size === 'small' ? '小' : size === 'medium' ? '中' : '大'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm text-text-secondary">卡片密度</label>
+              <div className="grid grid-cols-3 gap-2">
+                {(['compact', 'normal', 'spacious'] as const).map((density) => (
+                  <button
+                    key={density}
+                    onClick={() => setDisplaySettings(prev => ({ ...prev, card_density: density }))}
+                    className={cn(
+                      'rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
+                      displaySettings.card_density === density
+                        ? 'border-accent bg-accent/5 text-accent'
+                        : 'border-border-color text-text-secondary hover:border-text-tertiary'
+                    )}
+                  >
+                    {density === 'compact' ? '紧凑' : density === 'normal' ? '正常' : '宽松'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm text-text-secondary">行间距</label>
+              <div className="grid grid-cols-3 gap-2">
+                {(['tight', 'normal', 'relaxed'] as const).map((spacing) => (
+                  <button
+                    key={spacing}
+                    onClick={() => setDisplaySettings(prev => ({ ...prev, line_spacing: spacing }))}
+                    className={cn(
+                      'rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
+                      displaySettings.line_spacing === spacing
+                        ? 'border-accent bg-accent/5 text-accent'
+                        : 'border-border-color text-text-secondary hover:border-text-tertiary'
+                    )}
+                  >
+                    {spacing === 'tight' ? '紧密' : spacing === 'normal' ? '正常' : '宽松'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                onClick={handleSaveDisplay}
+                disabled={isSavingDisplay}
+                className="rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {isSavingDisplay ? '保存中...' : '保存显示设置'}
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="rounded-xl border border-border-color bg-bg-primary p-4">

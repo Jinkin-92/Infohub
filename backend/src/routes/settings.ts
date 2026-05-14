@@ -3,11 +3,18 @@ import { z } from 'zod';
 import { getValidatedBody, validateBody } from '../middleware/validation.js';
 import { localIntegrationsService } from '../services/localIntegrations.js';
 import { cronManager } from '../services/cron.js';
+import { userSettingsQueries, type UpdateUserSettingsInput } from '../db/queries.js';
 
 const settingsRouter = new Hono();
 
 const saveIntegrationsSchema = z.object({
   values: z.record(z.string()),
+});
+
+const updateDisplaySettingsSchema = z.object({
+  font_size: z.enum(['small', 'medium', 'large']).optional(),
+  card_density: z.enum(['compact', 'normal', 'spacious']).optional(),
+  line_spacing: z.enum(['tight', 'normal', 'relaxed']).optional(),
 });
 
 settingsRouter.get('/integrations', async (c) => {
@@ -40,6 +47,32 @@ settingsRouter.post('/integrations/restart', async (c) => {
     rsshub,
     scheduler: cronManager.getStatus(),
     message: 'Collector services restarted',
+  });
+});
+
+// Display settings endpoints
+settingsRouter.get('/display', async (c) => {
+  const settings = await userSettingsQueries.get();
+  return c.json({
+    ok: true,
+    settings: settings ? {
+      font_size: settings.font_size,
+      card_density: settings.card_density,
+      line_spacing: settings.line_spacing,
+    } : null,
+  });
+});
+
+settingsRouter.patch('/display', validateBody(updateDisplaySettingsSchema), async (c) => {
+  const input = getValidatedBody<UpdateUserSettingsInput>(c);
+  const updated = await userSettingsQueries.update(input);
+  return c.json({
+    ok: true,
+    settings: updated ? {
+      font_size: updated.font_size,
+      card_density: updated.card_density,
+      line_spacing: updated.line_spacing,
+    } : null,
   });
 });
 

@@ -945,3 +945,55 @@ export const publicSourcesQueries = {
     return created;
   },
 };
+
+// ============================================
+// 用户显示设置查询
+// ============================================
+export interface UserSettings {
+  id: number;
+  font_size: string;
+  card_density: string;
+  line_spacing: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UpdateUserSettingsInput {
+  font_size?: string;
+  card_density?: string;
+  line_spacing?: string;
+}
+
+export const userSettingsQueries = {
+  async get(): Promise<UserSettings | null> {
+    return (await sql.get<UserSettings>('SELECT * FROM user_settings WHERE id = 1')) ?? null;
+  },
+
+  async update(input: UpdateUserSettingsInput): Promise<UserSettings | null> {
+    const updates: string[] = [];
+    const values: Array<string | number> = [];
+
+    if (input.font_size !== undefined) {
+      updates.push('font_size = ?');
+      values.push(input.font_size);
+    }
+    if (input.card_density !== undefined) {
+      updates.push('card_density = ?');
+      values.push(input.card_density);
+    }
+    if (input.line_spacing !== undefined) {
+      updates.push('line_spacing = ?');
+      values.push(input.line_spacing);
+    }
+
+    if (updates.length === 0) {
+      return this.get();
+    }
+
+    updates.push('updated_at = CURRENT_TIMESTAMP');
+    values.push(1);
+
+    await sql.execute(`UPDATE user_settings SET ${updates.join(', ')} WHERE id = ?`, values);
+    return this.get();
+  },
+};

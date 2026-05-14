@@ -5,6 +5,7 @@ import useSWR from 'swr'
 import { feedApi, favoritesApi, sourcesApi } from '../lib/api'
 import { Item, Source, FavoriteTag } from '../types'
 import { cn, formatDate, getSourceColor, getSourceTone } from '../lib/utils'
+import { useDisplaySettings } from './DisplaySettingsContext'
 
 interface FeedListProps {
   platform?: string
@@ -152,6 +153,8 @@ export function FeedList({
   const [isExpanding, setIsExpanding] = useState(true)
   // 展开的条目ID集合
   const [expandedItemIds, setExpandedItemIds] = useState<Set<number>>(new Set())
+
+  const { settings: displaySettings } = useDisplaySettings()
 
   const { data: tagsData } = useSWR('favorites', () => favoritesApi.getTags(), {
     revalidateOnFocus: false,
@@ -583,10 +586,27 @@ export function FeedList({
               const tone = getSourceTone(group.source, group.source.id)
               const updateCount = sourceUnreadCounts[String(group.source.id)] ?? 0
 
+              // Display settings applied as classes
+              const densityClass = {
+                compact: 'py-1.5 px-2',
+                normal: 'py-2 px-3',
+                spacious: 'py-3 px-4',
+              }[displaySettings.card_density]
+              const spacingClass = {
+                tight: 'leading-tight',
+                normal: 'leading-normal',
+                relaxed: 'leading-relaxed',
+              }[displaySettings.line_spacing]
+              const fontClass = {
+                small: 'text-xs',
+                medium: 'text-sm',
+                large: 'text-base',
+              }[displaySettings.font_size]
+
               return (
                 <article
                   key={`${section.key}-${group.source.id}`}
-                  className="relative overflow-hidden rounded-2xl border shadow-card transition-all duration-150 hover:shadow-card-hover hover:-translate-y-0.5"
+                  className={`relative overflow-hidden rounded-2xl border shadow-card transition-all duration-150 hover:shadow-card-hover hover:-translate-y-0.5 ${densityClass}`}
                   style={{
                     height: `${CARD_HEIGHT}px`,
                     borderColor: tone.border,
@@ -594,12 +614,12 @@ export function FeedList({
                   }}
                 >
                   <header
-                    className="flex items-start justify-between gap-3 border-b border-white/50 px-4 py-3"
+                    className={`flex items-start justify-between gap-3 border-b border-white/50 ${displaySettings.card_density === 'compact' ? 'px-3 py-2' : displaySettings.card_density === 'spacious' ? 'px-5 py-4' : 'px-4 py-3'}`}
                     style={{ background: tone.header }}
                   >
                     <div>
-                      <h3 className="text-sm font-semibold text-text-primary">{group.title}</h3>
-                      <p className="mt-0.5 text-xs text-text-secondary">{group.source.platform}</p>
+                      <h3 className={`font-semibold text-text-primary ${fontClass}`}>{group.title}</h3>
+                      <p className={`mt-0.5 text-text-secondary ${displaySettings.font_size === 'small' ? 'text-[10px]' : displaySettings.font_size === 'large' ? 'text-xs' : 'text-xs'}`}>{group.source.platform}</p>
                     </div>
                     {updateCount > 0 && (
                       <span className="absolute top-2 right-2 rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-semibold text-white">
@@ -621,7 +641,7 @@ export function FeedList({
                   </div>
 
                   <div className="h-[calc(100%-100px)] overflow-y-auto px-2 pb-2">
-                    <div className="space-y-2">
+                    <div className={cn('space-y-2', spacingClass)}>
                       {group.items.map((item) => {
                         const isExpanded = expandedItemIds.has(item.id)
                         return (
@@ -641,11 +661,11 @@ export function FeedList({
                             >
                               {!item.is_read && <span className="mt-0.5 h-2 w-2 rounded-full bg-unread flex-shrink-0" />}
                               <div className="flex-1 min-w-0">
-                                <div className="text-sm font-medium leading-5 text-text-primary hover:text-accent">
+                                <div className={cn('font-medium leading-5 text-text-primary hover:text-accent', fontClass)}>
                                   {item.title}
                                 </div>
                                 {item.summary && !isExpanded && (
-                                  <p className="line-clamp-2 text-xs leading-5 text-text-secondary">
+                                  <p className={cn('line-clamp-2 text-text-secondary', displaySettings.font_size === 'small' ? 'text-[10px] leading-4' : displaySettings.font_size === 'large' ? 'text-sm leading-6' : 'text-xs leading-5')}>
                                     {item.summary}
                                   </p>
                                 )}
