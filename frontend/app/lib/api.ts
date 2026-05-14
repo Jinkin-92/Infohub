@@ -408,6 +408,57 @@ export const settingsApi = {
       body: JSON.stringify(settings),
     })
   },
+
+  async repair(): Promise<{
+    ok: boolean
+    report: {
+      rsshub: { wasRunning: boolean; restarted: boolean }
+      logins: Array<{
+        platform: string
+        valid: boolean
+        message?: string
+        sourceCount: number
+      }>
+      sources: {
+        retried: number
+        succeeded: number
+        failed: number
+        totalFailed: number
+        diagnoses: Array<{
+          sourceId: number
+          sourceName: string
+          platform: string
+          category: string
+          action: string
+          label: string
+          fixLabel: string
+          errorMessage: string | null
+        }>
+        byAction: Record<string, Array<{
+          sourceId: number
+          sourceName: string
+          platform: string
+          category: string
+          action: string
+          label: string
+          fixLabel: string
+          errorMessage: string | null
+        }>>
+      }
+    }
+    scheduler: {
+      enabled: boolean
+      isCollecting: boolean
+      lastRunAt: string | null
+      lastSuccessAt: string | null
+      lastError: string | null
+    }
+    rsshub: RsshubSettingsResponse['rsshub']
+  }> {
+    return fetchApi(`${API_BASE}/settings/repair`, {
+      method: 'POST',
+    })
+  },
 }
 
 /**

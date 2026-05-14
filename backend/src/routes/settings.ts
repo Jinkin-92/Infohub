@@ -19,6 +19,10 @@ const updateDisplaySettingsSchema = z.object({
 
 settingsRouter.get('/integrations', async (c) => {
   const rsshub = await localIntegrationsService.getRsshubSettings();
+  if (rsshub.running) {
+    cronManager.clearRecoveredIntegrationError();
+  }
+  await cronManager.clearStaleLastError();
   return c.json({
     ok: true,
     rsshub,
@@ -41,12 +45,54 @@ settingsRouter.post('/integrations', validateBody(saveIntegrationsSchema), async
 settingsRouter.post('/integrations/restart', async (c) => {
   await localIntegrationsService.restartRsshub();
   const rsshub = await localIntegrationsService.getRsshubSettings();
+  if (rsshub.running) {
+    cronManager.clearRecoveredIntegrationError();
+  }
+  await cronManager.clearStaleLastError();
 
   return c.json({
     ok: true,
     rsshub,
     scheduler: cronManager.getStatus(),
     message: 'Collector services restarted',
+  });
+});
+
+// Repair endpoint - restarts RSSHub and clears stale errors
+settingsRouter.post('/repair', async (c) => {
+  let rsshubRestarted = false;
+  const rsshubBefore = await localIntegrationsService.getRsshubSettings();
+
+  if (!rsshubBefore.running) {
+    try {
+      await localIntegrationsService.restartRsshub();
+      rsshubRestarted = true;
+    } catch (err) {
+      console.error('[Settings/Repair] Failed to restart RSSHub:', err);
+    }
+  }
+
+  cronManager.clearLastError();
+  await cronManager.clearStaleLastError();
+
+  const rsshub = await localIntegrationsService.getRsshubSettings();
+
+  return c.json({
+    ok: true,
+    report: {
+      rsshub: { wasRunning: rsshubBefore.running, restarted: rsshubRestarted },
+      sources: {
+        retried: 0,
+        succeeded: 0,
+        failed: 0,
+        totalFailed: 0,
+        diagnoses: [],
+        byAction: {},
+      },
+      logins: [],
+    },
+    scheduler: cronManager.getStatus(),
+    rsshub,
   });
 });
 

@@ -44,6 +44,30 @@ export class CronManager {
     };
   }
 
+  clearLastError(): void {
+    this.lastError = null;
+  }
+
+  /**
+   * If lastError is an aggregated "X sources failed" message but no sources
+   * are currently in error state in the database, clear the stale message.
+   */
+  async clearStaleLastError(): Promise<void> {
+    if (!this.lastError?.includes('sources failed during the last refresh')) {
+      return;
+    }
+
+    const allSources = await sourcesQueries.getAll();
+    const actualErrorCount = allSources.filter((s) => s.status === 'error').length;
+    if (actualErrorCount === 0) {
+      this.lastError = null;
+    }
+  }
+
+  clearRecoveredIntegrationError(): void {
+    // No-op for manual collection mode (integration error tracking removed)
+  }
+
   async startManualCollection(force = true): Promise<ManualCollectionStartResult> {
     if (this.isCollecting) {
       return {

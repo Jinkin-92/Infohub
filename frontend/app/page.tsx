@@ -42,6 +42,22 @@ export default function Home() {
   const [repairingCollector, setRepairingCollector] = useState(false)
   const [loadingFreshContent, setLoadingFreshContent] = useState(false)
   const [refreshMessage, setRefreshMessage] = useState<string | null>(null)
+  const [repairReport, setRepairReport] = useState<{
+    sources: {
+      totalFailed: number
+      byAction: Record<string, Array<{
+        sourceId: number
+        sourceName: string
+        platform: string
+        category: string
+        action: string
+        label: string
+        fixLabel: string
+        errorMessage: string | null
+      }>>
+    }
+    logins: Array<{ platform: string; valid: boolean; sourceCount: number }>
+  } | null>(null)
   const lastCompletedRefreshRef = useRef<string | null>(null)
 
   const { data: unreadData, mutate: mutateUnread } = useSWR(
@@ -150,10 +166,39 @@ export default function Home() {
   const handleRepairCollector = useCallback(async () => {
     setRepairingCollector(true)
     try {
-      await settingsApi.restartIntegrations()
+      const result = await settingsApi.repair()
       await mutateIntegrations()
       setRefreshTrigger((prev) => prev + 1)
       void mutateUnread()
+
+      const { report } = result
+
+      if (report.sources.totalFailed > 0) {
+        setRepairReport({
+          sources: {
+            totalFailed: report.sources.totalFailed,
+            byAction: report.sources.byAction,
+          },
+          logins: report.logins,
+        })
+        setRefreshMessage(null)
+      } else {
+        setRepairReport(null)
+        const rsshubMsg = report.rsshub.restarted
+          ? '已重启 RSSHub 服务'
+          : report.rsshub.wasRunning
+            ? 'RSSHub 运行正常'
+            : 'RSSHub 重启失败'
+        const loginIssues = report.logins.filter((l) => !l.valid && l.sourceCount > 0)
+        const loginMsg =
+          loginIssues.length > 0
+            ? `检测到 ${loginIssues.length} 个平台登录异常（${loginIssues.map((l) => l.platform).join('、')}）`
+            : '所有平台登录状态正常'
+        setRefreshMessage(`修复完成：${rsshubMsg}；所有订阅源状态正常；${loginMsg}。`)
+      }
+    } catch (err) {
+      setRepairReport(null)
+      setRefreshMessage(err instanceof Error ? err.message : '一键修复执行失败')
     } finally {
       setRepairingCollector(false)
     }
@@ -171,6 +216,29 @@ export default function Home() {
         }
       : null
 
+  const actionLabels: Record<string, string> = {
+    relogin: '需重新登录',
+    restart_rsshub: 'RSSHub 服务异常',
+    retry: '网络超时',
+    retry_later: '平台反爬/稍后重试',
+    disable_temporarily: 'RSSHub 路由问题',
+    configure_proxy: '需要配置代理',
+  }
+
+  function formatDiagnosisDescription(report: NonNullable<typeof repairReport>): string {
+    const parts = Object.entries(report.sources.byAction).map(([action, items]) => {
+      const label = actionLabels[action] || '采集失败'
+      return `${label}（${items.length} 个）`
+    })
+
+    const loginIssues = report.logins.filter((l) => !l.valid && l.sourceCount > 0)
+    if (loginIssues.length > 0) {
+      parts.push(`登录异常：${loginIssues.map((l) => l.platform).join('、')}`)
+    }
+
+    return parts.join('；') + '。建议进入设置查看详情并处理。'
+  }
+
   return (
     <main className="min-h-screen bg-bg-primary" data-testid="home-root">
       <TabBar
@@ -185,7 +253,25 @@ export default function Home() {
       />
 
       <div className="w-full px-4 pb-2 pt-4 sm:px-6 lg:px-8">
-        {collectorIssue && (
+        {repairReport && repairReport.sources.totalFailed > 0 && (
+          <div className="mb-4 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-4 text-amber-900 shadow-sm">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm font-semibold">检测到 {repairReport.sources.totalFailed} 个订阅源需要处理</p>
+                <p className="mt-1 text-sm text-amber-800">{formatDiagnosisDescription(repairReport)}</p>
+              </div>
+              <button
+                onClick={() => setIsSettingsOpen(true)}
+                disabled={repairingCollector}
+                className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                去设置修复
+              </button>
+            </div>
+          </div>
+        )}
+
+        {collectorIssue && !repairReport && (
           <div className="mb-4 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-4 text-amber-900 shadow-sm">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -203,13 +289,13 @@ export default function Home() {
           </div>
         )}
 
-        {loadingFreshContent && !collectorIssue && (
+        {loadingFreshContent && !collectorIssue && !repairReport && (
           <div className="mb-4 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900 shadow-sm">
             正在刷新订阅源并检查最新内容...
           </div>
         )}
 
-        {refreshMessage && !loadingFreshContent && !collectorIssue && (
+        {refreshMessage && !loadingFreshContent && !collectorIssue && !repairReport && (
           <div className="mb-4 rounded-2xl border border-border-color bg-bg-secondary px-4 py-3 text-sm text-text-secondary shadow-sm">
             {refreshMessage}
           </div>
