@@ -275,177 +275,222 @@ export default function Home() {
   }
 
   return (
-    <div className="flex min-h-screen bg-bg-primary">
-      {/* 左侧边栏 - 固定宽度 */}
-      <aside className="sticky top-0 h-screen w-56 flex-shrink-0 overflow-y-auto border-r border-border-color bg-bg-primary px-3 py-4">
-        {/* 日期筛选 */}
-        <div className="mb-6">
-          <h3 className="mb-2 text-xs font-medium text-text-muted">日期</h3>
-          <div className="space-y-1">
-            {getDateGroups().map((date) => (
-              <button
-                key={date.key}
-                className="w-full rounded-lg px-3 py-1.5 text-left text-sm text-text-secondary hover:bg-bg-secondary hover:text-text-primary"
-              >
-                {date.label}
-              </button>
-            ))}
+    <div className="flex min-h-screen">
+      {/* 左侧边栏 - 固定定位 */}
+      <aside className="sticky top-0 h-screen w-56 flex-shrink-0 overflow-y-auto border-r border-border-color bg-bg-primary">
+        {/* Logo区域 */}
+        <div className="flex items-center gap-2 border-b border-border-color px-4 py-3">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent">
+            <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
           </div>
+          <span className="font-semibold text-text-primary">信息中枢</span>
         </div>
 
-        {/* 二级栏目 - 平台筛选 */}
-        <div className="mb-6">
-          <h3 className="mb-2 text-xs font-medium text-text-muted">平台</h3>
-          <div className="space-y-1">
-            {activeTab.sourceType === 'custom' ? (
-              <>
+        <div className="p-3">
+          {/* 日期筛选 */}
+          <div className="mb-6">
+            <h3 className="mb-2 px-2 text-xs font-bold uppercase tracking-wider text-text-secondary">日期</h3>
+            <div className="space-y-0.5">
+              {getDateGroups().map((date) => (
                 <button
-                  onClick={() => {
-                    setActiveTab({ sourceType: 'custom', platform: 'all' })
-                    setTabVersion((v) => v + 1)
-                  }}
-                  className={cn(
-                    'w-full rounded-lg px-3 py-1.5 text-left text-sm transition-colors',
-                    activeTab.platform === 'all'
-                      ? 'bg-accent text-white'
-                      : 'text-text-secondary hover:bg-bg-secondary hover:text-text-primary'
-                  )}
+                  key={date.key}
+                  className="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-text-secondary transition-all hover:bg-bg-tertiary hover:text-text-primary active:bg-accent/10"
                 >
-                  全部
+                  {date.label}
                 </button>
-                {['zhihu', 'x', 'wechat', 'weibo', 'bilibili', 'youtube'].map((platform) => {
-                  const platformLabels: Record<string, string> = {
-                    zhihu: '知乎',
-                    x: 'X',
-                    wechat: '微信',
-                    weibo: '微博',
-                    bilibili: 'B站',
-                    youtube: 'YouTube',
-                  }
-                  return (
-                    <button
-                      key={platform}
-                      onClick={() => {
-                        setActiveTab({ sourceType: 'custom', platform: platform as any })
-                        setTabVersion((v) => v + 1)
-                        setSelectedSourceId(undefined)
-                      }}
-                      className={cn(
-                        'w-full rounded-lg px-3 py-1.5 text-left text-sm transition-colors',
-                        activeTab.platform === platform
-                          ? 'bg-accent text-white'
-                          : 'text-text-secondary hover:bg-bg-secondary hover:text-text-primary'
-                      )}
-                    >
-                      {platformLabels[platform]}
-                    </button>
-                  )
-                })}
-              </>
-            ) : (
-              <>
-                <button
-                  onClick={() => {
-                    setActiveTab({ sourceType: 'public', category: 'all' })
-                    setTabVersion((v) => v + 1)
-                  }}
-                  className={cn(
-                    'w-full rounded-lg px-3 py-1.5 text-left text-sm transition-colors',
-                    activeTab.category === 'all'
-                      ? 'bg-accent text-white'
-                      : 'text-text-secondary hover:bg-bg-secondary hover:text-text-primary'
-                  )}
-                >
-                  全部
-                </button>
-                {['tech', 'news', 'finance', 'life', 'design', 'video', 'aggregator'].map((cat) => {
-                  const catLabels: Record<string, string> = {
-                    tech: '科技',
-                    news: '新闻',
-                    finance: '财经',
-                    life: '生活',
-                    design: '设计',
-                    video: '视频',
-                    aggregator: '聚合',
-                  }
-                  return (
-                    <button
-                      key={cat}
-                      onClick={() => {
-                        setActiveTab({ sourceType: 'public', category: cat as any })
-                        setTabVersion((v) => v + 1)
-                        setSelectedSourceId(undefined)
-                      }}
-                      className={cn(
-                        'w-full rounded-lg px-3 py-1.5 text-left text-sm transition-colors',
-                        activeTab.category === cat
-                          ? 'bg-accent text-white'
-                          : 'text-text-secondary hover:bg-bg-secondary hover:text-text-primary'
-                      )}
-                    >
-                      {catLabels[cat]}
-                    </button>
-                  )
-                })}
-              </>
-            )}
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* 订阅源选择 */}
-        <div className="mb-6">
-          <h3 className="mb-2 text-xs font-medium text-text-muted">订阅源</h3>
-          <div className="space-y-1">
-            <button
-              onClick={() => setSelectedSourceId(undefined)}
-              className={cn(
-                'w-full rounded-lg px-3 py-1.5 text-left text-sm transition-colors',
-                selectedSourceId === undefined
-                  ? 'bg-accent text-white'
-                  : 'text-text-secondary hover:bg-bg-secondary hover:text-text-primary'
-              )}
-            >
-              全部订阅源
-            </button>
-            {Object.entries(sourcesByPlatform).map(([platform, sources]) => (
-              <div key={platform} className="space-y-1">
-                <div className="px-3 py-1 text-xs font-medium text-text-muted">
-                  {platform}
-                </div>
-                {sources.map((source) => (
+          {/* 二级栏目 - 平台筛选 */}
+          <div className="mb-6">
+            <h3 className="mb-2 px-2 text-xs font-bold uppercase tracking-wider text-text-secondary">平台</h3>
+            <div className="space-y-0.5">
+              {activeTab.sourceType === 'custom' ? (
+                <>
                   <button
-                    key={source.id}
-                    onClick={() => setSelectedSourceId(source.id)}
+                    onClick={() => {
+                      setActiveTab({ sourceType: 'custom', platform: 'all' })
+                      setTabVersion((v) => v + 1)
+                    }}
                     className={cn(
-                      'w-full rounded-lg px-3 py-1.5 text-left text-sm transition-colors truncate',
-                      selectedSourceId === source.id
-                        ? 'bg-accent text-white'
-                        : 'text-text-secondary hover:bg-bg-secondary hover:text-text-primary'
+                      'w-full rounded-lg px-3 py-2 text-left text-sm font-medium transition-all',
+                      activeTab.platform === 'all'
+                        ? 'bg-accent text-white shadow-sm'
+                        : 'text-text-secondary hover:bg-bg-tertiary hover:text-text-primary active:bg-accent/10'
                     )}
                   >
-                    {source.name}
+                    全部
                   </button>
-                ))}
-              </div>
-            ))}
+                  {['zhihu', 'x', 'wechat', 'weibo', 'bilibili', 'youtube'].map((platform) => {
+                    const platformLabels: Record<string, string> = {
+                      zhihu: '知乎',
+                      x: 'X',
+                      wechat: '微信',
+                      weibo: '微博',
+                      bilibili: 'B站',
+                      youtube: 'YouTube',
+                    }
+                    return (
+                      <button
+                        key={platform}
+                        onClick={() => {
+                          setActiveTab({ sourceType: 'custom', platform: platform as any })
+                          setTabVersion((v) => v + 1)
+                          setSelectedSourceId(undefined)
+                        }}
+                        className={cn(
+                          'w-full rounded-lg px-3 py-2 text-left text-sm font-medium transition-all',
+                          activeTab.platform === platform
+                            ? 'bg-accent text-white shadow-sm'
+                            : 'text-text-secondary hover:bg-bg-tertiary hover:text-text-primary active:bg-accent/10'
+                        )}
+                      >
+                        {platformLabels[platform]}
+                      </button>
+                    )
+                  })}
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => {
+                      setActiveTab({ sourceType: 'public', category: 'all' })
+                      setTabVersion((v) => v + 1)
+                    }}
+                    className={cn(
+                      'w-full rounded-lg px-3 py-2 text-left text-sm font-medium transition-all',
+                      activeTab.category === 'all'
+                        ? 'bg-accent text-white shadow-sm'
+                        : 'text-text-secondary hover:bg-bg-tertiary hover:text-text-primary active:bg-accent/10'
+                    )}
+                  >
+                    全部
+                  </button>
+                  {['tech', 'news', 'finance', 'life', 'design', 'video', 'aggregator'].map((cat) => {
+                    const catLabels: Record<string, string> = {
+                      tech: '科技',
+                      news: '新闻',
+                      finance: '财经',
+                      life: '生活',
+                      design: '设计',
+                      video: '视频',
+                      aggregator: '聚合',
+                    }
+                    return (
+                      <button
+                        key={cat}
+                        onClick={() => {
+                          setActiveTab({ sourceType: 'public', category: cat as any })
+                          setTabVersion((v) => v + 1)
+                          setSelectedSourceId(undefined)
+                        }}
+                        className={cn(
+                          'w-full rounded-lg px-3 py-2 text-left text-sm font-medium transition-all',
+                          activeTab.category === cat
+                            ? 'bg-accent text-white shadow-sm'
+                            : 'text-text-secondary hover:bg-bg-tertiary hover:text-text-primary active:bg-accent/10'
+                        )}
+                      >
+                        {catLabels[cat]}
+                      </button>
+                    )
+                  })}
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* 订阅源选择 */}
+          <div className="mb-6">
+            <h3 className="mb-2 px-2 text-xs font-bold uppercase tracking-wider text-text-secondary">订阅源</h3>
+            <div className="space-y-0.5">
+              <button
+                onClick={() => setSelectedSourceId(undefined)}
+                className={cn(
+                  'w-full rounded-lg px-3 py-2 text-left text-sm font-medium transition-all',
+                  selectedSourceId === undefined
+                    ? 'bg-accent text-white shadow-sm'
+                    : 'text-text-secondary hover:bg-bg-tertiary hover:text-text-primary active:bg-accent/10'
+                )}
+              >
+                全部订阅源
+              </button>
+              {Object.entries(sourcesByPlatform).map(([platform, sources]) => (
+                <div key={platform} className="mt-2">
+                  <div className="px-3 py-1.5 text-xs font-bold text-text-tertiary uppercase tracking-wider">
+                    {platform}
+                  </div>
+                  {sources.map((source) => (
+                    <button
+                      key={source.id}
+                      onClick={() => setSelectedSourceId(source.id)}
+                      className={cn(
+                        'w-full rounded-lg px-3 py-2 text-left text-sm font-medium transition-all truncate',
+                        selectedSourceId === source.id
+                          ? 'bg-accent text-white shadow-sm'
+                          : 'text-text-secondary hover:bg-bg-tertiary hover:text-text-primary active:bg-accent/10'
+                      )}
+                    >
+                      {source.name}
+                    </button>
+                  ))}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </aside>
 
       {/* 主内容区 */}
-      <main className="flex-1">
-        <TabBar
-          activeTab={activeTab}
-          onTabChange={(tab) => {
-            setActiveTab(tab)
-            setSelectedTagId(null)
-            setTabVersion((v) => v + 1)
-            setSelectedSourceId(undefined)
-          }}
-          onSettingsClick={() => setIsSettingsOpen(true)}
-          unreadCounts={unreadData?.by_platform ?? {}}
-        />
+      <main className="flex-1 min-w-0">
+        {/* 顶部栏 - 固定定位 */}
+        <div className="sticky top-0 z-40 border-b border-border-color bg-bg-secondary shadow-sm">
+          <div className="w-full px-4 py-2 sm:px-6 lg:px-8">
+            <div className="flex h-12 items-center gap-3">
+              {/* 两级下拉导航 */}
+              <div className="relative flex flex-1 items-center gap-2 flex-wrap">
+                <button
+                  onClick={() => setActiveTab({ sourceType: 'custom', platform: 'all' })}
+                  className={cn(
+                    'flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium transition-all',
+                    activeTab.sourceType === 'custom'
+                      ? 'bg-accent text-white shadow-sm'
+                      : 'bg-bg-tertiary text-text-secondary hover:bg-bg-tertiary/80 hover:text-text-primary'
+                  )}
+                >
+                  定制订阅源
+                </button>
+                <button
+                  onClick={() => setActiveTab({ sourceType: 'public', category: 'all' })}
+                  className={cn(
+                    'flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium transition-all',
+                    activeTab.sourceType === 'public'
+                      ? 'bg-accent text-white shadow-sm'
+                      : 'bg-bg-tertiary text-text-secondary hover:bg-bg-tertiary/80 hover:text-text-primary'
+                  )}
+                >
+                  公开订阅源
+                </button>
+              </div>
 
+              {/* 右侧设置按钮 */}
+              <button
+                onClick={() => setIsSettingsOpen(true)}
+                data-testid="open-settings-modal"
+                className="rounded-lg p-2 text-text-secondary transition-all hover:bg-bg-tertiary hover:text-text-primary active:bg-accent/10"
+                aria-label="设置"
+              >
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
         <div className="w-full px-4 pb-2 pt-4 sm:px-6 lg:px-8">
           {repairReport && repairReport.sources.totalFailed > 0 && (
             <div className="mb-4 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-4 text-amber-900 shadow-sm">

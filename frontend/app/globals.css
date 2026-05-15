@@ -20,14 +20,14 @@
   /* 暗黑模式变量 */
   --bg-primary: #0F0F0F;
   --bg-secondary: #1A1A1A;
-  --bg-tertiary: #262626;
-  --text-primary: #FFFFFF;
-  --text-secondary: #E5E5E5;
+  --bg-tertiary: #2A2A2A;
+  --text-primary: #F5F5F5;
+  --text-secondary: #D4D4D4;
   --text-tertiary: #A3A3A3;
   --text-muted: #737373;
-  --border-color: #404040;
-  --shadow-color: rgba(0, 0, 0, 0.3);
-  --shadow-color-hover: rgba(0, 0, 0, 0.5);
+  --border-color: #3A3A3A;
+  --shadow-color: rgba(0, 0, 0, 0.4);
+  --shadow-color-hover: rgba(0, 0, 0, 0.6);
 }
 
 * {

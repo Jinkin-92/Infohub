@@ -219,6 +219,18 @@ function initSQLiteTables() {
       created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
+
+    -- 用户显示设置表
+    CREATE TABLE IF NOT EXISTS user_settings (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      font_size TEXT NOT NULL DEFAULT 'medium',
+      card_density TEXT NOT NULL DEFAULT 'normal',
+      line_spacing TEXT NOT NULL DEFAULT 'normal',
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+
+    INSERT OR IGNORE INTO user_settings (id) VALUES (1);
   `);
 
   // Seed default favorite tags
