@@ -90,30 +90,16 @@ function Get-ProcessCommandLine {
 }
 
 function Stop-StrayInfoHubProcess {
-  param(
-    [int]$Port,
-    [string[]]$ExpectedMarkers
-  )
+  param([int]$Port)
 
   $pids = Get-ListeningPids -Port $Port
   foreach ($processId in $pids) {
-    $commandLine = Get-ProcessCommandLine -ProcessId $processId
-    $matchesMarker = $false
-    foreach ($marker in $ExpectedMarkers) {
-      if ($marker -and $commandLine -and $commandLine.ToLower().Contains($marker.ToLower())) {
-        $matchesMarker = $true
-        break
-      }
-    }
-
-    if ($matchesMarker) {
+    try {
+      taskkill /F /T /PID $processId | Out-Null
+    } catch {
       try {
-        taskkill /F /T /PID $processId | Out-Null
+        Stop-Process -Id $processId -Force -ErrorAction SilentlyContinue
       } catch {
-        try {
-          Stop-Process -Id $processId -Force -ErrorAction SilentlyContinue
-        } catch {
-        }
       }
     }
   }
@@ -383,8 +369,8 @@ try {
   Write-Step -Index '3/6' -Message '清理旧进程和旧日志'
   Stop-KnownProcess -PidFile $backendPidPath
   Stop-KnownProcess -PidFile $frontendPidPath
-  Stop-StrayInfoHubProcess -Port 3002 -ExpectedMarkers @($backendDir, 'dist/index.js', 'backend/dist/index.js', '.\dist\index.js')
-  Stop-StrayInfoHubProcess -Port 3000 -ExpectedMarkers @($frontendDir, 'next start', 'start-server.js', 'frontend/node_modules/next/dist/server/lib/start-server.js', '.\node_modules\next\dist\bin\next')
+  Stop-StrayInfoHubProcess -Port 3002
+  Stop-StrayInfoHubProcess -Port 3000
   Start-Sleep -Seconds 2
 
   Remove-Item -LiteralPath $backendLog -Force -ErrorAction SilentlyContinue
@@ -406,6 +392,10 @@ try {
     -StdoutPath $backendLog `
     -StderrPath $backendErrorLog `
     -PidFile $backendPidPath
+
+  Write-Host 'Building frontend for production...'
+  Invoke-NpmCommand -NodeRuntime $nodeRuntime -WorkingDirectory $frontendDir -Arguments @('run', 'build')
+  Write-Success 'Frontend build complete.'
 
   Start-ServiceProcess `
     -FilePath $nodeRuntime.NodeExe `
