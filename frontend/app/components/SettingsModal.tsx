@@ -688,7 +688,7 @@ function GeneralTab() {
             </div>
 
             <div>
-              <label className="mb-2 block text-sm text-text-secondary">卡片密度</label>
+              <label className="mb-2 block text-sm text-text-secondary">卡片大小</label>
               <div className="grid grid-cols-3 gap-2">
                 {(['compact', 'normal', 'spacious'] as const).map((density) => (
                   <button
@@ -701,7 +701,7 @@ function GeneralTab() {
                         : 'border-border-color text-text-secondary hover:border-text-tertiary'
                     )}
                   >
-                    {density === 'compact' ? '紧凑' : density === 'normal' ? '正常' : '宽松'}
+                    {density === 'compact' ? '小' : density === 'normal' ? '中' : '大'}
                   </button>
                 ))}
               </div>

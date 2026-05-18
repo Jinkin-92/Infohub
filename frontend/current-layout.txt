@@ -1,0 +1,1949 @@
+- generic [active] [ref=e1] [box=0,0,1241,11151]:
+  - alert [ref=e117] [box=-1,-1,1,1]
+  - generic [ref=e118] [box=0,0,1241,11151]:
+    - complementary [ref=e119] [box=0,0,224,1225]:
+      - generic [ref=e120] [box=0,0,215,53]:
+        - img [ref=e122] [box=22,18,16,16]
+        - generic [ref=e124] [box=52,13,64,26]: 信息中枢
+      - generic [ref=e125] [box=0,53,215,1689]:
+        - generic [ref=e126] [box=12,65,191,201]:
+          - heading "日期" [level=3] [ref=e127] [box=12,65,191,15]
+          - generic [ref=e128] [box=12,88,191,178]:
+            - button "全部" [ref=e129] [cursor=pointer] [box=12,88,191,34]
+            - button "今天" [ref=e130] [cursor=pointer] [box=12,124,191,34]
+            - button "昨天" [ref=e131] [cursor=pointer] [box=12,160,191,34]
+            - button "本周" [ref=e132] [cursor=pointer] [box=12,196,191,34]
+            - button "更早" [ref=e133] [cursor=pointer] [box=12,232,191,34]
+        - generic [ref=e134] [box=12,290,191,273]:
+          - heading "平台" [level=3] [ref=e135] [box=12,290,191,15]
+          - generic [ref=e136] [box=12,314,191,250]:
+            - button "全部" [ref=e137] [cursor=pointer] [box=12,314,191,34]
+            - button "知乎" [ref=e138] [cursor=pointer] [box=12,350,191,34]
+            - button "X" [ref=e139] [cursor=pointer] [box=12,386,191,34]
+            - button "微信" [ref=e140] [cursor=pointer] [box=12,422,191,34]
+            - button "微博" [ref=e141] [cursor=pointer] [box=12,458,191,34]
+            - button "B站" [ref=e142] [cursor=pointer] [box=12,494,191,34]
+            - button "YouTube" [ref=e143] [cursor=pointer] [box=12,530,191,34]
+        - generic [ref=e144] [box=12,588,191,1118]:
+          - heading "订阅源" [level=3] [ref=e145] [box=12,588,191,15]
+          - generic [ref=e146] [box=12,611,191,1094]:
+            - button "全部订阅源" [ref=e147] [cursor=pointer] [box=12,611,191,34]
+            - generic [ref=e148] [box=12,647,191,61]:
+              - generic [ref=e149] [box=12,647,191,27]: weibo
+              - button "谷大白话" [ref=e150] [cursor=pointer] [box=12,675,191,34]
+            - generic [ref=e151] [box=12,711,191,129]:
+              - generic [ref=e152] [box=12,711,191,27]: x
+              - button "lidang 立党 （劝人卖房/学CS/买SP500/纳100/OpenAI/Anthrop第一人）" [ref=e153] [cursor=pointer] [box=12,738,191,34]
+              - button "Elon Musk" [ref=e154] [cursor=pointer] [box=12,772,191,34]
+              - button "AYi" [ref=e155] [cursor=pointer] [box=12,806,191,34]
+            - generic [ref=e156] [box=12,842,191,129]:
+              - generic [ref=e157] [box=12,842,191,27]: bilibili
+              - button "马克的技术工作坊" [ref=e158] [cursor=pointer] [box=12,869,191,34]
+              - button "历史小吏-" [ref=e159] [cursor=pointer] [box=12,903,191,34]
+              - button "军武志" [ref=e160] [cursor=pointer] [box=12,937,191,34]
+            - generic [ref=e161] [box=12,973,191,469]:
+              - generic [ref=e162] [box=12,973,191,27]: wechat
+              - button "逛逛" [ref=e163] [cursor=pointer] [box=12,1001,191,34]
+              - button "六镇" [ref=e164] [cursor=pointer] [box=12,1035,191,34]
+              - button "香帅的金融江湖" [ref=e165] [cursor=pointer] [box=12,1069,191,34]
+              - button "卡尔的AI沃茨" [ref=e166] [cursor=pointer] [box=12,1103,191,34]
+              - button "饼干哥哥AGI" [ref=e167] [cursor=pointer] [box=12,1137,191,34]
+              - button "袋鼠帝AI客栈" [ref=e168] [cursor=pointer] [box=12,1171,191,34]
+              - button "网罗灯下黑" [ref=e169] [cursor=pointer] [box=12,1205,191,34]
+              - button "赛博禅心" [ref=e170] [cursor=pointer] [box=12,1239,191,34]
+              - button "硅基鹿鸣" [ref=e171] [cursor=pointer] [box=12,1273,191,34]
+              - button "APPSO" [ref=e172] [cursor=pointer] [box=12,1307,191,34]
+              - button "艾逗笔" [ref=e173] [cursor=pointer] [box=12,1341,191,34]
+              - button "太阳照常升起" [ref=e174] [cursor=pointer] [box=12,1375,191,34]
+              - button "数字生命卡兹克" [ref=e175] [cursor=pointer] [box=12,1409,191,34]
+            - generic [ref=e176] [box=12,1445,191,61]:
+              - generic [ref=e177] [box=12,1445,191,27]: youtube
+              - button "YouTube · @OpenAI" [ref=e178] [cursor=pointer] [box=12,1472,191,34]
+            - generic [ref=e179] [box=12,1508,191,197]:
+              - generic [ref=e180] [box=12,1508,191,27]: zhihu
+              - button "芯芯" [ref=e181] [cursor=pointer] [box=12,1536,191,34]
+              - button "寒武纪的鳄鱼" [ref=e182] [cursor=pointer] [box=12,1570,191,34]
+              - button "与太阳相关" [ref=e183] [cursor=pointer] [box=12,1604,191,34]
+              - button "奥特之父" [ref=e184] [cursor=pointer] [box=12,1638,191,34]
+              - button "MR Dang" [ref=e185] [cursor=pointer] [box=12,1672,191,34]
+    - main [ref=e186] [box=224,0,1017,11151]:
+      - generic [ref=e189] [box=256,8,953,48]:
+        - generic [ref=e190] [box=256,17,905,30]:
+          - button "定制订阅源" [ref=e191] [cursor=pointer] [box=256,17,84,30]
+          - button "公开订阅源" [ref=e192] [cursor=pointer] [box=348,17,84,30]
+        - button "设置" [ref=e193] [cursor=pointer] [box=1173,14,36,36]:
+          - img [ref=e194] [box=1181,22,20,20]
+      - generic [ref=e197] [box=224,65,1017,127]:
+        - generic [ref=e198] [box=256,81,953,44]: 订阅源正在后台刷新，内容会在完成后自动更新。
+        - generic [ref=e199] [box=256,141,953,43]:
+          - generic [ref=e201] [box=256,141,705,43]:
+            - img [ref=e202] [box=273,153,20,20]
+            - textbox "搜索标题、摘要、作者..." [ref=e204] [box=301,154,590,18]
+            - generic [ref=e205] [box=899,152,46,21]:
+              - generic [ref=e206] [box=906,155,22,15]: Ctrl
+              - generic [ref=e207] [box=932,155,6,15]: K
+          - button "收藏筛选" [ref=e209] [cursor=pointer] [box=973,141,122,36]:
+            - img [ref=e210] [box=986,151,16,16]
+            - generic [ref=e212] [box=1010,150,48,18]: 收藏筛选
+            - img [ref=e213] [box=1066,151,16,16]
+          - button "翻译全部" [ref=e215] [cursor=pointer] [box=1107,141,102,43]:
+            - img [ref=e216] [box=1123,155,16,16]
+            - text: 翻译全部
+      - generic [ref=e218] [box=224,192,1017,10959]:
+        - button "添加定制订阅源" [ref=e220] [cursor=pointer] [box=1071,208,138,34]:
+          - img [ref=e221] [box=1087,217,16,16]
+          - text: 添加定制订阅源
+        - generic [ref=e223] [box=256,258,953,10877]:
+          - generic [ref=e224] [box=256,258,953,53]:
+            - generic [ref=e225] [box=256,266,317,37]:
+              - paragraph [ref=e226] [box=256,266,317,18]:
+                - text: 共 116 条内容，分布在 4 个日期分组中
+                - generic [ref=e227] [box=474,267,73,16]: 102 条待处理
+              - paragraph [ref=e228] [box=256,288,317,15]: 同一天的动态会聚合成统一卡片墙，只展示当天有更新的 up 主。
+            - button "全部标记已读" [ref=e229] [cursor=pointer] [box=1091,274,118,30]:
+              - img [ref=e230] [box=1103,281,16,16]
+              - text: 全部标记已读
+          - generic [ref=e232] [box=256,344,953,2439]:
+            - generic [ref=e233] [box=256,344,953,63]:
+              - generic [ref=e234] [box=256,344,101,50]:
+                - heading "今天" [level=2] [ref=e235] [box=256,344,101,28]
+                - paragraph [ref=e236] [box=256,376,101,18]: 2026-05-15 · 周五
+              - generic [ref=e237] [box=1092,370,117,23]: 12 个订阅源有更新
+            - generic [ref=e238] [box=256,423,953,2360]:
+              - article [ref=e239] [box=256,423,469,380]:
+                - generic [ref=e240] [box=269,432,443,60]:
+                  - generic [ref=e241] [box=285,444,19,35]:
+                    - heading "AYi" [level=3] [ref=e242] [box=285,444,19,18]
+                    - paragraph [ref=e243] [box=285,464,19,15]: x
+                  - generic [ref=e244] [box=684,432,32,20]: 99+
+                - generic [ref=e245] [box=269,492,443,34]:
+                  - generic [ref=e246] [box=285,500,92,18]:
+                    - generic [ref=e247] [box=285,500,32,18]: 99+
+                    - generic [ref=e248] [box=321,501,56,15]: 总更新 100
+                  - generic [ref=e249] [box=652,501,44,15]: 采集正常
+                - generic [ref=e251] [box=277,526,419,1562]:
+                  - generic [ref=e252] [box=277,526,419,138]:
+                    - generic [ref=e255] [cursor=pointer] [box=302,535,385,94]:
+                      - generic [ref=e256] [box=302,535,385,54]: "AYi: 还有个让我觉得特别吃惊不可思议的地方： 老哥没有给 AI 任何关于钱包或者密码的提示，只是把整个硬盘的原始数据扔了进去，AI 自己完成了从找文件到读代码修 bu"
+                      - paragraph [ref=e257] [box=302,589,385,40]: 还有个让我觉得特别吃惊不可思议的地方： 老哥没有给 AI 任何关于钱包或者密码的提示，只是把整个硬盘的原始数据扔了进去，AI 自己完成了从找文件到读代码修 bug 再到解密的全部流程，真的很牛逼
+                    - generic [ref=e258] [box=278,637,417,26]:
+                      - generic [ref=e259] [box=286,638,43,15]: 7 分钟前
+                      - generic [ref=e260] [box=613,637,74,18]:
+                        - button "添加收藏" [ref=e261] [cursor=pointer] [box=613,637,26,18]:
+                          - img [ref=e262] [box=619,639,14,14]
+                        - link "查看原文" [ref=e264] [cursor=pointer] [box=643,638,44,15]:
+                          - /url: https://x.com/AYi_AInotes/status/2055109494841987419
+                  - generic [ref=e265] [box=277,672,419,120]:
+                    - generic [ref=e268] [cursor=pointer] [box=302,681,385,76]:
+                      - generic [ref=e269] [box=302,681,385,36]: "AYi: holy shit 这是我今年看到的最疯狂的 AI 故事，没有之一。 一个哥们儿用 Claude 找回了被锁了 11 年的 5 个比特币，现在价值差不多 40"
+                      - paragraph [ref=e270] [box=302,717,385,40]: "holy shit 这是我今年看到的最疯狂的 AI 故事，没有之一。 一个哥们儿用 Claude 找回了被锁了 11 年的 5 个比特币，现在价值差不多 40 万美元， 他大学的时候脑子一热，把钱包密码改成了一串没人能记住的鬼东西，然后转头就忘了， Quote: HOLY FUCKING SHIT OMG CLAUDE JUST CRACKED THIS SHIT, THANK YOU @AnthropicAI THANK YOU @DarioAmodei NAMING MY KID AFTER YOU https://blockchain.com/explorer/addresse"
+                    - generic [ref=e271] [box=278,765,417,26]:
+                      - generic [ref=e272] [box=286,766,43,15]: 7 分钟前
+                      - generic [ref=e273] [box=613,765,74,18]:
+                        - button "添加收藏" [ref=e274] [cursor=pointer] [box=613,765,26,18]:
+                          - img [ref=e275] [box=619,767,14,14]
+                        - link "查看原文" [ref=e277] [cursor=pointer] [box=643,766,44,15]:
+                          - /url: https://x.com/AYi_AInotes/status/2055109491511681316
+                  - generic [ref=e278] [box=277,800,419,138]:
+                    - generic [ref=e281] [cursor=pointer] [box=302,809,385,94]:
+                      - generic [ref=e282] [box=302,809,385,54]: "AYi: 补充两个最容易被忽略的细节 1. 它支持实时编辑文件和直接集成Stripe等第三方服务，不用你手动复制粘贴代码， 2. 目前仅限SuperGrok Heav"
+                      - paragraph [ref=e283] [box=302,863,385,40]: 补充两个最容易被忽略的细节 1. 它支持实时编辑文件和直接集成Stripe等第三方服务，不用你手动复制粘贴代码， 2. 目前仅限SuperGrok Heavy订阅者可用，首6个月99美元每月，后续会涨到300美元每月
+                    - generic [ref=e284] [box=278,911,417,26]:
+                      - generic [ref=e285] [box=286,912,49,15]: 37 分钟前
+                      - generic [ref=e286] [box=613,911,74,18]:
+                        - button "添加收藏" [ref=e287] [cursor=pointer] [box=613,911,26,18]:
+                          - img [ref=e288] [box=619,913,14,14]
+                        - link "查看原文" [ref=e290] [cursor=pointer] [box=643,912,44,15]:
+                          - /url: https://x.com/AYi_AInotes/status/2055101803667058892
+                  - generic [ref=e291] [box=277,946,419,138]:
+                    - generic [ref=e294] [cursor=pointer] [box=302,955,385,94]:
+                      - generic [ref=e295] [box=302,955,385,54]: "AYi: Damn，xAI今天发布的Grok Build， 可能是今年到目前为止最重要的AI产品， 我看很多人还在吐槽它没有漂亮的网页界面，吐槽它贵得离谱， 但就是没"
+                      - paragraph [ref=e296] [box=302,1009,385,40]: "Damn，xAI今天发布的Grok Build， 可能是今年到目前为止最重要的AI产品， 我看很多人还在吐槽它没有漂亮的网页界面，吐槽它贵得离谱， 但就是没人看懂这是代理时代真正到来的第一个明确信号， 铁铁们，这可不是又一个帮你补代码的助手之类的产品， 它能让你指挥一整支AI工程军团的指挥中心， Quote: An early beta of Grok Build, an agentic CLI for coding, building apps, and automating workflows is now available for SuperGrok Heavy subscri"
+                    - generic [ref=e297] [box=278,1057,417,26]:
+                      - generic [ref=e298] [box=286,1058,49,15]: 37 分钟前
+                      - generic [ref=e299] [box=613,1057,74,18]:
+                        - button "添加收藏" [ref=e300] [cursor=pointer] [box=613,1057,26,18]:
+                          - img [ref=e301] [box=619,1059,14,14]
+                        - link "查看原文" [ref=e303] [cursor=pointer] [box=643,1058,44,15]:
+                          - /url: https://x.com/AYi_AInotes/status/2055101798147391823
+                  - generic [ref=e304] [box=277,1092,419,138]:
+                    - generic [ref=e307] [cursor=pointer] [box=302,1101,385,94]:
+                      - generic [ref=e308] [box=302,1101,385,54]: "AYi: 这场争议背后还有一个被严重忽略的维度—— 美国正在重演 19 世纪英国的故事。 当年大英帝国主导工业革命,但中后期资本主义+工会， 双重夹击,基础设施投资"
+                      - paragraph [ref=e309] [box=302,1155,385,40]: 这场争议背后还有一个被严重忽略的维度—— 美国正在重演 19 世纪英国的故事。 当年大英帝国主导工业革命,但中后期资本主义+工会， 双重夹击,基础设施投资停滞,最后让出制造业领导权 ， 今天美国正在 AI 算力基础设施这件事上重演, 一边是反垄断+环保叙事, 一边是地缘竞争窗口正在关闭 。
+                    - generic [ref=e310] [box=278,1203,417,26]:
+                      - generic [ref=e311] [box=286,1204,43,15]: 7 小时前
+                      - generic [ref=e312] [box=613,1203,74,18]:
+                        - button "添加收藏" [ref=e313] [cursor=pointer] [box=613,1203,26,18]:
+                          - img [ref=e314] [box=619,1205,14,14]
+                        - link "查看原文" [ref=e316] [cursor=pointer] [box=643,1204,44,15]:
+                          - /url: https://x.com/AYi_AInotes/status/2054991194111795422
+                  - generic [ref=e317] [box=277,1238,419,120]:
+                    - generic [ref=e320] [cursor=pointer] [box=302,1247,385,76]:
+                      - generic [ref=e321] [box=302,1247,385,36]: "AYi: 顺手补几个被我从正文砍掉的关键数据, 给真想深度理解这场争议的朋友: 1. PwC 2025 研究:数据中心 2017→2023 直接岗位"
+                      - paragraph [ref=e322] [box=302,1283,385,40]: "顺手补几个被我从正文砍掉的关键数据, 给真想深度理解这场争议的朋友: 1. PwC 2025 研究:数据中心 2017→2023 直接岗位 增长 50%,劳动收入增长 144%,GDP 贡献增长 105%, 税收 1627 亿美元 2. Brookings 用合成控制法严控了预处理增长趋势, 770 个数据中心、93 个县、20"
+                    - generic [ref=e323] [box=278,1331,417,26]:
+                      - generic [ref=e324] [box=286,1332,43,15]: 7 小时前
+                      - generic [ref=e325] [box=613,1331,74,18]:
+                        - button "添加收藏" [ref=e326] [cursor=pointer] [box=613,1331,26,18]:
+                          - img [ref=e327] [box=619,1333,14,14]
+                        - link "查看原文" [ref=e329] [cursor=pointer] [box=643,1332,44,15]:
+                          - /url: https://x.com/AYi_AInotes/status/2054991191897186319
+                  - generic [ref=e330] [box=277,1366,419,138]:
+                    - generic [ref=e333] [cursor=pointer] [box=302,1375,385,94]:
+                      - generic [ref=e334] [box=302,1375,385,54]: "AYi: 说一句可能要被进步派朋友拉黑的判断, Sanders 和 AOC 这次推的反数据中心法案, 表面在保护社区, 实际在亲手关掉美国未来 10 年最大的就业发动机"
+                      - paragraph [ref=e335] [box=302,1429,385,40]: "说一句可能要被进步派朋友拉黑的判断, Sanders 和 AOC 这次推的反数据中心法案, 表面在保护社区, 实际在亲手关掉美国未来 10 年最大的就业发动机, 我知道这话不好听,但你听我把数据讲完, 反对者最常说的几件事:抢电、抢水、噪音、污染、电费暴涨、 现场就几十个保安运维,建完就自动化, Quote: Sanders and AOC introduced a bill to pause ALL AI data center construction. 300+ local bills filed. Half of planned 2026 data centers facing"
+                    - generic [ref=e336] [box=278,1477,417,26]:
+                      - generic [ref=e337] [box=286,1478,43,15]: 7 小时前
+                      - generic [ref=e338] [box=613,1477,74,18]:
+                        - button "添加收藏" [ref=e339] [cursor=pointer] [box=613,1477,26,18]:
+                          - img [ref=e340] [box=619,1479,14,14]
+                        - link "查看原文" [ref=e342] [cursor=pointer] [box=643,1478,44,15]:
+                          - /url: https://x.com/AYi_AInotes/status/2054991188302672035
+                  - generic [ref=e343] [box=277,1512,419,138]:
+                    - generic [ref=e345] [cursor=pointer] [box=286,1521,401,94]:
+                      - generic [ref=e346] [box=286,1521,401,54]: "AYi: 全网都在骂 Anthropic 和盖茨搞阴谋，但没人看懂这步棋到底有多狠。 看很多人都在聊 2 亿美元捐款，聊 PR，聊阴谋论， 没人看到这是大模型从聊天玩具"
+                      - paragraph [ref=e347] [box=286,1575,401,40]: "全网都在骂 Anthropic 和盖茨搞阴谋，但没人看懂这步棋到底有多狠。 看很多人都在聊 2 亿美元捐款，聊 PR，聊阴谋论， 没人看到这是大模型从聊天玩具真正走向改变世界的第一步。 这可以说是一张价值无法估量的全球底层场景入场券， 不是慈善，也不是 PR。 盖茨基金会拥有全球唯一经过 20 Quote: We’re partnering with the Gates Foundation, committing $200 million in grants, Claude credits, and technical support to programs in global he"
+                    - generic [ref=e348] [box=278,1623,417,26]:
+                      - generic [ref=e349] [box=286,1624,43,15]: 9 小时前
+                      - generic [ref=e350] [box=613,1623,74,18]:
+                        - button "添加收藏" [ref=e351] [cursor=pointer] [box=613,1623,26,18]:
+                          - img [ref=e352] [box=619,1625,14,14]
+                        - link "查看原文" [ref=e354] [cursor=pointer] [box=643,1624,44,15]:
+                          - /url: https://x.com/AYi_AInotes/status/2054975105092980857
+                  - generic [ref=e355] [box=277,1658,419,138]:
+                    - generic [ref=e357] [cursor=pointer] [box=286,1667,401,94]:
+                      - generic [ref=e358] [box=286,1667,401,54]: "AYi: 1. 课程总时长3小时8分钟，19个视频+8个代码示例+6个作业，全部是干货没有废话 2. 免费版可以看所有视频和基础代码，PRO版可以做 graded as"
+                      - paragraph [ref=e359] [box=286,1721,401,40]: 1. 课程总时长3小时8分钟，19个视频+8个代码示例+6个作业，全部是干货没有废话 2. 免费版可以看所有视频和基础代码，PRO版可以做 graded assignment 拿证书
+                    - generic [ref=e360] [box=278,1769,417,26]:
+                      - generic [ref=e361] [box=286,1770,43,15]: 9 小时前
+                      - generic [ref=e362] [box=613,1769,74,18]:
+                        - button "添加收藏" [ref=e363] [cursor=pointer] [box=613,1769,26,18]:
+                          - img [ref=e364] [box=619,1771,14,14]
+                        - link "查看原文" [ref=e366] [cursor=pointer] [box=643,1770,44,15]:
+                          - /url: https://x.com/AYi_AInotes/status/2054973228569739277
+                  - generic [ref=e367] [box=277,1804,419,138]:
+                    - generic [ref=e370] [cursor=pointer] [box=302,1813,385,94]:
+                      - generic [ref=e371] [box=302,1813,385,54]: "AYi: 做LLM生产落地的开发老哥们，可以看Andrew Ng刚出的这门课，免费版可以看所有视频和基础代码。 这个课程不是又一遍Attention is All Yo"
+                      - paragraph [ref=e372] [box=302,1867,385,40]: "做LLM生产落地的开发老哥们，可以看Andrew Ng刚出的这门课，免费版可以看所有视频和基础代码。 这个课程不是又一遍Attention is All You Need的数学推导， 也不是又一套调prompt的玄学技巧， 更不是又一个从零写Transformer的玩具项目，它直接把LLM的黑箱给你拆开了。 会让你亲手玩自回归循环， Quote: New course: Transformers in Practice. You'll get a practical view of how transformer-based LLMs work, so you can reason ab"
+                    - generic [ref=e373] [box=278,1915,417,26]:
+                      - generic [ref=e374] [box=286,1916,43,15]: 9 小时前
+                      - generic [ref=e375] [box=613,1915,74,18]:
+                        - button "添加收藏" [ref=e376] [cursor=pointer] [box=613,1915,26,18]:
+                          - img [ref=e377] [box=619,1917,14,14]
+                        - link "查看原文" [ref=e379] [cursor=pointer] [box=643,1916,44,15]:
+                          - /url: https://x.com/AYi_AInotes/status/2054973222903263244
+                  - generic [ref=e380] [box=277,1950,419,138]:
+                    - generic [ref=e383] [cursor=pointer] [box=302,1959,385,94]:
+                      - generic [ref=e384] [box=302,1959,385,54]: "AYi: Anthropic 和盖茨基金会官宣 2 亿美元合作， 99% 的解读都在聊\"AI 公益\"， 我觉得这是我今年看到最精准的一步商业棋， 跟慈善没半毛钱关系。"
+                      - paragraph [ref=e385] [box=302,2013,385,40]: "Anthropic 和盖茨基金会官宣 2 亿美元合作， 99% 的解读都在聊\"AI 公益\"， 我觉得这是我今年看到最精准的一步商业棋， 跟慈善没半毛钱关系。 Anthropic 掏的那一半并不是现金，主要是技术人力 + Claude 额度，盖茨基金会掏的那一半， 是 20 Quote: We’re partnering with the Gates Foundation, committing $200 million in grants, Claude credits, and technical support to programs in global health, life s"
+                    - generic [ref=e386] [box=278,2061,417,26]:
+                      - generic [ref=e387] [box=286,2062,43,15]: 9 小时前
+                      - generic [ref=e388] [box=613,2061,74,18]:
+                        - button "添加收藏" [ref=e389] [cursor=pointer] [box=613,2061,26,18]:
+                          - img [ref=e390] [box=619,2063,14,14]
+                        - link "查看原文" [ref=e392] [cursor=pointer] [box=643,2062,44,15]:
+                          - /url: https://x.com/AYi_AInotes/status/2054968292268220599
+              - article [ref=e393] [box=741,423,469,380]:
+                - generic [ref=e394] [box=754,432,443,60]:
+                  - generic [ref=e395] [box=770,444,70,35]:
+                    - heading "饼干哥哥AGI" [level=3] [ref=e396] [box=770,444,70,18]
+                    - paragraph [ref=e397] [box=770,464,70,15]: wechat
+                  - generic [ref=e398] [box=1176,432,24,20]: "65"
+                - generic [ref=e399] [box=754,492,443,34]:
+                  - generic [ref=e400] [box=770,500,78,18]:
+                    - generic [ref=e401] [box=770,500,24,18]: "65"
+                    - generic [ref=e402] [box=798,501,49,15]: 总更新 65
+                  - generic [ref=e403] [box=1136,501,44,15]: 采集正常
+                - generic [ref=e406] [box=762,526,427,62]:
+                  - generic [ref=e410] [cursor=pointer] [box=787,535,393,18]: codex之后，开发AI 应用的逻辑全变了！
+                  - generic [ref=e411] [box=763,561,425,26]:
+                    - generic [ref=e412] [box=771,562,49,15]: 12 分钟前
+                    - generic [ref=e413] [box=1105,561,74,18]:
+                      - button "添加收藏" [ref=e414] [cursor=pointer] [box=1105,561,26,18]:
+                        - img [ref=e415] [box=1111,563,14,14]
+                      - link "查看原文" [ref=e417] [cursor=pointer] [box=1135,562,44,15]:
+                        - /url: https://mp.weixin.qq.com/s/DInIvy9Qrnik_aty2v2msQ
+              - article [ref=e418] [box=256,819,469,380]:
+                - generic [ref=e419] [box=269,828,443,60]:
+                  - generic [ref=e420] [box=285,840,37,35]:
+                    - heading "六镇" [level=3] [ref=e421] [box=285,840,37,18]
+                    - paragraph [ref=e422] [box=285,860,37,15]: wechat
+                  - generic [ref=e423] [box=691,828,24,20]: "30"
+                - generic [ref=e424] [box=269,888,443,34]:
+                  - generic [ref=e425] [box=285,896,78,18]:
+                    - generic [ref=e426] [box=285,896,24,18]: "30"
+                    - generic [ref=e427] [box=313,897,49,15]: 总更新 30
+                  - generic [ref=e428] [box=652,897,44,15]: 采集正常
+                - generic [ref=e431] [box=277,922,427,62]:
+                  - generic [ref=e435] [cursor=pointer] [box=302,931,393,18]: 研究了上千个谋杀案，发现了一些问题
+                  - generic [ref=e436] [box=278,957,425,26]:
+                    - generic [ref=e437] [box=286,958,49,15]: 22 分钟前
+                    - generic [ref=e438] [box=621,957,74,18]:
+                      - button "添加收藏" [ref=e439] [cursor=pointer] [box=621,957,26,18]:
+                        - img [ref=e440] [box=627,959,14,14]
+                      - link "查看原文" [ref=e442] [cursor=pointer] [box=651,958,44,15]:
+                        - /url: https://mp.weixin.qq.com/s/RnUrTbSu_nywKOkLOF_miA
+              - article [ref=e443] [box=741,819,469,380]:
+                - generic [ref=e444] [box=754,828,443,60]:
+                  - generic [ref=e445] [box=770,840,63,35]:
+                    - heading "Elon Musk" [level=3] [ref=e446] [box=770,840,63,18]
+                    - paragraph [ref=e447] [box=770,860,63,15]: x
+                  - generic [ref=e448] [box=1176,828,24,20]: "33"
+                - generic [ref=e449] [box=754,888,443,34]:
+                  - generic [ref=e450] [box=770,896,78,18]:
+                    - generic [ref=e451] [box=770,896,24,18]: "33"
+                    - generic [ref=e452] [box=798,897,49,15]: 总更新 33
+                  - generic [ref=e453] [box=1136,897,44,15]: 采集正常
+                - generic [ref=e455] [box=762,922,419,504]:
+                  - generic [ref=e456] [box=762,922,419,120]:
+                    - generic [ref=e459] [cursor=pointer] [box=787,931,385,76]:
+                      - generic [ref=e460] [box=787,931,385,36]: "Elon Musk: Please list the most important features to improve, fix or add in the replies be"
+                      - paragraph [ref=e461] [box=787,967,385,40]: "Please list the most important features to improve, fix or add in the replies below:"
+                    - generic [ref=e462] [box=763,1015,417,26]:
+                      - generic [ref=e463] [box=771,1016,49,15]: 29 分钟前
+                      - generic [ref=e464] [box=1097,1015,74,18]:
+                        - button "添加收藏" [ref=e465] [cursor=pointer] [box=1097,1015,26,18]:
+                          - img [ref=e466] [box=1103,1017,14,14]
+                        - link "查看原文" [ref=e468] [cursor=pointer] [box=1127,1016,44,15]:
+                          - /url: https://x.com/elonmusk/status/2055103759550919140
+                  - generic [ref=e469] [box=762,1050,419,120]:
+                    - generic [ref=e472] [cursor=pointer] [box=787,1059,385,76]:
+                      - generic [ref=e473] [box=787,1059,385,36]: "Elon Musk: He actually did the meme Quote: Christopher Nolan directing The Odyssey"
+                      - paragraph [ref=e474] [box=787,1095,385,40]: "He actually did the meme Quote: Christopher Nolan directing The Odyssey"
+                    - generic [ref=e475] [box=763,1143,417,26]:
+                      - generic [ref=e476] [box=771,1144,43,15]: 6 小时前
+                      - generic [ref=e477] [box=1097,1143,74,18]:
+                        - button "添加收藏" [ref=e478] [cursor=pointer] [box=1097,1143,26,18]:
+                          - img [ref=e479] [box=1103,1145,14,14]
+                        - link "查看原文" [ref=e481] [cursor=pointer] [box=1127,1144,44,15]:
+                          - /url: https://x.com/elonmusk/status/2055017088272744630
+                  - generic [ref=e482] [box=762,1178,419,120]:
+                    - generic [ref=e485] [cursor=pointer] [box=787,1187,385,76]:
+                      - generic [ref=e486] [box=787,1187,385,36]: "Elon Musk: Grok Build Quote: Grok Build is a fully interactive CLI, which means you can ac"
+                      - paragraph [ref=e487] [box=787,1223,385,40]: "Grok Build Quote: Grok Build is a fully interactive CLI, which means you can actually use your mouse to click. No flickers. Especially useful as I find myself running 5+ agents at a time and jumping between plans. x.com/xai/status/205…"
+                    - generic [ref=e488] [box=763,1271,417,26]:
+                      - generic [ref=e489] [box=771,1272,43,15]: 6 小时前
+                      - generic [ref=e490] [box=1097,1271,74,18]:
+                        - button "添加收藏" [ref=e491] [cursor=pointer] [box=1097,1271,26,18]:
+                          - img [ref=e492] [box=1103,1273,14,14]
+                        - link "查看原文" [ref=e494] [cursor=pointer] [box=1127,1272,44,15]:
+                          - /url: https://x.com/elonmusk/status/2055010870573633859
+                  - generic [ref=e495] [box=762,1306,419,120]:
+                    - generic [ref=e498] [cursor=pointer] [box=787,1315,385,76]:
+                      - generic [ref=e499] [box=787,1315,385,36]: "Elon Musk: Try this early Grok Build (anything) beta and let us know what to improve. Muc"
+                      - paragraph [ref=e500] [box=787,1351,385,40]: "Try this early Grok Build (anything) beta and let us know what to improve. Much appreciated! Quote: An early beta of Grok Build, an agentic CLI for coding, building apps, and automating workflows is now available for SuperGrok Heavy subscribers. Through this early beta, we will improve the model"
+                    - generic [ref=e501] [box=763,1399,417,26]:
+                      - generic [ref=e502] [box=771,1400,43,15]: 6 小时前
+                      - generic [ref=e503] [box=1097,1399,74,18]:
+                        - button "添加收藏" [ref=e504] [cursor=pointer] [box=1097,1399,26,18]:
+                          - img [ref=e505] [box=1103,1401,14,14]
+                        - link "查看原文" [ref=e507] [cursor=pointer] [box=1127,1400,44,15]:
+                          - /url: https://x.com/elonmusk/status/2055008501722943750
+              - article [ref=e508] [box=256,1215,469,380]:
+                - generic [ref=e509] [box=269,1224,443,60]:
+                  - generic [ref=e510] [box=285,1236,73,35]:
+                    - heading "卡尔的AI沃茨" [level=3] [ref=e511] [box=285,1236,73,18]
+                    - paragraph [ref=e512] [box=285,1256,73,15]: wechat
+                  - generic [ref=e513] [box=691,1224,24,20]: "73"
+                - generic [ref=e514] [box=269,1284,443,34]:
+                  - generic [ref=e515] [box=285,1292,78,18]:
+                    - generic [ref=e516] [box=285,1292,24,18]: "73"
+                    - generic [ref=e517] [box=313,1293,49,15]: 总更新 73
+                  - generic [ref=e518] [box=652,1293,44,15]: 采集正常
+                - generic [ref=e521] [box=277,1318,427,102]:
+                  - generic [ref=e524] [cursor=pointer] [box=302,1327,393,58]:
+                    - generic [ref=e525] [box=302,1327,393,18]: 夯爆了的Codex App出手机版了！能连多电脑
+                    - paragraph [ref=e526] [box=302,1345,393,40]: 把Codex App和手机版GPT更到最新版，Codex App自动会弹窗，之前要是没有安装这个浏览器自动化扩展的话，这次设置的时候也可以顺带加上了。 手机端的Codex其实是直接在ChatGPT iOS里的，不需要装一个新应用。对话里的模型权限比起电脑版多了一个选项，除了默认自动完全，还可以继承电脑端Codex APP上对于这个文件夹设置的权限。 因为我的Mac mini上面也有Codex App嘛，我就想试试看能不能连接上。因为当时mbp连接之后在手机端的最上方是会有一个当前电脑的远程地址的，而且会显示状态，连接在线就是绿色。 我就觉得它肯定有连其他电脑的方式，把Mac mini的Codex也更新到最新后，它同样出现了对应的步骤，但是唯独没有了扫🐎连接的步骤。后面我在手机端看呢，其实可以通过SSH连接的，不过就是对小白来说比较费事。 再后面我就发现了，如果把Codex完全退出，再进入之后，它不会有那个移动端配置引导的步骤情况下，在左侧对话框的右下角。会有一个手机的logo，点一下那个logo就会出现二维码，这时候扫就能够连接新的主机。 （ps 有概率会顶掉之前的那台所以SSH还是最稳定的） 天才来的。 而且移动端照样也可以给云端的Codex发任务，直接爽玩，也不需要考虑连接其他im平台，会不会时不时掉线了。 Hermes， OpenClaw， Claude Code们， 你们以后已经不可能掉线不干活了！
+                  - generic [ref=e527] [box=278,1393,425,26]:
+                    - generic [ref=e528] [box=286,1394,49,15]: 32 分钟前
+                    - generic [ref=e529] [box=621,1393,74,18]:
+                      - button "添加收藏" [ref=e530] [cursor=pointer] [box=621,1393,26,18]:
+                        - img [ref=e531] [box=627,1395,14,14]
+                      - link "查看原文" [ref=e533] [cursor=pointer] [box=651,1394,44,15]:
+                        - /url: https://mp.weixin.qq.com/s/p3nnoiIVHPn7djQCN01-gw
+              - article [ref=e534] [box=741,1215,469,380]:
+                - generic [ref=e535] [box=754,1224,443,60]:
+                  - generic [ref=e536] [box=770,1236,73,35]:
+                    - heading "袋鼠帝AI客栈" [level=3] [ref=e537] [box=770,1236,73,18]
+                    - paragraph [ref=e538] [box=770,1256,73,15]: wechat
+                  - generic [ref=e539] [box=1176,1224,24,20]: "65"
+                - generic [ref=e540] [box=754,1284,443,34]:
+                  - generic [ref=e541] [box=770,1292,78,18]:
+                    - generic [ref=e542] [box=770,1292,24,18]: "65"
+                    - generic [ref=e543] [box=798,1293,49,15]: 总更新 65
+                  - generic [ref=e544] [box=1136,1293,44,15]: 采集正常
+                - generic [ref=e547] [box=762,1318,427,62]:
+                  - generic [ref=e551] [cursor=pointer] [box=787,1327,393,18]: Codex终于进手机了！
+                  - generic [ref=e552] [box=763,1353,425,26]:
+                    - generic [ref=e553] [box=771,1354,43,15]: 1 小时前
+                    - generic [ref=e554] [box=1105,1353,74,18]:
+                      - button "添加收藏" [ref=e555] [cursor=pointer] [box=1105,1353,26,18]:
+                        - img [ref=e556] [box=1111,1355,14,14]
+                      - link "查看原文" [ref=e558] [cursor=pointer] [box=1135,1354,44,15]:
+                        - /url: https://mp.weixin.qq.com/s/09xQb4TFYbadS4TSWXGlcQ
+              - article [ref=e559] [box=256,1611,469,380]:
+                - generic [ref=e560] [box=269,1620,443,60]:
+                  - generic [ref=e561] [box=285,1632,42,35]:
+                    - heading "APPSO" [level=3] [ref=e562] [box=285,1632,42,18]
+                    - paragraph [ref=e563] [box=285,1652,42,15]: wechat
+                  - generic [ref=e564] [box=684,1620,32,20]: 99+
+                - generic [ref=e565] [box=269,1680,443,34]:
+                  - generic [ref=e566] [box=285,1688,92,18]:
+                    - generic [ref=e567] [box=285,1688,32,18]: 99+
+                    - generic [ref=e568] [box=321,1689,56,15]: 总更新 115
+                  - generic [ref=e569] [box=652,1689,44,15]: 采集正常
+                - generic [ref=e572] [box=277,1714,427,120]:
+                  - generic [ref=e575] [cursor=pointer] [box=302,1723,393,76]:
+                    - generic [ref=e576] [box=302,1723,393,36]: iPhone 17系列突然降价，最高降千元/英伟达多款显卡短暂上架京东/腾讯否认「AI 一号位将离职」
+                    - paragraph [ref=e577] [box=302,1759,393,40]: · 估值 46.5 亿美元，前 Meta FAIR 总监田渊栋创业公司正式亮相 · Claude 重新允许接入龙虾，开发者：这是变相涨价 · 鸿蒙智行洽谈打造玛莎拉蒂新能源车
+                  - generic [ref=e578] [box=278,1807,425,26]:
+                    - generic [ref=e579] [box=286,1808,43,15]: 1 小时前
+                    - generic [ref=e580] [box=621,1807,74,18]:
+                      - button "添加收藏" [ref=e581] [cursor=pointer] [box=621,1807,26,18]:
+                        - img [ref=e582] [box=627,1809,14,14]
+                      - link "查看原文" [ref=e584] [cursor=pointer] [box=651,1808,44,15]:
+                        - /url: https://mp.weixin.qq.com/s/8Z8Kv9DmI_RfzgEsLAyfpg
+              - article [ref=e585] [box=741,1611,469,380]:
+                - generic [ref=e586] [box=754,1620,443,60]:
+                  - generic [ref=e587] [box=770,1632,60,35]:
+                    - heading "网罗灯下黑" [level=3] [ref=e588] [box=770,1632,60,18]
+                    - paragraph [ref=e589] [box=770,1652,60,15]: wechat
+                  - generic [ref=e590] [box=1176,1620,24,20]: "62"
+                - generic [ref=e591] [box=754,1680,443,34]:
+                  - generic [ref=e592] [box=770,1688,78,18]:
+                    - generic [ref=e593] [box=770,1688,24,18]: "62"
+                    - generic [ref=e594] [box=798,1689,49,15]: 总更新 62
+                  - generic [ref=e595] [box=1136,1689,44,15]: 采集正常
+                - generic [ref=e598] [box=762,1714,427,62]:
+                  - generic [ref=e601] [cursor=pointer] [box=771,1723,409,18]: 手把手教你免费领 Claude Opus 4.7 + 半价 ChatGPT Plus
+                  - generic [ref=e602] [box=763,1749,425,26]:
+                    - generic [ref=e603] [box=771,1750,43,15]: 2 小时前
+                    - generic [ref=e604] [box=1105,1749,74,18]:
+                      - button "添加收藏" [ref=e605] [cursor=pointer] [box=1105,1749,26,18]:
+                        - img [ref=e606] [box=1111,1751,14,14]
+                      - link "查看原文" [ref=e608] [cursor=pointer] [box=1135,1750,44,15]:
+                        - /url: https://mp.weixin.qq.com/s/LyBjHLGWKyTj9BxYBXRNQQ
+              - article [ref=e609] [box=256,2007,469,380]:
+                - generic [ref=e610] [box=269,2016,443,60]:
+                  - generic [ref=e611] [box=285,2028,56,35]:
+                    - heading "MR Dang" [level=3] [ref=e612] [box=285,2028,56,18]
+                    - paragraph [ref=e613] [box=285,2048,56,15]: zhihu
+                  - generic [ref=e614] [box=691,2016,24,20]: "33"
+                - generic [ref=e615] [box=269,2076,443,34]:
+                  - generic [ref=e616] [box=285,2084,78,18]:
+                    - generic [ref=e617] [box=285,2084,24,18]: "33"
+                    - generic [ref=e618] [box=313,2085,49,15]: 总更新 33
+                  - generic [ref=e619] [box=652,2085,44,15]: 采集正常
+                - generic [ref=e622] [box=277,2110,427,102]:
+                  - generic [ref=e624] [cursor=pointer] [box=286,2119,409,58]:
+                    - generic [ref=e625] [box=286,2119,409,18]: 如何评价2026年5月15日A股行情？
+                    - paragraph [ref=e626] [box=286,2137,409,40]: 回答了问题2026-05-15 07:38如何评价2026年5月15日A股行情？MR Dang知势榜经济与管理领域影响力榜答主央行发布了4月的数据，正好明天圈内要写一份宏观数据解读的文章，拿来做例题了： 央行原文地址 第一段话讲的是社融，整体增长7.8%，一季度数据是7.9%，说明四月有所放缓。 实体发放贷款增速5.6%，一季度数据是5.8%，也说明四月实体经济贷款发放有所保守。 政府债券这块儿占比有所提升，一季度末是21.6%，提升到了21.7%。…阅读全文赞同 264添加评论收藏喜欢分享
+                  - generic [ref=e627] [box=278,2185,425,26]:
+                    - generic [ref=e628] [box=286,2186,43,15]: 2 小时前
+                    - generic [ref=e629] [box=621,2185,74,18]:
+                      - button "添加收藏" [ref=e630] [cursor=pointer] [box=621,2185,26,18]:
+                        - img [ref=e631] [box=627,2187,14,14]
+                      - link "查看原文" [ref=e633] [cursor=pointer] [box=651,2186,44,15]:
+                        - /url: https://www.zhihu.com/question/2038015454527140934/answer/2038523597044635062
+              - article [ref=e634] [box=741,2007,469,380]:
+                - generic [ref=e635] [box=754,2016,443,78]:
+                  - generic [ref=e636] [box=770,2028,411,53]:
+                    - heading "lidang 立党 （劝人卖房/学CS/买SP500/纳100/OpenAI/Anthrop第一人）" [level=3] [ref=e637] [box=770,2028,411,36]
+                    - paragraph [ref=e638] [box=770,2066,411,15]: x
+                  - generic [ref=e639] [box=1176,2016,24,20]: "67"
+                - generic [ref=e640] [box=754,2094,443,34]:
+                  - generic [ref=e641] [box=770,2102,78,18]:
+                    - generic [ref=e642] [box=770,2102,24,18]: "67"
+                    - generic [ref=e643] [box=798,2103,49,15]: 总更新 67
+                  - generic [ref=e644] [box=1136,2103,44,15]: 采集正常
+                - generic [ref=e646] [box=762,2128,419,574]:
+                  - generic [ref=e647] [box=762,2128,419,100]:
+                    - generic [ref=e650] [cursor=pointer] [box=787,2137,385,56]:
+                      - generic [ref=e651] [box=787,2137,385,36]: "lidang 立党 （劝人卖房/学CS/买SP500/纳100/OpenAI/Anthrop第一人）: 难得看到一场绝佳婚礼， 每一个人都是大傻逼，绝了。"
+                      - paragraph [ref=e652] [box=787,2173,385,20]: 难得看到一场绝佳婚礼， 每一个人都是大傻逼，绝了。
+                    - generic [ref=e653] [box=763,2201,417,26]:
+                      - generic [ref=e654] [box=771,2202,43,15]: 4 小时前
+                      - generic [ref=e655] [box=1097,2201,74,18]:
+                        - button "添加收藏" [ref=e656] [cursor=pointer] [box=1097,2201,26,18]:
+                          - img [ref=e657] [box=1103,2203,14,14]
+                        - link "查看原文" [ref=e659] [cursor=pointer] [box=1127,2202,44,15]:
+                          - /url: https://x.com/lidangzzz/status/2055041937418137990
+                  - generic [ref=e660] [box=762,2236,419,156]:
+                    - generic [ref=e663] [cursor=pointer] [box=787,2245,385,112]:
+                      - generic [ref=e664] [box=787,2245,385,72]: "lidang 立党 （劝人卖房/学CS/买SP500/纳100/OpenAI/Anthrop第一人）: 不用latex，很多文档可以直接生成odt（libreoffice和openoffice的文件格式），实际效果应该会更好。 只不过绝大多数人类只能手敲late"
+                      - paragraph [ref=e665] [box=787,2317,385,40]: "不用latex，很多文档可以直接生成odt（libreoffice和openoffice的文件格式），实际效果应该会更好。 只不过绝大多数人类只能手敲latex，latex也有更加完备的文档，以及一大堆可以训练的training dataset，导致LLM对latex语法更加熟悉。 我个人是绝对站odt的，因为这是最兼容office全家桶的开源格式。 Quote: 现在 codex 都用 LaTeX 来做签证申请材料的文件，看的那叫一个精致，如果没有这些 coding agent 谁会发癫写 LaTeX 来做签证申请？也是享福了"
+                    - generic [ref=e666] [box=763,2365,417,26]:
+                      - generic [ref=e667] [box=771,2366,43,15]: 6 小时前
+                      - generic [ref=e668] [box=1097,2365,74,18]:
+                        - button "添加收藏" [ref=e669] [cursor=pointer] [box=1097,2365,26,18]:
+                          - img [ref=e670] [box=1103,2367,14,14]
+                        - link "查看原文" [ref=e672] [cursor=pointer] [box=1127,2366,44,15]:
+                          - /url: https://x.com/lidangzzz/status/2055018833555902514
+                  - generic [ref=e673] [box=762,2400,419,156]:
+                    - generic [ref=e676] [cursor=pointer] [box=787,2409,385,112]:
+                      - generic [ref=e677] [box=787,2409,385,72]: "lidang 立党 （劝人卖房/学CS/买SP500/纳100/OpenAI/Anthrop第一人）: 至少LLM Agent可以做出一些非常初步的判断，来提高医院的效率，节约医生的时间。 打个比方，绝大多数人在流感季节，是吃不到奥司他韦这种处方药的，等你看完医"
+                      - paragraph [ref=e678] [box=787,2481,385,40]: "至少LLM Agent可以做出一些非常初步的判断，来提高医院的效率，节约医生的时间。 打个比方，绝大多数人在流感季节，是吃不到奥司他韦这种处方药的，等你看完医生、拿到处方、拿到药物，可能已经快好了。 一些人口密集的地方，诊所完全可以开个急诊，一个医生坐诊，同时放20个检测盒，检测完流感病毒 Quote: 我感觉很合理。医学影像识别不知道，但是现在大模型水平超过很多基层医生了。不过感觉改革阻力很大"
+                    - generic [ref=e679] [box=763,2529,417,26]:
+                      - generic [ref=e680] [box=771,2530,43,15]: 6 小时前
+                      - generic [ref=e681] [box=1097,2529,74,18]:
+                        - button "添加收藏" [ref=e682] [cursor=pointer] [box=1097,2529,26,18]:
+                          - img [ref=e683] [box=1103,2531,14,14]
+                        - link "查看原文" [ref=e685] [cursor=pointer] [box=1127,2530,44,15]:
+                          - /url: https://x.com/lidangzzz/status/2055009162854310167
+                  - generic [ref=e686] [box=762,2564,419,138]:
+                    - generic [ref=e689] [cursor=pointer] [box=787,2573,385,94]:
+                      - generic [ref=e690] [box=787,2573,385,54]: "lidang 立党 （劝人卖房/学CS/买SP500/纳100/OpenAI/Anthrop第一人）: 最早的医疗AI实际是各种大型的decision tree和baysian， 后来IBM Watson雄心勃勃的医学AI是经典NLP（syntax tree）+"
+                      - paragraph [ref=e691] [box=787,2627,385,40]: 最早的医疗AI实际是各种大型的decision tree和baysian， 后来IBM Watson雄心勃勃的医学AI是经典NLP（syntax tree）+知识图谱+一大堆复杂系统拼在一起， 我对人类医疗AI这个领域简直太熟悉了， 医疗AI很难替代医生，也压根没想着100%彻底替代医生，但这个行业的所有人都在努力尝试做辅助医生决策
+                    - generic [ref=e692] [box=763,2675,417,26]:
+                      - generic [ref=e693] [box=771,2676,49,15]: 10 小时前
+                      - generic [ref=e694] [box=1097,2675,74,18]:
+                        - button "添加收藏" [ref=e695] [cursor=pointer] [box=1097,2675,26,18]:
+                          - img [ref=e696] [box=1103,2677,14,14]
+                        - link "查看原文" [ref=e698] [cursor=pointer] [box=1127,2676,44,15]:
+                          - /url: https://x.com/lidangzzz/status/2054954929559613922
+              - article [ref=e699] [box=256,2403,469,380]:
+                - generic [ref=e700] [box=269,2412,443,60]:
+                  - generic [ref=e701] [box=285,2424,122,35]:
+                    - heading "YouTube · @OpenAI" [level=3] [ref=e702] [box=285,2424,122,18]
+                    - paragraph [ref=e703] [box=285,2444,122,15]: youtube
+                  - generic [ref=e704] [box=691,2412,24,20]: "31"
+                - generic [ref=e705] [box=269,2472,443,34]:
+                  - generic [ref=e706] [box=285,2480,78,18]:
+                    - generic [ref=e707] [box=285,2480,24,18]: "31"
+                    - generic [ref=e708] [box=313,2481,49,15]: 总更新 31
+                  - generic [ref=e709] [box=652,2481,44,15]: 采集正常
+                - generic [ref=e711] [box=277,2506,427,220]:
+                  - generic [ref=e712] [box=277,2506,427,62]:
+                    - generic [ref=e716] [cursor=pointer] [box=302,2515,393,18]: "Codex for Everyday Work: AI Agents Beyond Coding"
+                    - generic [ref=e717] [box=278,2541,425,26]:
+                      - generic [ref=e718] [box=286,2542,43,15]: 5 小时前
+                      - generic [ref=e719] [box=621,2541,74,18]:
+                        - button "添加收藏" [ref=e720] [cursor=pointer] [box=621,2541,26,18]:
+                          - img [ref=e721] [box=627,2543,14,14]
+                        - link "查看原文" [ref=e723] [cursor=pointer] [box=651,2542,44,15]:
+                          - /url: https://www.youtube.com/watch?v=DLP9CagE3dU
+                  - generic [ref=e724] [box=277,2576,427,62]:
+                    - generic [ref=e728] [cursor=pointer] [box=302,2585,393,18]: "Now in preview: Codex in the ChatGPT mobile app."
+                    - generic [ref=e729] [box=278,2611,425,26]:
+                      - generic [ref=e730] [box=286,2612,43,15]: 6 小时前
+                      - generic [ref=e731] [box=621,2611,74,18]:
+                        - button "添加收藏" [ref=e732] [cursor=pointer] [box=621,2611,26,18]:
+                          - img [ref=e733] [box=627,2613,14,14]
+                        - link "查看原文" [ref=e735] [cursor=pointer] [box=651,2612,44,15]:
+                          - /url: https://www.youtube.com/shorts/tk9qrk5G4RQ
+                  - generic [ref=e736] [box=277,2646,427,80]:
+                    - generic [ref=e740] [cursor=pointer] [box=302,2655,393,36]: Inside image generation’s Renaissance moment — the OpenAI Podcast Ep. 19
+                    - generic [ref=e741] [box=278,2699,425,26]:
+                      - generic [ref=e742] [box=286,2700,43,15]: 8 小时前
+                      - generic [ref=e743] [box=621,2699,74,18]:
+                        - button "添加收藏" [ref=e744] [cursor=pointer] [box=621,2699,26,18]:
+                          - img [ref=e745] [box=627,2701,14,14]
+                        - link "查看原文" [ref=e747] [cursor=pointer] [box=651,2700,44,15]:
+                          - /url: https://www.youtube.com/watch?v=bH2nP-aCFjk
+              - article [ref=e748] [box=741,2403,469,380]:
+                - generic [ref=e749] [box=754,2412,443,60]:
+                  - generic [ref=e750] [box=770,2424,48,35]:
+                    - heading "奥特之父" [level=3] [ref=e751] [box=770,2424,48,18]
+                    - paragraph [ref=e752] [box=770,2444,48,15]: zhihu
+                  - generic [ref=e753] [box=1176,2412,24,20]: "35"
+                - generic [ref=e754] [box=754,2472,443,34]:
+                  - generic [ref=e755] [box=770,2480,78,18]:
+                    - generic [ref=e756] [box=770,2480,24,18]: "35"
+                    - generic [ref=e757] [box=798,2481,49,15]: 总更新 35
+                  - generic [ref=e758] [box=1136,2481,44,15]: 采集正常
+                - generic [ref=e761] [box=762,2506,427,102]:
+                  - generic [ref=e764] [cursor=pointer] [box=787,2515,393,58]:
+                    - generic [ref=e765] [box=787,2515,393,18]: 你见过最惨的人生有多惨，为什么惨？
+                    - paragraph [ref=e766] [box=787,2533,393,40]: 回答了问题2026-05-15 00:00你见过最惨的人生有多惨，为什么惨？奥特之父知势榜经济与管理领域影响力榜答主最近看到一个脸被毛霉菌吃掉的小女孩。 真的呼吸困难。太难过了。 想问下神通广大的知友，这样的有办法整容恢复么？…阅读全文赞同 6128 条评论收藏喜欢分享
+                  - generic [ref=e767] [box=763,2581,425,26]:
+                    - generic [ref=e768] [box=771,2582,49,15]: 10 小时前
+                    - generic [ref=e769] [box=1105,2581,74,18]:
+                      - button "添加收藏" [ref=e770] [cursor=pointer] [box=1105,2581,26,18]:
+                        - img [ref=e771] [box=1111,2583,14,14]
+                      - link "查看原文" [ref=e773] [cursor=pointer] [box=1135,2582,44,15]:
+                        - /url: https://www.zhihu.com/question/291582758/answer/2038408303076718539
+          - generic [ref=e774] [box=256,2815,953,3627]:
+            - generic [ref=e775] [box=256,2815,953,63]:
+              - generic [ref=e776] [box=256,2815,101,50]:
+                - heading "昨天" [level=2] [ref=e777] [box=256,2815,101,28]
+                - paragraph [ref=e778] [box=256,2847,101,18]: 2026-05-14 · 周四
+              - generic [ref=e779] [box=1092,2841,117,23]: 17 个订阅源有更新
+            - generic [ref=e780] [box=256,2894,953,3548]:
+              - article [ref=e781] [box=256,2894,469,380]:
+                - generic [ref=e782] [box=269,2903,443,60]:
+                  - generic [ref=e783] [box=285,2915,48,35]:
+                    - heading "奥特之父" [level=3] [ref=e784] [box=285,2915,48,18]
+                    - paragraph [ref=e785] [box=285,2935,48,15]: zhihu
+                  - generic [ref=e786] [box=691,2903,24,20]: "35"
+                - generic [ref=e787] [box=269,2963,443,34]:
+                  - generic [ref=e788] [box=285,2971,78,18]:
+                    - generic [ref=e789] [box=285,2971,24,18]: "35"
+                    - generic [ref=e790] [box=313,2972,49,15]: 总更新 35
+                  - generic [ref=e791] [box=652,2972,44,15]: 采集正常
+                - generic [ref=e793] [box=277,2997,419,340]:
+                  - generic [ref=e794] [box=277,2997,419,120]:
+                    - generic [ref=e797] [cursor=pointer] [box=302,3006,385,76]:
+                      - generic [ref=e798] [box=302,3006,385,36]: 特朗普访华欢迎宴会上雷军和马斯克合照，他们可能交流了什么？会对新能源车行业有影响吗？
+                      - paragraph [ref=e799] [box=302,3042,385,40]: 回答了问题2026-05-14 23:50特朗普访华欢迎宴会上雷军和马斯克合照，他们可能交流了什么？会对新能源车行业有影响吗？奥特之父知势榜经济与管理领域影响力榜答主今天到会的，中国企业家代表有联想集团董事长、CEO杨元庆，小米集团董事长、CEO雷军，海尔集团董事局主席、CEO周云杰，海信集团董事长贾少谦，抖音集团CEO梁汝波、福耀玻璃集团董事长曹晖等。 里面我有联想小米海信福耀，因为我搞价投喜欢投好公司，很巧，这些企业现在都在低位，海信福耀点金术位置介入，联想八块多买的，小米成本现…阅读全文赞同 40528 条评论收藏喜欢分享
+                    - generic [ref=e800] [box=278,3090,417,26]:
+                      - generic [ref=e801] [box=286,3091,49,15]: 10 小时前
+                      - generic [ref=e802] [box=613,3090,74,18]:
+                        - button "添加收藏" [ref=e803] [cursor=pointer] [box=613,3090,26,18]:
+                          - img [ref=e804] [box=619,3092,14,14]
+                        - link "查看原文" [ref=e806] [cursor=pointer] [box=643,3091,44,15]:
+                          - /url: https://www.zhihu.com/question/2038327972331877678/answer/2038405910628922589
+                  - generic [ref=e807] [box=277,3125,419,102]:
+                    - paragraph [ref=e811] [cursor=pointer] [box=286,3152,401,40]: "发布了想法2026-05-14 14:34奥特之父知势榜经济与管理领域影响力榜答主知「势」之星 徽章佩戴留念，期待在知乎继续前行，探索无尽可能。 #知「势」之星发布于2026-05-14 14:34赞同 273 条评论收藏喜欢分享"
+                    - generic [ref=e812] [box=278,3200,417,26]:
+                      - generic [ref=e813] [box=286,3201,49,15]: 19 小时前
+                      - generic [ref=e814] [box=613,3200,74,18]:
+                        - button "添加收藏" [ref=e815] [cursor=pointer] [box=613,3200,26,18]:
+                          - img [ref=e816] [box=619,3202,14,14]
+                        - link "查看原文" [ref=e818] [cursor=pointer] [box=643,3201,44,15]:
+                          - /url: https://www.zhihu.com/question/48509984
+                  - generic [ref=e819] [box=277,3235,419,102]:
+                    - generic [ref=e821] [cursor=pointer] [box=286,3244,401,58]:
+                      - generic [ref=e822] [box=286,3244,401,18]: 如何评价2026年5月14日A股行情？
+                      - paragraph [ref=e823] [box=286,3262,401,40]: 回答了问题2026-05-14 14:33如何评价2026年5月14日A股行情？奥特之父知势榜经济与管理领域影响力榜答主今天心情不好。没做好仓位管理。五月第一次绿。无法压制的巨大负面情绪。 早盘按特郎普访华的惯性，认为马斯克来，t链机器人会有短期利好消息，追了点机器人想做个短线，浮亏3%。 昨天的智能电网尝试用龙头战法，浮亏3%。 港股里面寄予厚望的阿里腾讯，只是微涨而已，地平线跌了很多，今天补了。自己的港股持仓和恒科差不多走势。 整体上，我的…阅读全文赞同 460567 条评论收藏喜欢分享
+                    - generic [ref=e824] [box=278,3310,417,26]:
+                      - generic [ref=e825] [box=286,3311,49,15]: 19 小时前
+                      - generic [ref=e826] [box=613,3310,74,18]:
+                        - button "添加收藏" [ref=e827] [cursor=pointer] [box=613,3310,26,18]:
+                          - img [ref=e828] [box=619,3312,14,14]
+                        - link "查看原文" [ref=e830] [cursor=pointer] [box=643,3311,44,15]:
+                          - /url: https://www.zhihu.com/question/2037848758654857950/answer/2038265752088785256
+              - article [ref=e831] [box=741,2894,469,380]:
+                - generic [ref=e832] [box=754,2903,443,60]:
+                  - generic [ref=e833] [box=770,2915,48,35]:
+                    - heading "赛博禅心" [level=3] [ref=e834] [box=770,2915,48,18]
+                    - paragraph [ref=e835] [box=770,2935,48,15]: wechat
+                  - generic [ref=e836] [box=1176,2903,24,20]: "84"
+                - generic [ref=e837] [box=754,2963,443,34]:
+                  - generic [ref=e838] [box=770,2971,78,18]:
+                    - generic [ref=e839] [box=770,2971,24,18]: "84"
+                    - generic [ref=e840] [box=798,2972,49,15]: 总更新 84
+                  - generic [ref=e841] [box=1136,2972,44,15]: 采集正常
+                - generic [ref=e843] [box=762,2997,419,262]:
+                  - generic [ref=e844] [box=762,2997,419,82]:
+                    - generic [ref=e847] [cursor=pointer] [box=787,3006,385,38]:
+                      - generic [ref=e848] [box=787,3006,385,18]: 5090 已上架京东（我好像是第二个下单的）
+                      - paragraph [ref=e849] [box=787,3024,385,20]: 老黄牛逼！商谈推进的神速啊！
+                    - generic [ref=e850] [box=763,3052,417,26]:
+                      - generic [ref=e851] [box=771,3053,49,15]: 12 小时前
+                      - generic [ref=e852] [box=1097,3052,74,18]:
+                        - button "添加收藏" [ref=e853] [cursor=pointer] [box=1097,3052,26,18]:
+                          - img [ref=e854] [box=1103,3054,14,14]
+                        - link "查看原文" [ref=e856] [cursor=pointer] [box=1127,3053,44,15]:
+                          - /url: https://mp.weixin.qq.com/s/Zm5r1j2aP0Tc_qDBaopfBg
+                  - generic [ref=e857] [box=762,3087,419,82]:
+                    - generic [ref=e860] [cursor=pointer] [box=787,3096,385,38]:
+                      - generic [ref=e861] [box=787,3096,385,18]: OpenAI 在招运营：要会中文，负责开发者关系
+                      - paragraph [ref=e862] [box=787,3114,385,20]: 内附申请链接，坐标新加坡，负责中文市场
+                    - generic [ref=e863] [box=763,3142,417,26]:
+                      - generic [ref=e864] [box=771,3143,49,15]: 15 小时前
+                      - generic [ref=e865] [box=1097,3142,74,18]:
+                        - button "添加收藏" [ref=e866] [cursor=pointer] [box=1097,3142,26,18]:
+                          - img [ref=e867] [box=1103,3144,14,14]
+                        - link "查看原文" [ref=e869] [cursor=pointer] [box=1127,3143,44,15]:
+                          - /url: https://mp.weixin.qq.com/s/LveJh4bMcG2WJU28xm5GBQ
+                  - generic [ref=e870] [box=762,3177,419,82]:
+                    - generic [ref=e872] [cursor=pointer] [box=771,3186,401,38]:
+                      - generic [ref=e873] [box=771,3186,401,18]: Claude 套餐，将不再支持自动化任务
+                      - paragraph [ref=e874] [box=771,3204,401,20]: 细讲下 Claude 的计费规则，以及演进由来
+                    - generic [ref=e875] [box=763,3232,417,26]:
+                      - generic [ref=e876] [box=771,3233,49,15]: 22 小时前
+                      - generic [ref=e877] [box=1097,3232,74,18]:
+                        - button "添加收藏" [ref=e878] [cursor=pointer] [box=1097,3232,26,18]:
+                          - img [ref=e879] [box=1103,3234,14,14]
+                        - link "查看原文" [ref=e881] [cursor=pointer] [box=1127,3233,44,15]:
+                          - /url: https://mp.weixin.qq.com/s/5IVaID-R7ayZTgiOL2Ydpw
+              - article [ref=e882] [box=256,3290,469,380]:
+                - generic [ref=e883] [box=269,3299,443,60]:
+                  - generic [ref=e884] [box=285,3311,19,35]:
+                    - heading "AYi" [level=3] [ref=e885] [box=285,3311,19,18]
+                    - paragraph [ref=e886] [box=285,3331,19,15]: x
+                  - generic [ref=e887] [box=684,3299,32,20]: 99+
+                - generic [ref=e888] [box=269,3359,443,34]:
+                  - generic [ref=e889] [box=285,3367,92,18]:
+                    - generic [ref=e890] [box=285,3367,32,18]: 99+
+                    - generic [ref=e891] [box=321,3368,56,15]: 总更新 100
+                  - generic [ref=e892] [box=652,3368,44,15]: 采集正常
+                - generic [ref=e894] [box=277,3393,419,2164]:
+                  - generic [ref=e895] [box=277,3393,419,138]:
+                    - generic [ref=e898] [cursor=pointer] [box=302,3402,385,94]:
+                      - generic [ref=e899] [box=302,3402,385,54]: "AYi: 最后想说，@elonmusk 才是真正的全球偶像，和国籍无关 了，和立场无关，和财富地位也无关，他代表的是人类对火星对未来的所有想象，这种影响力，没有人能复制！"
+                      - paragraph [ref=e900] [box=302,3456,385,40]: 最后想说，@elonmusk 才是真正的全球偶像，和国籍无关 了，和立场无关，和财富地位也无关，他代表的是人类对火星对未来的所有想象，这种影响力，没有人能复制！！
+                    - generic [ref=e901] [box=278,3504,417,26]:
+                      - generic [ref=e902] [box=286,3505,49,15]: 13 小时前
+                      - generic [ref=e903] [box=613,3504,74,18]:
+                        - button "添加收藏" [ref=e904] [cursor=pointer] [box=613,3504,26,18]:
+                          - img [ref=e905] [box=619,3506,14,14]
+                        - link "查看原文" [ref=e907] [cursor=pointer] [box=643,3505,44,15]:
+                          - /url: https://x.com/AYi_AInotes/status/2054906521759183308
+                  - generic [ref=e908] [box=277,3539,419,138]:
+                    - generic [ref=e910] [cursor=pointer] [box=286,3548,401,94]:
+                      - generic [ref=e911] [box=286,3548,401,54]: "AYi: Damn，这真是今天中国国宴上最魔幻的一幕！ 特斯拉的死对头小米雷军， 像个逃课的中学生一样， 蹑手蹑脚冲上去找马斯克合影 但最有意思的是马斯克明显已经被拍烦"
+                      - paragraph [ref=e912] [box=286,3602,401,40]: Damn，这真是今天中国国宴上最魔幻的一幕！ 特斯拉的死对头小米雷军， 像个逃课的中学生一样， 蹑手蹑脚冲上去找马斯克合影 但最有意思的是马斯克明显已经被拍烦了，脸上写着又来， 转头还是配合着摆出了一个夸张的鬼脸。 雷军合完影之后那种藏不住的开心，像终于拿到了偶像签名的小学生
+                    - generic [ref=e913] [box=278,3650,417,26]:
+                      - generic [ref=e914] [box=286,3651,49,15]: 13 小时前
+                      - generic [ref=e915] [box=613,3650,74,18]:
+                        - button "添加收藏" [ref=e916] [cursor=pointer] [box=613,3650,26,18]:
+                          - img [ref=e917] [box=619,3652,14,14]
+                        - link "查看原文" [ref=e919] [cursor=pointer] [box=643,3651,44,15]:
+                          - /url: https://x.com/AYi_AInotes/status/2054906516742795403
+                  - generic [ref=e920] [box=277,3685,419,120]:
+                    - generic [ref=e923] [cursor=pointer] [box=302,3694,385,76]:
+                      - generic [ref=e924] [box=302,3694,385,36]: "AYi: 说一个更大的判断: 2026 年所有头部 SaaS 都会朝同一个方向走： 把自己变成 Agent 的操作系统， 这回 Notion 抢了第一, 那么"
+                      - paragraph [ref=e925] [box=302,3730,385,40]: "说一个更大的判断: 2026 年所有头部 SaaS 都会朝同一个方向走： 把自己变成 Agent 的操作系统， 这回 Notion 抢了第一, 那么Slack/Salesforce/HubSpot 一定会紧跟, 未来 12 个月,SaaS 这个词的内涵会被重新定义， 那些还把工具当工具的人,会被那些把工具当 OS 的人吃掉。"
+                    - generic [ref=e926] [box=278,3778,417,26]:
+                      - generic [ref=e927] [box=286,3779,49,15]: 15 小时前
+                      - generic [ref=e928] [box=613,3778,74,18]:
+                        - button "添加收藏" [ref=e929] [cursor=pointer] [box=613,3778,26,18]:
+                          - img [ref=e930] [box=619,3780,14,14]
+                        - link "查看原文" [ref=e932] [cursor=pointer] [box=643,3779,44,15]:
+                          - /url: https://x.com/AYi_AInotes/status/2054874711880794562
+                  - generic [ref=e933] [box=277,3813,419,120]:
+                    - generic [ref=e936] [cursor=pointer] [box=302,3822,385,76]:
+                      - generic [ref=e937] [box=302,3822,385,36]: "AYi: 顺手补三个具体建议,给真想吃这波红利的朋友 1. 现在就把核心 workflow 搬进 Notion(知识库+任务+项目) 不是为了用 No"
+                      - paragraph [ref=e938] [box=302,3858,385,40]: 顺手补三个具体建议,给真想吃这波红利的朋友 1. 现在就把核心 workflow 搬进 Notion(知识库+任务+项目) 不是为了用 Notion,是为了让你的 Agent 有一个统一的上下文层 2. Business 计划以上的朋友,试用 ntn CLI 装一遍, curl -fsSL https://ntn.dev | bash,跑通第一个
+                    - generic [ref=e939] [box=278,3906,417,26]:
+                      - generic [ref=e940] [box=286,3907,49,15]: 15 小时前
+                      - generic [ref=e941] [box=613,3906,74,18]:
+                        - button "添加收藏" [ref=e942] [cursor=pointer] [box=613,3906,26,18]:
+                          - img [ref=e943] [box=619,3908,14,14]
+                        - link "查看原文" [ref=e945] [cursor=pointer] [box=643,3907,44,15]:
+                          - /url: https://x.com/AYi_AInotes/status/2054874709418823985
+                  - generic [ref=e946] [box=277,3941,419,120]:
+                    - generic [ref=e949] [cursor=pointer] [box=302,3950,385,76]:
+                      - generic [ref=e950] [box=302,3950,385,36]: "AYi: Notion 今天凌晨发了一个开发者平台, 大家都以为它在追 AI Agent 风口, 但实际方向是有些反过来的, 它要让所有 Agent 来追它, 我盯着它"
+                      - paragraph [ref=e951] [box=302,3986,385,40]: "Notion 今天凌晨发了一个开发者平台, 大家都以为它在追 AI Agent 风口, 但实际方向是有些反过来的, 它要让所有 Agent 来追它, 我盯着它官方文档里那个新的 CLI 工具看了一会儿,才慢慢回过味儿来, 这个 CLI 设计得很奇怪, 它自带 --help,自带 --docs,自带 --spec, 每个命令的元信息都精简到极致,token Quote: BIG one for devs today. Introducing the Notion Developer Platform: - Notion CLI, ntn (Notion in your terminal)"
+                    - generic [ref=e952] [box=278,4034,417,26]:
+                      - generic [ref=e953] [box=286,4035,49,15]: 15 小时前
+                      - generic [ref=e954] [box=613,4034,74,18]:
+                        - button "添加收藏" [ref=e955] [cursor=pointer] [box=613,4034,26,18]:
+                          - img [ref=e956] [box=619,4036,14,14]
+                        - link "查看原文" [ref=e958] [cursor=pointer] [box=643,4035,44,15]:
+                          - /url: https://x.com/AYi_AInotes/status/2054874706239439186
+                  - generic [ref=e959] [box=277,4069,419,138]:
+                    - generic [ref=e962] [cursor=pointer] [box=302,4078,385,94]:
+                      - generic [ref=e963] [box=302,4078,385,54]: "AYi: 临时解决方案：用ChatGPT的时候一定要开广告拦截器，或者只用API版，API没有这些第三方追踪代码。 补充：OpenAI目前还没有针对这起诉讼发表正式回应"
+                      - paragraph [ref=e964] [box=302,4132,385,40]: 临时解决方案：用ChatGPT的时候一定要开广告拦截器，或者只用API版，API没有这些第三方追踪代码。 补充：OpenAI目前还没有针对这起诉讼发表正式回应，最终结果还要等法院审理。这类基于加州CIPA的隐私诉讼最近确实很多。
+                    - generic [ref=e965] [box=278,4180,417,26]:
+                      - generic [ref=e966] [box=286,4181,49,15]: 16 小时前
+                      - generic [ref=e967] [box=613,4180,74,18]:
+                        - button "添加收藏" [ref=e968] [cursor=pointer] [box=613,4180,26,18]:
+                          - img [ref=e969] [box=619,4182,14,14]
+                        - link "查看原文" [ref=e971] [cursor=pointer] [box=643,4181,44,15]:
+                          - /url: https://x.com/AYi_AInotes/status/2054856539488366641
+                  - generic [ref=e972] [box=277,4215,419,82]:
+                    - generic [ref=e975] [cursor=pointer] [box=302,4224,385,38]:
+                      - generic [ref=e976] [box=302,4224,385,18]: "AYi: 原诉讼文件链接："
+                      - paragraph [ref=e977] [box=302,4242,385,20]: 原诉讼文件链接：
+                    - generic [ref=e978] [box=278,4270,417,26]:
+                      - generic [ref=e979] [box=286,4271,49,15]: 16 小时前
+                      - generic [ref=e980] [box=613,4270,74,18]:
+                        - button "添加收藏" [ref=e981] [cursor=pointer] [box=613,4270,26,18]:
+                          - img [ref=e982] [box=619,4272,14,14]
+                        - link "查看原文" [ref=e984] [cursor=pointer] [box=643,4271,44,15]:
+                          - /url: https://x.com/AYi_AInotes/status/2054856523818430637
+                  - generic [ref=e985] [box=277,4305,419,138]:
+                    - generic [ref=e988] [cursor=pointer] [box=302,4314,385,94]:
+                      - generic [ref=e989] [box=302,4314,385,54]: "AYi: 最近全网都在聊OpenAI的ChatGPT 5.5多厉害，Codex多好用之类的， 但没人注意到昨天刚爆的这个集体诉讼，这件事可能是真正炸穿底线的事。 南加"
+                      - paragraph [ref=e990] [box=302,4368,385,40]: 最近全网都在聊OpenAI的ChatGPT 5.5多厉害，Codex多好用之类的， 但没人注意到昨天刚爆的这个集体诉讼，这件事可能是真正炸穿底线的事。 南加州联邦法院昨天正式立案，原告代表所有美国ChatGPT用户起诉OpenAI。 诉讼文件里的实锤硬到爆， OpenAI在ChatGPT网站代码里直接嵌入了Facebook
+                    - generic [ref=e991] [box=278,4416,417,26]:
+                      - generic [ref=e992] [box=286,4417,49,15]: 16 小时前
+                      - generic [ref=e993] [box=613,4416,74,18]:
+                        - button "添加收藏" [ref=e994] [cursor=pointer] [box=613,4416,26,18]:
+                          - img [ref=e995] [box=619,4418,14,14]
+                        - link "查看原文" [ref=e997] [cursor=pointer] [box=643,4417,44,15]:
+                          - /url: https://x.com/AYi_AInotes/status/2054856518185439662
+                  - generic [ref=e998] [box=277,4451,419,120]:
+                    - generic [ref=e1000] [cursor=pointer] [box=286,4460,401,76]:
+                      - generic [ref=e1001] [box=286,4460,401,36]: "AYi: Cursor效率是真的高，昨天联系确认邮箱， 今天上午就反馈Ultra+$10000额度就到账了， @cursor_ai this is incredibl"
+                      - paragraph [ref=e1002] [box=286,4496,401,40]: "Cursor效率是真的高，昨天联系确认邮箱， 今天上午就反馈Ultra+$10000额度就到账了， @cursor_ai this is incredible — thank you so much! A $10K credit is far beyond what I expected, and I truly appreciate you putting this kind of trust in me. I’ll make sure to put it to meaningful Quote: Cursor这公司真的把我整懵了， 长这么大第一次见，主动给用户送$10000额度的"
+                    - generic [ref=e1003] [box=278,4544,417,26]:
+                      - generic [ref=e1004] [box=286,4545,49,15]: 20 小时前
+                      - generic [ref=e1005] [box=613,4544,74,18]:
+                        - button "添加收藏" [ref=e1006] [cursor=pointer] [box=613,4544,26,18]:
+                          - img [ref=e1007] [box=619,4546,14,14]
+                        - link "查看原文" [ref=e1009] [cursor=pointer] [box=643,4545,44,15]:
+                          - /url: https://x.com/AYi_AInotes/status/2054798146966798748
+                  - generic [ref=e1010] [box=277,4579,419,120]:
+                    - generic [ref=e1013] [cursor=pointer] [box=302,4588,385,76]:
+                      - generic [ref=e1014] [box=302,4588,385,36]: "AYi: 顺手补一个我盯着数据琢磨出来的小框架，给做内容的朋友参考： 下次再看到一条爆款，先别急着学， 花两分钟问自己三个问题 1 画面"
+                      - paragraph [ref=e1015] [box=302,4624,385,40]: 顺手补一个我盯着数据琢磨出来的小框架，给做内容的朋友参考： 下次再看到一条爆款，先别急着学， 花两分钟问自己三个问题 1 画面里的东西真的硬，还是镜头让它看起来硬 2 叙事顺序是不是先把对手拉到极致，再反衬己方的稳定 3
+                    - generic [ref=e1016] [box=278,4672,417,26]:
+                      - generic [ref=e1017] [box=286,4673,49,15]: 21 小时前
+                      - generic [ref=e1018] [box=613,4672,74,18]:
+                        - button "添加收藏" [ref=e1019] [cursor=pointer] [box=613,4672,26,18]:
+                          - img [ref=e1020] [box=619,4674,14,14]
+                        - link "查看原文" [ref=e1022] [cursor=pointer] [box=643,4673,44,15]:
+                          - /url: https://x.com/AYi_AInotes/status/2054780424111452660
+                  - generic [ref=e1023] [box=277,4707,419,138]:
+                    - generic [ref=e1026] [cursor=pointer] [box=302,4716,385,94]:
+                      - generic [ref=e1027] [box=302,4716,385,54]: "AYi: 最晚发的这条30 秒视频一晚上播放量跑到100万，前一条跑到了200多万， 最近也有很多人私信我请教X增长和运营怎么做的这么好，说好多人都在模仿学习之类的，有"
+                      - paragraph [ref=e1028] [box=302,4770,385,40]: "最晚发的这条30 秒视频一晚上播放量跑到100万，前一条跑到了200多万， 最近也有很多人私信我请教X增长和运营怎么做的这么好，说好多人都在模仿学习之类的，有没有社群啥的，要付费学习， 我先简单分享下这两条看似普通的视频爆火的原因。 早上醒来看到大家在评论区吵成两派， Quote: Damn！这一幕看得我头皮发麻 全世界最硬的空军一号，贴着首都机场碾过来， 面前的人民解放军硬是岿然不动！ 这一幕直接在X全网刷爆了！ x.com/ayi_ainotes/st…"
+                    - generic [ref=e1029] [box=278,4818,417,26]:
+                      - generic [ref=e1030] [box=286,4819,49,15]: 21 小时前
+                      - generic [ref=e1031] [box=613,4818,74,18]:
+                        - button "添加收藏" [ref=e1032] [cursor=pointer] [box=613,4818,26,18]:
+                          - img [ref=e1033] [box=619,4820,14,14]
+                        - link "查看原文" [ref=e1035] [cursor=pointer] [box=643,4819,44,15]:
+                          - /url: https://x.com/AYi_AInotes/status/2054780416934961556
+                  - generic [ref=e1036] [box=277,4853,419,138]:
+                    - generic [ref=e1039] [cursor=pointer] [box=302,4862,385,94]:
+                      - generic [ref=e1040] [box=302,4862,385,54]: "AYi: 现在到7月13日放心用，把想做的项目、实验全甩进去， 7月13日之后，交互继续用Claude Code，自动化要么接受涨价，要么开始测OpenAI Codex当"
+                      - paragraph [ref=e1041] [box=302,4916,385,40]: 现在到7月13日放心用，把想做的项目、实验全甩进去， 7月13日之后，交互继续用Claude Code，自动化要么接受涨价，要么开始测OpenAI Codex当备胎。
+                    - generic [ref=e1042] [box=278,4964,417,26]:
+                      - generic [ref=e1043] [box=286,4965,49,15]: 23 小时前
+                      - generic [ref=e1044] [box=613,4964,74,18]:
+                        - button "添加收藏" [ref=e1045] [cursor=pointer] [box=613,4964,26,18]:
+                          - img [ref=e1046] [box=619,4966,14,14]
+                        - link "查看原文" [ref=e1048] [cursor=pointer] [box=643,4965,44,15]:
+                          - /url: https://x.com/AYi_AInotes/status/2054760139333230628
+                  - generic [ref=e1049] [box=277,4999,419,138]:
+                    - generic [ref=e1052] [cursor=pointer] [box=302,5008,385,94]:
+                      - generic [ref=e1053] [box=302,5008,385,54]: "AYi: 全网都在薅Claude今天的50%编程福利，但90%的人都没看懂背后的时间差。 今天早上，Anthropic先发重磅公告： 6月15日起， 所有自动化用法（c"
+                      - paragraph [ref=e1054] [box=302,5062,385,40]: "全网都在薅Claude今天的50%编程福利，但90%的人都没看懂背后的时间差。 今天早上，Anthropic先发重磅公告： 6月15日起， 所有自动化用法（claude -p、Agent SDK、GitHub Actions、第三方Agent工具）， 从订阅额度里剥离，改成独立的月度信用额度，用完就得按API原价付费。 Quote: Claude Code weekly limits are increasing 50%, now through July 13. Live now for all Pro, Max, Team, and seat-based Enterprise us"
+                    - generic [ref=e1055] [box=278,5110,417,26]:
+                      - generic [ref=e1056] [box=286,5111,49,15]: 23 小时前
+                      - generic [ref=e1057] [box=613,5110,74,18]:
+                        - button "添加收藏" [ref=e1058] [cursor=pointer] [box=613,5110,26,18]:
+                          - img [ref=e1059] [box=619,5112,14,14]
+                        - link "查看原文" [ref=e1061] [cursor=pointer] [box=643,5111,44,15]:
+                          - /url: https://x.com/AYi_AInotes/status/2054760132848849096
+                  - generic [ref=e1062] [box=277,5145,419,120]:
+                    - generic [ref=e1065] [cursor=pointer] [box=302,5154,385,76]:
+                      - generic [ref=e1066] [box=302,5154,385,36]: "AYi: In Chinese culture, we have a special way of forming nicknames by adding prefixe"
+                      - paragraph [ref=e1067] [box=302,5190,385,40]: "In Chinese culture, we have a special way of forming nicknames by adding prefixes to surnames. 'Lao' (老) before a surname means close relationship and familiarity, regardless of the person's actual age. For example, we call a good friend named Li 'Lao Li', and Wang 'Lao Wang'. Quote: I keep seeing"
+                    - generic [ref=e1068] [box=278,5238,417,26]:
+                      - generic [ref=e1069] [box=286,5239,32,15]: 1 天前
+                      - generic [ref=e1070] [box=613,5238,74,18]:
+                        - button "添加收藏" [ref=e1071] [cursor=pointer] [box=613,5238,26,18]:
+                          - img [ref=e1072] [box=619,5240,14,14]
+                        - link "查看原文" [ref=e1074] [cursor=pointer] [box=643,5239,44,15]:
+                          - /url: https://x.com/AYi_AInotes/status/2054736430472040730
+                  - generic [ref=e1075] [box=277,5273,419,138]:
+                    - generic [ref=e1078] [cursor=pointer] [box=302,5282,385,94]:
+                      - generic [ref=e1079] [box=302,5282,385,54]: "AYi: 说实话，大多数人盯着孙宇晨那些奇葩故事—— 3000 万请巴菲特放鸽子、620 万美元吃掉一根香蕉、SEC 起诉、和特朗普家族互撕…… 觉得这就是一个流量怪人"
+                      - paragraph [ref=e1080] [box=302,5336,385,40]: "说实话，大多数人盯着孙宇晨那些奇葩故事—— 3000 万请巴菲特放鸽子、620 万美元吃掉一根香蕉、SEC 起诉、和特朗普家族互撕…… 觉得这就是一个流量怪人，仅此而已。 但你要是去翻一下他过去 10 年的公开投资清单，会有点尴尬。 2016 年他公开喊 90 Quote: 说个暴论，90%的Claude中转站，都在偷偷给你跑Sonnet冒充Opus！ 兄弟们，Claude 中转站里，终于出了一个自己人做的了！ 老板是我朋友，他自己就是重度 Claude Code 用户， 饱受封号之苦，外面的站也用烂了，干脆自己搭了一套，叫 http://ccode.dev， 号池、防封、风控全"
+                    - generic [ref=e1081] [box=278,5384,417,26]:
+                      - generic [ref=e1082] [box=286,5385,32,15]: 1 天前
+                      - generic [ref=e1083] [box=613,5384,74,18]:
+                        - button "添加收藏" [ref=e1084] [cursor=pointer] [box=613,5384,26,18]:
+                          - img [ref=e1085] [box=619,5386,14,14]
+                        - link "查看原文" [ref=e1087] [cursor=pointer] [box=643,5385,44,15]:
+                          - /url: https://x.com/AYi_AInotes/status/2054698205527613532
+                  - generic [ref=e1088] [box=277,5419,419,138]:
+                    - generic [ref=e1091] [cursor=pointer] [box=302,5428,385,94]:
+                      - generic [ref=e1092] [box=302,5428,385,54]: "AYi: 说实话，看到 Claude 这条\"福利\"全网都在转，但绝大多数人没注意到官方话术下面藏的真正信号。 打开他们的详细说明，会发现一件挺有意思的事。 这笔每月的"
+                      - paragraph [ref=e1093] [box=302,5482,385,40]: "说实话，看到 Claude 这条\"福利\"全网都在转，但绝大多数人没注意到官方话术下面藏的真正信号。 打开他们的详细说明，会发现一件挺有意思的事。 这笔每月的\"专用信用额度\"，是按 API 价格计费的。 Pro $20，Max 5x $100，Max 20x $200。 听起来还行对吧？ 但你要是问那些一直在用 claude -p 和 Agent Quote: Starting June 15, paid Claude plans can claim a dedicated monthly credit for programmatic usage. The credit covers"
+                    - generic [ref=e1094] [box=278,5530,417,26]:
+                      - generic [ref=e1095] [box=286,5531,32,15]: 1 天前
+                      - generic [ref=e1096] [box=613,5530,74,18]:
+                        - button "添加收藏" [ref=e1097] [cursor=pointer] [box=613,5530,26,18]:
+                          - img [ref=e1098] [box=619,5532,14,14]
+                        - link "查看原文" [ref=e1100] [cursor=pointer] [box=643,5531,44,15]:
+                          - /url: https://x.com/AYi_AInotes/status/2054634985814970839
+              - article [ref=e1101] [box=741,3290,469,380]:
+                - generic [ref=e1102] [box=754,3299,443,60]:
+                  - generic [ref=e1103] [box=770,3311,70,35]:
+                    - heading "饼干哥哥AGI" [level=3] [ref=e1104] [box=770,3311,70,18]
+                    - paragraph [ref=e1105] [box=770,3331,70,15]: wechat
+                  - generic [ref=e1106] [box=1176,3299,24,20]: "65"
+                - generic [ref=e1107] [box=754,3359,443,34]:
+                  - generic [ref=e1108] [box=770,3367,78,18]:
+                    - generic [ref=e1109] [box=770,3367,24,18]: "65"
+                    - generic [ref=e1110] [box=798,3368,49,15]: 总更新 65
+                  - generic [ref=e1111] [box=1136,3368,44,15]: 采集正常
+                - generic [ref=e1114] [box=762,3393,427,102]:
+                  - generic [ref=e1117] [cursor=pointer] [box=787,3402,393,58]:
+                    - generic [ref=e1118] [box=787,3402,393,18]: 悟空官宣放量了，利好AI打工人
+                    - paragraph [ref=e1119] [box=787,3420,393,40]: "上个月抢不到悟空邀请码我是愁眉苦脸。这一周突然发现好拿了，我是心高气傲。 昨晚刷到别人发的阿里财报出来才知道：好家伙，人家官宣放量了。 这让我想到钉钉总部连logo都换成悟空了，还有网友评论说这是商战，因为孙悟空棒打出头鸟（飞书）。 真是笑死我了！！ 那接入悟空能少多少活，有没有钉钉生态的办公人来分享下体验呢？ <a class=\"wx_topic_link\" topic-id=\"mp5axp7j-tj8mrg\" style=\"color: #576B95 !important;\" data-topic=\"1\" data-recommend=\"\">#悟空</a> <a class=\"wx_topic_link\" topic-id=\"mp5axp7j-tla2ca\" style=\"color: #576B95 !important;\" data-topic=\"1\" data-recommend=\"\">#钉钉</a> <a class=\"wx_topic_link\" topic-id=\"mp5axp7j-vnpbka\" style=\"color: #576B95 !important;\" data-topic=\"1\" data-recommend=\"\">#企业AI</a> <a class=\"wx_topic_link\" topic-id=\"mp5axp7j-b82ie2\" style=\"color: #576B95 !important;\" data-topic=\"1\" data-recommend=\"\">#阿里AI</a> <a class=\"wx_topic_link\" topic-id=\"mp5axp7j-hswo8t\" style=\"color: #576B95 !important;\" data-topic=\"1\" data-recommend=\"\">#AI</a> Agent <a class=\"wx_topic_link\" topic-id=\"mp5axp7j-rbmsos\" style=\"color: #576B95 !important;\" data-topic=\"1\" data-recommend=\"\">#办公效率</a> <a class=\"wx_topic_link\" topic-id=\"mp5axp7j-xafj5f\" style=\"color: #576B95 !important;\" data-topic=\"1\" data-recommend=\"\">#财报</a> <a class=\"wx_topic_link\" topic-id=\"mp5axp7k-rr3ej1\" style=\"color: #576B95 !important;\" data-topic=\"1\" data-recommend=\"\">#飞书</a>"
+                  - generic [ref=e1120] [box=763,3468,425,26]:
+                    - generic [ref=e1121] [box=771,3469,49,15]: 14 小时前
+                    - generic [ref=e1122] [box=1105,3468,74,18]:
+                      - button "添加收藏" [ref=e1123] [cursor=pointer] [box=1105,3468,26,18]:
+                        - img [ref=e1124] [box=1111,3470,14,14]
+                      - link "查看原文" [ref=e1126] [cursor=pointer] [box=1135,3469,44,15]:
+                        - /url: https://mp.weixin.qq.com/s/nVP1A0Kr3zeSuvsi2H2lfA
+              - article [ref=e1127] [box=256,3686,469,380]:
+                - generic [ref=e1128] [box=269,3695,443,60]:
+                  - generic [ref=e1129] [box=285,3707,42,35]:
+                    - heading "APPSO" [level=3] [ref=e1130] [box=285,3707,42,18]
+                    - paragraph [ref=e1131] [box=285,3727,42,15]: wechat
+                  - generic [ref=e1132] [box=684,3695,32,20]: 99+
+                - generic [ref=e1133] [box=269,3755,443,34]:
+                  - generic [ref=e1134] [box=285,3763,92,18]:
+                    - generic [ref=e1135] [box=285,3763,32,18]: 99+
+                    - generic [ref=e1136] [box=321,3764,56,15]: 总更新 115
+                  - generic [ref=e1137] [box=652,3764,44,15]: 采集正常
+                - generic [ref=e1139] [box=277,3789,419,390]:
+                  - generic [ref=e1140] [box=277,3789,419,82]:
+                    - generic [ref=e1143] [cursor=pointer] [box=302,3798,385,38]:
+                      - generic [ref=e1144] [box=302,3798,385,18]: 年薪210万，招一个AI「布道者」
+                      - paragraph [ref=e1145] [box=302,3816,385,20]: 极度的坦诚，就是最高级的布道。
+                    - generic [ref=e1146] [box=278,3844,417,26]:
+                      - generic [ref=e1147] [box=286,3845,49,15]: 17 小时前
+                      - generic [ref=e1148] [box=613,3844,74,18]:
+                        - button "添加收藏" [ref=e1149] [cursor=pointer] [box=613,3844,26,18]:
+                          - img [ref=e1150] [box=619,3846,14,14]
+                        - link "查看原文" [ref=e1152] [cursor=pointer] [box=643,3845,44,15]:
+                          - /url: https://mp.weixin.qq.com/s/1NApxHVzwEeiyeDWGYNHtw
+                  - generic [ref=e1153] [box=277,3879,419,82]:
+                    - generic [ref=e1156] [cursor=pointer] [box=302,3888,385,38]:
+                      - generic [ref=e1157] [box=302,3888,385,18]: 杀死 ChatGPT 聊天框的，是「鼠标」
+                      - paragraph [ref=e1158] [box=302,3906,385,20]: AI 交互的尽头是「指手画脚」。
+                    - generic [ref=e1159] [box=278,3934,417,26]:
+                      - generic [ref=e1160] [box=286,3935,49,15]: 19 小时前
+                      - generic [ref=e1161] [box=613,3934,74,18]:
+                        - button "添加收藏" [ref=e1162] [cursor=pointer] [box=613,3934,26,18]:
+                          - img [ref=e1163] [box=619,3936,14,14]
+                        - link "查看原文" [ref=e1165] [cursor=pointer] [box=643,3935,44,15]:
+                          - /url: https://mp.weixin.qq.com/s/8ApwKS3dFIJ4ckb5EVF_AA
+                  - generic [ref=e1166] [box=277,3969,419,82]:
+                    - generic [ref=e1169] [cursor=pointer] [box=302,3978,385,38]:
+                      - generic [ref=e1170] [box=302,3978,385,18]: 刚刚，全AI圈疯抢的田渊栋官宣创业，黄仁勋也投了
+                      - paragraph [ref=e1171] [box=302,3996,385,20]: 田渊栋杀回 AI 牌桌
+                    - generic [ref=e1172] [box=278,4024,417,26]:
+                      - generic [ref=e1173] [box=286,4025,32,15]: 1 天前
+                      - generic [ref=e1174] [box=613,4024,74,18]:
+                        - button "添加收藏" [ref=e1175] [cursor=pointer] [box=613,4024,26,18]:
+                          - img [ref=e1176] [box=619,4026,14,14]
+                        - link "查看原文" [ref=e1178] [cursor=pointer] [box=643,4025,44,15]:
+                          - /url: https://mp.weixin.qq.com/s/Us7HirSRgqlVDxjcXwHUFA
+                  - generic [ref=e1179] [box=277,4059,419,120]:
+                    - generic [ref=e1182] [cursor=pointer] [box=302,4068,385,76]:
+                      - generic [ref=e1183] [box=302,4068,385,36]: 马斯克：只有我和黄仁勋坐上空军一号/微信聊天记录可一键总结/马化腾回应腾讯AI落后质疑
+                      - paragraph [ref=e1184] [box=302,4104,385,40]: · MacBook Neo 推高销量，苹果笔记本一季度线上市占升至 13% · 比亚迪回应推「车机屏幕小换大」服务 · Charli xcx 成为 Nothing 首位全球品牌大使
+                    - generic [ref=e1185] [box=278,4152,417,26]:
+                      - generic [ref=e1186] [box=286,4153,32,15]: 1 天前
+                      - generic [ref=e1187] [box=613,4152,74,18]:
+                        - button "添加收藏" [ref=e1188] [cursor=pointer] [box=613,4152,26,18]:
+                          - img [ref=e1189] [box=619,4154,14,14]
+                        - link "查看原文" [ref=e1191] [cursor=pointer] [box=643,4153,44,15]:
+                          - /url: https://mp.weixin.qq.com/s/P95g0WjCCFGMvtrG3j80PA
+              - article [ref=e1192] [box=741,3686,469,380]:
+                - generic [ref=e1193] [box=754,3695,443,60]:
+                  - generic [ref=e1194] [box=770,3707,84,35]:
+                    - heading "香帅的金融江湖" [level=3] [ref=e1195] [box=770,3707,84,18]
+                    - paragraph [ref=e1196] [box=770,3727,84,15]: wechat
+                  - generic [ref=e1197] [box=1176,3695,24,20]: "82"
+                - generic [ref=e1198] [box=754,3755,443,34]:
+                  - generic [ref=e1199] [box=770,3763,78,18]:
+                    - generic [ref=e1200] [box=770,3763,24,18]: "82"
+                    - generic [ref=e1201] [box=798,3764,49,15]: 总更新 82
+                  - generic [ref=e1202] [box=1136,3764,44,15]: 采集正常
+                - generic [ref=e1205] [box=762,3789,419,566]:
+                  - generic [ref=e1209] [cursor=pointer] [box=787,3798,385,522]: 特朗普今天这一趟，最重要的信息已经确认——双方同意把“中美建设性战略稳定关系”作为未来3年乃至更长时间中美关系的新定位。 会谈通稿里这句看似平静的外交辞令，我反复读了好几遍，越读越觉得分量重。 我2022年提出“岛链化”这个说法的时候说过，全球一体化的平坦大市场已经在瓦解，世界正在分裂成几个大岛，中美是最大的两座。这一次的“建设性战略稳定关系”，其实不是把岛和岛重新拼回大陆，而是承认岛链化已成定局之后，两座最大的岛之间，第一次正式约定要修一条相对稳定的航道——合作为主的积极稳定、竞争有度的良性稳定、分歧可控的常态稳定。这是一个时代级别的秩序信号：大国接受了彼此独立的存在，然后开始为这种独立配上规则。 但秩序之上，博弈一刻没停。 刚刚路透社说，美国批准10家中国企业向英伟达采购H200芯片，黄仁勋本人就在随访的工商代表团里，亲自向白宫游说突破。要知道，英伟达在中国本土AI芯片市场份额已从四年前的95%跌到了50%（2025年5月），后因H20被禁已降至0%。 放在三年前，这个故事的剧本会是美国封锁→中国受困。但今天的剧本，正在被改写—— DeepSeek之后，中国AI已经走完了从“卡位全球生产网络”到“形成本土生产网络”的关键一跃，正在向“构建中国主导的跨国生产网络”演进。换句话说，当美国还在用一张芯片清单来“组织”全球AI产业链时，中国的算力、模型、应用、出海四件套，已经长出了自己的一张网。 另一个值得注意的信息，是这两天的财报上——比亚迪Q1净利润同比腰斩、单季汇兑损失21亿；宁德时代财务费用同比翻倍；昨晚出炉的腾讯Q1业绩，Non-IFRS经营利润增速仅9%，部分被汇率因素侵蚀。 这些事和我们普通家庭有什么关系？ 中美关系重定位、生产网络外溢、人民币升值——三股力量会沿着汇率、利率、产业政策、跨境清算一路传导，最终落到你的人民币账户、其他资产账户上。任何一个家庭的资产配置，都需要一张新的坐标系——岛链化的坐标系。 那在这张坐标系里，怎么把“博弈”变成“确定性”？我反复打磨，总结成四句话： 第一， 底线思维。 第二， 多元分散。 第三， 以支出定义安全。 第四， 用好“接口”。 我会把这四件事掰开讲透。 「共潮生·香港专场」倒计时1天。 明天，我们香港见。
+                  - generic [ref=e1210] [box=763,4328,417,26]:
+                    - generic [ref=e1211] [box=771,4329,49,15]: 17 小时前
+                    - generic [ref=e1212] [box=1097,4328,74,18]:
+                      - button "添加收藏" [ref=e1213] [cursor=pointer] [box=1097,4328,26,18]:
+                        - img [ref=e1214] [box=1103,4330,14,14]
+                      - link "查看原文" [ref=e1216] [cursor=pointer] [box=1127,4329,44,15]:
+                        - /url: https://mp.weixin.qq.com/s/LqGE0h6fT-wbCpC7Ejm1EQ
+              - article [ref=e1217] [box=256,4082,469,380]:
+                - generic [ref=e1218] [box=269,4091,443,78]:
+                  - generic [ref=e1219] [box=285,4103,411,53]:
+                    - heading "lidang 立党 （劝人卖房/学CS/买SP500/纳100/OpenAI/Anthrop第一人）" [level=3] [ref=e1220] [box=285,4103,411,36]
+                    - paragraph [ref=e1221] [box=285,4141,411,15]: x
+                  - generic [ref=e1222] [box=691,4091,24,20]: "67"
+                - generic [ref=e1223] [box=269,4169,443,34]:
+                  - generic [ref=e1224] [box=285,4177,78,18]:
+                    - generic [ref=e1225] [box=285,4177,24,18]: "67"
+                    - generic [ref=e1226] [box=313,4178,49,15]: 总更新 67
+                  - generic [ref=e1227] [box=652,4178,44,15]: 采集正常
+                - generic [ref=e1229] [box=277,4203,419,630]:
+                  - generic [ref=e1230] [box=277,4203,419,156]:
+                    - generic [ref=e1233] [cursor=pointer] [box=302,4212,385,112]:
+                      - generic [ref=e1234] [box=302,4212,385,72]: "lidang 立党 （劝人卖房/学CS/买SP500/纳100/OpenAI/Anthrop第一人）: 看了figure AI的youtube直播，看了10分钟，大概得出结论： 1. figure AI完全没有解决灵巧手的问题，直播全程双手翻转快递袋和快递盒；"
+                      - paragraph [ref=e1235] [box=302,4284,385,40]: 看了figure AI的youtube直播，看了10分钟，大概得出结论： 1. figure AI完全没有解决灵巧手的问题，直播全程双手翻转快递袋和快递盒； 2. figure AI直播翻快递的功能，跟他们在官网放的demo和口号相去甚远，宣传远远大于实际； 3. 你可以观察figure AI的投资人，绝大多数硅谷VC和我的结论基本一致。
+                    - generic [ref=e1236] [box=278,4332,417,26]:
+                      - generic [ref=e1237] [box=286,4333,49,15]: 17 小时前
+                      - generic [ref=e1238] [box=613,4332,74,18]:
+                        - button "添加收藏" [ref=e1239] [cursor=pointer] [box=613,4332,26,18]:
+                          - img [ref=e1240] [box=619,4334,14,14]
+                        - link "查看原文" [ref=e1242] [cursor=pointer] [box=643,4333,44,15]:
+                          - /url: https://x.com/lidangzzz/status/2054840631466299573
+                  - generic [ref=e1243] [box=277,4367,419,138]:
+                    - generic [ref=e1246] [cursor=pointer] [box=302,4376,385,94]:
+                      - generic [ref=e1247] [box=302,4376,385,54]: "lidang 立党 （劝人卖房/学CS/买SP500/纳100/OpenAI/Anthrop第一人）: 几乎每天都有封神的AI短剧火遍全网。 艺术家和编剧在这个时代是最幸福的，因为他们拥有了最伟大、最平权、最大影响力的创作工具。"
+                      - paragraph [ref=e1248] [box=302,4430,385,40]: 几乎每天都有封神的AI短剧火遍全网。 艺术家和编剧在这个时代是最幸福的，因为他们拥有了最伟大、最平权、最大影响力的创作工具。
+                    - generic [ref=e1249] [box=278,4478,417,26]:
+                      - generic [ref=e1250] [box=286,4479,49,15]: 20 小时前
+                      - generic [ref=e1251] [box=613,4478,74,18]:
+                        - button "添加收藏" [ref=e1252] [cursor=pointer] [box=613,4478,26,18]:
+                          - img [ref=e1253] [box=619,4480,14,14]
+                        - link "查看原文" [ref=e1255] [cursor=pointer] [box=643,4479,44,15]:
+                          - /url: https://x.com/lidangzzz/status/2054809149225988479
+                  - generic [ref=e1256] [box=277,4513,419,156]:
+                    - generic [ref=e1259] [cursor=pointer] [box=302,4522,385,112]:
+                      - generic [ref=e1260] [box=302,4522,385,72]: "lidang 立党 （劝人卖房/学CS/买SP500/纳100/OpenAI/Anthrop第一人）: 我再说一个暴论， 中国在医疗LLM、u-net读片子读核磁、医疗LLM Agent搭建，相比美国和全世界而言，拥有巨大优势。 原因很简单，中国病人多，病人数"
+                      - paragraph [ref=e1261] [box=302,4594,385,40]: 我再说一个暴论， 中国在医疗LLM、u-net读片子读核磁、医疗LLM Agent搭建，相比美国和全世界而言，拥有巨大优势。 原因很简单，中国病人多，病人数据用于research和商业化用途的隐私也没有美国苛刻， 只要保障单个病人实名隐私，一个郑大一附属的可用数据，就能比全世界其他200个国家加起来还多。
+                    - generic [ref=e1262] [box=278,4642,417,26]:
+                      - generic [ref=e1263] [box=286,4643,49,15]: 21 小时前
+                      - generic [ref=e1264] [box=613,4642,74,18]:
+                        - button "添加收藏" [ref=e1265] [cursor=pointer] [box=613,4642,26,18]:
+                          - img [ref=e1266] [box=619,4644,14,14]
+                        - link "查看原文" [ref=e1268] [cursor=pointer] [box=643,4643,44,15]:
+                          - /url: https://x.com/lidangzzz/status/2054785133643809272
+                  - generic [ref=e1269] [box=277,4677,419,156]:
+                    - generic [ref=e1272] [cursor=pointer] [box=302,4686,385,112]:
+                      - generic [ref=e1273] [box=302,4686,385,72]: "lidang 立党 （劝人卖房/学CS/买SP500/纳100/OpenAI/Anthrop第一人）: AI焦虑的本质是中老年焦虑。 一个精力无限、有好奇心的年轻人，开着3个claude code，使用goal driven一次跑100小时，同时开着ChatGP"
+                      - paragraph [ref=e1274] [box=302,4758,385,40]: AI焦虑的本质是中老年焦虑。 一个精力无限、有好奇心的年轻人，开着3个claude code，使用goal driven一次跑100小时，同时开着ChatGPT、claude，零散时间刷刷推特，每天上手两三个新工具， 一个彻底失去欲望、没有精力、睡眠不足、学习能力为0、油盐不进的滚刀肉中老年人，已经几乎被AI斩杀了，
+                    - generic [ref=e1275] [box=278,4806,417,26]:
+                      - generic [ref=e1276] [box=286,4807,49,15]: 23 小时前
+                      - generic [ref=e1277] [box=613,4806,74,18]:
+                        - button "添加收藏" [ref=e1278] [cursor=pointer] [box=613,4806,26,18]:
+                          - img [ref=e1279] [box=619,4808,14,14]
+                        - link "查看原文" [ref=e1281] [cursor=pointer] [box=643,4807,44,15]:
+                          - /url: https://x.com/lidangzzz/status/2054749651115405527
+              - article [ref=e1282] [box=741,4082,469,380]:
+                - generic [ref=e1283] [box=754,4091,443,60]:
+                  - generic [ref=e1284] [box=770,4103,37,35]:
+                    - heading "逛逛" [level=3] [ref=e1285] [box=770,4103,37,18]
+                    - paragraph [ref=e1286] [box=770,4123,37,15]: wechat
+                  - generic [ref=e1287] [box=1176,4091,24,20]: "50"
+                - generic [ref=e1288] [box=754,4151,443,34]:
+                  - generic [ref=e1289] [box=770,4159,78,18]:
+                    - generic [ref=e1290] [box=770,4159,24,18]: "50"
+                    - generic [ref=e1291] [box=798,4160,49,15]: 总更新 50
+                  - generic [ref=e1292] [box=1136,4160,44,15]: 采集正常
+                - generic [ref=e1295] [box=762,4185,427,62]:
+                  - generic [ref=e1298] [cursor=pointer] [box=771,4194,409,18]: 强烈推荐看看这个演讲，还配套 7 万 Star 的开源 Skill。
+                  - generic [ref=e1299] [box=763,4220,425,26]:
+                    - generic [ref=e1300] [box=771,4221,49,15]: 18 小时前
+                    - generic [ref=e1301] [box=1105,4220,74,18]:
+                      - button "添加收藏" [ref=e1302] [cursor=pointer] [box=1105,4220,26,18]:
+                        - img [ref=e1303] [box=1111,4222,14,14]
+                      - link "查看原文" [ref=e1305] [cursor=pointer] [box=1135,4221,44,15]:
+                        - /url: https://mp.weixin.qq.com/s/5J6OfK7MxqUY32OtRL5Aiw
+              - article [ref=e1306] [box=256,4478,469,380]:
+                - generic [ref=e1307] [box=269,4487,443,60]:
+                  - generic [ref=e1308] [box=285,4499,72,35]:
+                    - heading "太阳照常升起" [level=3] [ref=e1309] [box=285,4499,72,18]
+                    - paragraph [ref=e1310] [box=285,4519,72,15]: wechat
+                  - generic [ref=e1311] [box=691,4487,24,20]: "75"
+                - generic [ref=e1312] [box=269,4547,443,34]:
+                  - generic [ref=e1313] [box=285,4555,78,18]:
+                    - generic [ref=e1314] [box=285,4555,24,18]: "75"
+                    - generic [ref=e1315] [box=313,4556,49,15]: 总更新 75
+                  - generic [ref=e1316] [box=652,4556,44,15]: 采集正常
+                - generic [ref=e1319] [box=277,4581,427,82]:
+                  - generic [ref=e1321] [cursor=pointer] [box=286,4590,409,38]:
+                    - generic [ref=e1322] [box=286,4590,409,18]: 为美国的读者写一篇
+                    - paragraph [ref=e1323] [box=286,4608,409,20]: 与君远相知
+                  - generic [ref=e1324] [box=278,4636,425,26]:
+                    - generic [ref=e1325] [box=286,4637,49,15]: 20 小时前
+                    - generic [ref=e1326] [box=621,4636,74,18]:
+                      - button "添加收藏" [ref=e1327] [cursor=pointer] [box=621,4636,26,18]:
+                        - img [ref=e1328] [box=627,4638,14,14]
+                      - link "查看原文" [ref=e1330] [cursor=pointer] [box=651,4637,44,15]:
+                        - /url: https://mp.weixin.qq.com/s/9SZoNWt1Uh8Ftikj4FSxEA
+              - article [ref=e1331] [box=741,4478,469,380]:
+                - generic [ref=e1332] [box=754,4487,443,60]:
+                  - generic [ref=e1333] [box=770,4499,84,35]:
+                    - heading "数字生命卡兹克" [level=3] [ref=e1334] [box=770,4499,84,18]
+                    - paragraph [ref=e1335] [box=770,4519,84,15]: wechat
+                  - generic [ref=e1336] [box=1176,4487,24,20]: "53"
+                - generic [ref=e1337] [box=754,4547,443,34]:
+                  - generic [ref=e1338] [box=770,4555,78,18]:
+                    - generic [ref=e1339] [box=770,4555,24,18]: "53"
+                    - generic [ref=e1340] [box=798,4556,49,15]: 总更新 53
+                  - generic [ref=e1341] [box=1136,4556,44,15]: 采集正常
+                - generic [ref=e1344] [box=762,4581,427,82]:
+                  - generic [ref=e1346] [cursor=pointer] [box=771,4590,409,38]:
+                    - generic [ref=e1347] [box=771,4590,409,18]: 现在，你可以在手机上用AI生成一个APP了。
+                    - paragraph [ref=e1348] [box=771,4608,409,20]: 我妈也能搓
+                  - generic [ref=e1349] [box=763,4636,425,26]:
+                    - generic [ref=e1350] [box=771,4637,49,15]: 22 小时前
+                    - generic [ref=e1351] [box=1105,4636,74,18]:
+                      - button "添加收藏" [ref=e1352] [cursor=pointer] [box=1105,4636,26,18]:
+                        - img [ref=e1353] [box=1111,4638,14,14]
+                      - link "查看原文" [ref=e1355] [cursor=pointer] [box=1135,4637,44,15]:
+                        - /url: https://mp.weixin.qq.com/s/pBVkWV5r8IPMLwZWMFrPCw
+              - article [ref=e1356] [box=256,4874,469,380]:
+                - generic [ref=e1357] [box=269,4883,443,60]:
+                  - generic [ref=e1358] [box=285,4895,29,35]:
+                    - heading "芯芯" [level=3] [ref=e1359] [box=285,4895,29,18]
+                    - paragraph [ref=e1360] [box=285,4915,29,15]: zhihu
+                  - generic [ref=e1361] [box=691,4883,24,20]: "12"
+                - generic [ref=e1362] [box=269,4943,443,34]:
+                  - generic [ref=e1363] [box=285,4951,78,18]:
+                    - generic [ref=e1364] [box=285,4951,24,18]: "12"
+                    - generic [ref=e1365] [box=313,4952,49,15]: 总更新 12
+                  - generic [ref=e1366] [box=652,4952,44,15]: 采集正常
+                - generic [ref=e1369] [box=277,4977,427,120]:
+                  - generic [ref=e1371] [cursor=pointer] [box=286,4986,409,76]:
+                    - generic [ref=e1372] [box=286,4986,409,36]: 发布了想法2026-05-14 11:52芯芯我无数次，泪流满面。其实我写了。 但。直接进黑屋了。…阅读全文发布于2026-05-14 11:52赞同 9
+                    - paragraph [ref=e1373] [box=286,5022,409,40]: 发布了想法2026-05-14 11:52芯芯我无数次，泪流满面。其实我写了。 但。直接进黑屋了。…阅读全文发布于2026-05-14 11:52赞同 9145 条评论8 喜欢分享
+                  - generic [ref=e1374] [box=278,5070,425,26]:
+                    - generic [ref=e1375] [box=286,5071,49,15]: 22 小时前
+                    - generic [ref=e1376] [box=621,5070,74,18]:
+                      - button "添加收藏" [ref=e1377] [cursor=pointer] [box=621,5070,26,18]:
+                        - img [ref=e1378] [box=627,5072,14,14]
+                      - link "查看原文" [ref=e1380] [cursor=pointer] [box=651,5071,44,15]:
+                        - /url: https://www.zhihu.com/people/rui-xun-98
+              - article [ref=e1381] [box=741,4874,469,380]:
+                - generic [ref=e1382] [box=754,4883,443,60]:
+                  - generic [ref=e1383] [box=770,4895,48,35]:
+                    - heading "谷大白话" [level=3] [ref=e1384] [box=770,4895,48,18]
+                    - paragraph [ref=e1385] [box=770,4915,48,15]: weibo
+                  - generic [ref=e1386] [box=1176,4883,24,20]: "20"
+                - generic [ref=e1387] [box=754,4943,443,34]:
+                  - generic [ref=e1388] [box=770,4951,78,18]:
+                    - generic [ref=e1389] [box=770,4951,24,18]: "20"
+                    - generic [ref=e1390] [box=798,4952,49,15]: 总更新 20
+                  - generic [ref=e1391] [box=1136,4952,44,15]: 采集正常
+                - generic [ref=e1393] [box=762,4977,419,320]:
+                  - generic [ref=e1394] [box=762,4977,419,120]:
+                    - generic [ref=e1396] [cursor=pointer] [box=771,4986,401,76]:
+                      - generic [ref=e1397] [box=771,4986,401,36]: "谷大白话: 哈哈最近推特上看到好多，特别逼真！可灵靠着这棒球特效登顶了42国AppStore 总榜…… 查看图片"
+                      - paragraph [ref=e1398] [box=771,5022,401,40]: "哈哈最近推特上看到好多，特别逼真！可灵靠着这棒球特效登顶了42国AppStore 总榜…… 查看图片 | 最近韩国棒球女孩的AI视频在海外特别火，国内各种社交平台上也全都是，我实验了一下怎么做出那种效果，供大家参考。 #AI创作营# #微博V创作中心# 路径1:懒人手法，直接使用可灵AI的特效模板，找自己的图，直接拉到可灵特效模板里，就可以解决了，好处是还原度非常高，不用动手。坏处是它是写死的程序， ... 全文 | reposts 29 | comments 7 | likes 83"
+                    - generic [ref=e1399] [box=763,5070,417,26]:
+                      - generic [ref=e1400] [box=771,5071,49,15]: 23 小时前
+                      - generic [ref=e1401] [box=1097,5070,74,18]:
+                        - button "添加收藏" [ref=e1402] [cursor=pointer] [box=1097,5070,26,18]:
+                          - img [ref=e1403] [box=1103,5072,14,14]
+                        - link "查看原文" [ref=e1405] [cursor=pointer] [box=1127,5071,44,15]:
+                          - /url: https://m.weibo.cn/status/QFiK3m9Si?mblogid=QFiK3m9Si&launchid=10000360-page_H5
+                  - generic [ref=e1406] [box=762,5105,419,102]:
+                    - generic [ref=e1409] [cursor=pointer] [box=787,5114,385,58]:
+                      - generic [ref=e1410] [box=787,5114,385,18]: "谷大白话: 诶？// @万钟来 :普京抵川"
+                      - paragraph [ref=e1411] [box=787,5132,385,40]: 诶？// @万钟来 :普京抵川 | 白宫官号发的川普抵京视频 | reposts 62 | comments 26 | likes 204
+                    - generic [ref=e1412] [box=763,5180,417,26]:
+                      - generic [ref=e1413] [box=771,5181,32,15]: 1 天前
+                      - generic [ref=e1414] [box=1097,5180,74,18]:
+                        - button "添加收藏" [ref=e1415] [cursor=pointer] [box=1097,5180,26,18]:
+                          - img [ref=e1416] [box=1103,5182,14,14]
+                        - link "查看原文" [ref=e1418] [cursor=pointer] [box=1127,5181,44,15]:
+                          - /url: https://m.weibo.cn/status/QFhpXv466?mblogid=QFhpXv466&launchid=10000360-page_H5
+                  - generic [ref=e1419] [box=762,5215,419,82]:
+                    - generic [ref=e1422] [cursor=pointer] [box=787,5224,385,38]:
+                      - generic [ref=e1423] [box=787,5224,385,18]: "谷大白话: 白宫官号发的川普抵京视频"
+                      - paragraph [ref=e1424] [box=787,5242,385,20]: 白宫官号发的川普抵京视频 | reposts 916 | comments 200 | likes 5067
+                    - generic [ref=e1425] [box=763,5270,417,26]:
+                      - generic [ref=e1426] [box=771,5271,32,15]: 1 天前
+                      - generic [ref=e1427] [box=1097,5270,74,18]:
+                        - button "添加收藏" [ref=e1428] [cursor=pointer] [box=1097,5270,26,18]:
+                          - img [ref=e1429] [box=1103,5272,14,14]
+                        - link "查看原文" [ref=e1431] [cursor=pointer] [box=1127,5271,44,15]:
+                          - /url: https://m.weibo.cn/status/QFh688EFT?mblogid=QFh688EFT&launchid=10000360-page_H5
+              - article [ref=e1432] [box=256,5270,469,380]:
+                - generic [ref=e1433] [box=269,5279,443,60]:
+                  - generic [ref=e1434] [box=285,5291,73,35]:
+                    - heading "袋鼠帝AI客栈" [level=3] [ref=e1435] [box=285,5291,73,18]
+                    - paragraph [ref=e1436] [box=285,5311,73,15]: wechat
+                  - generic [ref=e1437] [box=691,5279,24,20]: "65"
+                - generic [ref=e1438] [box=269,5339,443,34]:
+                  - generic [ref=e1439] [box=285,5347,78,18]:
+                    - generic [ref=e1440] [box=285,5347,24,18]: "65"
+                    - generic [ref=e1441] [box=313,5348,49,15]: 总更新 65
+                  - generic [ref=e1442] [box=652,5348,44,15]: 采集正常
+                - generic [ref=e1445] [box=277,5373,427,82]:
+                  - generic [ref=e1448] [cursor=pointer] [box=302,5382,393,38]:
+                    - generic [ref=e1449] [box=302,5382,393,18]: 我的一人公司AI视频团队，被腾讯收编了
+                    - paragraph [ref=e1450] [box=302,5400,393,20]: 开源「产品宣传片」.skill，可以自动生成任何产品的宣传片～
+                  - generic [ref=e1451] [box=278,5428,425,26]:
+                    - generic [ref=e1452] [box=286,5429,32,15]: 1 天前
+                    - generic [ref=e1453] [box=621,5428,74,18]:
+                      - button "添加收藏" [ref=e1454] [cursor=pointer] [box=621,5428,26,18]:
+                        - img [ref=e1455] [box=627,5430,14,14]
+                      - link "查看原文" [ref=e1457] [cursor=pointer] [box=651,5429,44,15]:
+                        - /url: https://mp.weixin.qq.com/s/dmOmsHrm3vhLgl7vSWcIfg
+              - article [ref=e1458] [box=741,5270,469,380]:
+                - generic [ref=e1459] [box=754,5279,443,60]:
+                  - generic [ref=e1460] [box=770,5291,72,35]:
+                    - heading "寒武纪的鳄鱼" [level=3] [ref=e1461] [box=770,5291,72,18]
+                    - paragraph [ref=e1462] [box=770,5311,72,15]: zhihu
+                  - generic [ref=e1463] [box=1176,5279,24,20]: "26"
+                - generic [ref=e1464] [box=754,5339,443,34]:
+                  - generic [ref=e1465] [box=770,5347,78,18]:
+                    - generic [ref=e1466] [box=770,5347,24,18]: "26"
+                    - generic [ref=e1467] [box=798,5348,49,15]: 总更新 26
+                  - generic [ref=e1468] [box=1136,5348,44,15]: 采集正常
+                - generic [ref=e1471] [box=762,5373,427,120]:
+                  - generic [ref=e1474] [cursor=pointer] [box=787,5382,393,76]:
+                    - generic [ref=e1475] [box=787,5382,393,36]: 股市明明价值投资长持吃息就稳赚，为什么还会出现“七负二平一胜”的说法？
+                    - paragraph [ref=e1476] [box=787,5418,393,40]: 回答了问题2026-05-14 07:44股市明明价值投资长持吃息就稳赚，为什么还会出现“七负二平一胜”的说法？寒武纪的鳄鱼二级市场，职业投资如果你这个策略可以不受那些每天大涨的板块的影响，可以长期坚持下去。以后必然极其富有。 但是在这个市场上，大部分人既不有相信价值，也不相信有投资功能，更无法长期持有。…阅读全文赞同 309115 条评论收藏喜欢分享
+                  - generic [ref=e1477] [box=763,5466,425,26]:
+                    - generic [ref=e1478] [box=771,5467,32,15]: 1 天前
+                    - generic [ref=e1479] [box=1105,5466,74,18]:
+                      - button "添加收藏" [ref=e1480] [cursor=pointer] [box=1105,5466,26,18]:
+                        - img [ref=e1481] [box=1111,5468,14,14]
+                      - link "查看原文" [ref=e1483] [cursor=pointer] [box=1135,5467,44,15]:
+                        - /url: https://www.zhihu.com/question/2003270282236949474/answer/2038162665193919605
+              - article [ref=e1484] [box=256,5666,469,380]:
+                - generic [ref=e1485] [box=269,5675,443,60]:
+                  - generic [ref=e1486] [box=285,5687,56,35]:
+                    - heading "MR Dang" [level=3] [ref=e1487] [box=285,5687,56,18]
+                    - paragraph [ref=e1488] [box=285,5707,56,15]: zhihu
+                  - generic [ref=e1489] [box=691,5675,24,20]: "33"
+                - generic [ref=e1490] [box=269,5735,443,34]:
+                  - generic [ref=e1491] [box=285,5743,78,18]:
+                    - generic [ref=e1492] [box=285,5743,24,18]: "33"
+                    - generic [ref=e1493] [box=313,5744,49,15]: 总更新 33
+                  - generic [ref=e1494] [box=652,5744,44,15]: 采集正常
+                - generic [ref=e1497] [box=277,5769,427,102]:
+                  - generic [ref=e1500] [cursor=pointer] [box=302,5778,393,58]:
+                    - generic [ref=e1501] [box=302,5778,393,18]: 如何评价2026年5月14日A股行情？
+                    - paragraph [ref=e1502] [box=302,5796,393,40]: 回答了问题2026-05-14 07:33如何评价2026年5月14日A股行情？MR Dang知势榜经济与管理领域影响力榜答主昨天CPI，今天PPI： 西大公布的核心PPI数据比CPI还超预期，达到了5.2％，比前值4％和预期4.3％都高了很多。 这还只是核心的，普通PPI更是达到了6％。 PPI是CPI的先行指标，大概领先三五个月。 这么炸的PPI会导致接下来的CPI持续升高，推高通胀，进一步降低降息预期，甚至带来加息的讨论。 对黄金不是好消息，对股…阅读全文赞同 472376 条评论收藏喜欢分享
+                  - generic [ref=e1503] [box=278,5844,425,26]:
+                    - generic [ref=e1504] [box=286,5845,32,15]: 1 天前
+                    - generic [ref=e1505] [box=621,5844,74,18]:
+                      - button "添加收藏" [ref=e1506] [cursor=pointer] [box=621,5844,26,18]:
+                        - img [ref=e1507] [box=627,5846,14,14]
+                      - link "查看原文" [ref=e1509] [cursor=pointer] [box=651,5845,44,15]:
+                        - /url: https://www.zhihu.com/question/2037848758654857950/answer/2038159976938607710
+              - article [ref=e1510] [box=741,5666,469,380]:
+                - generic [ref=e1511] [box=754,5675,443,60]:
+                  - generic [ref=e1512] [box=770,5687,122,35]:
+                    - heading "YouTube · @OpenAI" [level=3] [ref=e1513] [box=770,5687,122,18]
+                    - paragraph [ref=e1514] [box=770,5707,122,15]: youtube
+                  - generic [ref=e1515] [box=1176,5675,24,20]: "31"
+                - generic [ref=e1516] [box=754,5735,443,34]:
+                  - generic [ref=e1517] [box=770,5743,78,18]:
+                    - generic [ref=e1518] [box=770,5743,24,18]: "31"
+                    - generic [ref=e1519] [box=798,5744,49,15]: 总更新 31
+                  - generic [ref=e1520] [box=1136,5744,44,15]: 采集正常
+                - generic [ref=e1523] [box=762,5769,427,62]:
+                  - generic [ref=e1527] [cursor=pointer] [box=787,5778,393,18]: "Build Hour: GPT-Realtime-2"
+                  - generic [ref=e1528] [box=763,5804,425,26]:
+                    - generic [ref=e1529] [box=771,5805,32,15]: 1 天前
+                    - generic [ref=e1530] [box=1105,5804,74,18]:
+                      - button "添加收藏" [ref=e1531] [cursor=pointer] [box=1105,5804,26,18]:
+                        - img [ref=e1532] [box=1111,5806,14,14]
+                      - link "查看原文" [ref=e1534] [cursor=pointer] [box=1135,5805,44,15]:
+                        - /url: https://www.youtube.com/watch?v=qGS9Ghnq1RU
+              - article [ref=e1535] [box=256,6062,469,380]:
+                - generic [ref=e1536] [box=269,6071,443,60]:
+                  - generic [ref=e1537] [box=285,6083,63,35]:
+                    - heading "Elon Musk" [level=3] [ref=e1538] [box=285,6083,63,18]
+                    - paragraph [ref=e1539] [box=285,6103,63,15]: x
+                  - generic [ref=e1540] [box=691,6071,24,20]: "33"
+                - generic [ref=e1541] [box=269,6131,443,34]:
+                  - generic [ref=e1542] [box=285,6139,78,18]:
+                    - generic [ref=e1543] [box=285,6139,24,18]: "33"
+                    - generic [ref=e1544] [box=313,6140,49,15]: 总更新 33
+                  - generic [ref=e1545] [box=652,6140,44,15]: 采集正常
+                - generic [ref=e1548] [box=277,6165,427,120]:
+                  - generic [ref=e1551] [cursor=pointer] [box=302,6174,393,76]:
+                    - generic [ref=e1552] [box=302,6174,393,36]: "Elon Musk: Starlink Quote: MrBeast just gave one of the strongest endorsements possible fo"
+                    - paragraph [ref=e1553] [box=302,6210,393,40]: "Starlink Quote: MrBeast just gave one of the strongest endorsements possible for Starlink: “I will only book flights exclusively on planes with Starlink. I don’t care if it means an extra layover - I’ll sit in the back of the plane if it gives me Starlink.” He says Starlink has become the"
+                  - generic [ref=e1554] [box=278,6258,425,26]:
+                    - generic [ref=e1555] [box=286,6259,32,15]: 1 天前
+                    - generic [ref=e1556] [box=621,6258,74,18]:
+                      - button "添加收藏" [ref=e1557] [cursor=pointer] [box=621,6258,26,18]:
+                        - img [ref=e1558] [box=627,6260,14,14]
+                      - link "查看原文" [ref=e1560] [cursor=pointer] [box=651,6259,44,15]:
+                        - /url: https://x.com/elonmusk/status/2054692244259782845
+          - generic [ref=e1561] [box=256,6474,953,2439]:
+            - generic [ref=e1562] [box=256,6474,953,63]:
+              - generic [ref=e1563] [box=256,6474,101,50]:
+                - heading "5月13日" [level=2] [ref=e1564] [box=256,6474,101,28]
+                - paragraph [ref=e1565] [box=256,6506,101,18]: 2026-05-13 · 周三
+              - generic [ref=e1566] [box=1092,6500,117,23]: 12 个订阅源有更新
+            - generic [ref=e1567] [box=256,6553,953,2360]:
+              - article [ref=e1568] [box=256,6553,469,380]:
+                - generic [ref=e1569] [box=269,6562,443,60]:
+                  - generic [ref=e1570] [box=285,6574,63,35]:
+                    - heading "Elon Musk" [level=3] [ref=e1571] [box=285,6574,63,18]
+                    - paragraph [ref=e1572] [box=285,6594,63,15]: x
+                  - generic [ref=e1573] [box=691,6562,24,20]: "33"
+                - generic [ref=e1574] [box=269,6622,443,34]:
+                  - generic [ref=e1575] [box=285,6630,78,18]:
+                    - generic [ref=e1576] [box=285,6630,24,18]: "33"
+                    - generic [ref=e1577] [box=313,6631,49,15]: 总更新 33
+                  - generic [ref=e1578] [box=652,6631,44,15]: 采集正常
+                - generic [ref=e1580] [box=277,6656,419,338]:
+                  - generic [ref=e1581] [box=277,6656,419,120]:
+                    - generic [ref=e1584] [cursor=pointer] [box=302,6665,385,76]:
+                      - generic [ref=e1585] [box=302,6665,385,36]: "Elon Musk: True Quote: To be eligible to win Best Picture at the Oscars… 1. At least 1 No"
+                      - paragraph [ref=e1586] [box=302,6701,385,40]: "True Quote: To be eligible to win Best Picture at the Oscars… 1. At least 1 Non-White/Non-Straight lead or Significant Role. 2. At least 30% minor roles Non-White/Non-Straight people. 3. At least 2 Departments headed by Non-White/Non-Straight people. This is why Nolan did it. Coward."
+                    - generic [ref=e1587] [box=278,6749,417,26]:
+                      - generic [ref=e1588] [box=286,6750,32,15]: 1 天前
+                      - generic [ref=e1589] [box=613,6749,74,18]:
+                        - button "添加收藏" [ref=e1590] [cursor=pointer] [box=613,6749,26,18]:
+                          - img [ref=e1591] [box=619,6751,14,14]
+                        - link "查看原文" [ref=e1593] [cursor=pointer] [box=643,6750,44,15]:
+                          - /url: https://x.com/elonmusk/status/2054579507697504446
+                  - generic [ref=e1594] [box=277,6784,419,82]:
+                    - generic [ref=e1597] [cursor=pointer] [box=302,6793,385,38]:
+                      - generic [ref=e1598] [box=302,6793,385,18]: "Elon Musk: On my way to Beijing in Air Force One"
+                      - paragraph [ref=e1599] [box=302,6811,385,20]: On my way to Beijing in Air Force One
+                    - generic [ref=e1600] [box=278,6839,417,26]:
+                      - generic [ref=e1601] [box=286,6840,32,15]: 1 天前
+                      - generic [ref=e1602] [box=613,6839,74,18]:
+                        - button "添加收藏" [ref=e1603] [cursor=pointer] [box=613,6839,26,18]:
+                          - img [ref=e1604] [box=619,6841,14,14]
+                        - link "查看原文" [ref=e1606] [cursor=pointer] [box=643,6840,44,15]:
+                          - /url: https://x.com/elonmusk/status/2054479261462040687
+                  - generic [ref=e1607] [box=277,6874,419,120]:
+                    - generic [ref=e1610] [cursor=pointer] [box=302,6883,385,76]:
+                      - generic [ref=e1611] [box=302,6883,385,36]: "Elon Musk: True Quote: What Democrats think fascism means: Republicans What fascism actu"
+                      - paragraph [ref=e1612] [box=302,6919,385,40]: "True Quote: What Democrats think fascism means: Republicans What fascism actually means: a far-left, authoritarian ideology focused on creating a highly centralized, dictatorial state that subordinates to the state all aspects of society—economy, culture, media, education, and private life x.com"
+                    - generic [ref=e1613] [box=278,6967,417,26]:
+                      - generic [ref=e1614] [box=286,6968,32,15]: 1 天前
+                      - generic [ref=e1615] [box=613,6967,74,18]:
+                        - button "添加收藏" [ref=e1616] [cursor=pointer] [box=613,6967,26,18]:
+                          - img [ref=e1617] [box=619,6969,14,14]
+                        - link "查看原文" [ref=e1619] [cursor=pointer] [box=643,6968,44,15]:
+                          - /url: https://x.com/elonmusk/status/2054474488360874018
+              - article [ref=e1620] [box=741,6553,469,380]:
+                - generic [ref=e1621] [box=754,6562,443,60]:
+                  - generic [ref=e1622] [box=770,6574,19,35]:
+                    - heading "AYi" [level=3] [ref=e1623] [box=770,6574,19,18]
+                    - paragraph [ref=e1624] [box=770,6594,19,15]: x
+                  - generic [ref=e1625] [box=1168,6562,32,20]: 99+
+                - generic [ref=e1626] [box=754,6622,443,34]:
+                  - generic [ref=e1627] [box=770,6630,92,18]:
+                    - generic [ref=e1628] [box=770,6630,32,18]: 99+
+                    - generic [ref=e1629] [box=805,6631,56,15]: 总更新 100
+                  - generic [ref=e1630] [box=1136,6631,44,15]: 采集正常
+                - generic [ref=e1633] [box=762,6656,427,138]:
+                  - generic [ref=e1636] [cursor=pointer] [box=787,6665,393,94]:
+                    - generic [ref=e1637] [box=787,6665,393,54]: "AYi: Cursor这公司真的把我整懵了， 长这么大第一次见，主动给用户送$10000额度的公司 之前他们同事私信我，说要送我一万刀的使用额度， 我那几天忙到飞起，"
+                    - paragraph [ref=e1638] [box=787,6719,393,40]: "Cursor这公司真的把我整懵了， 长这么大第一次见，主动给用户送$10000额度的公司 之前他们同事私信我，说要送我一万刀的使用额度， 我那几天忙到飞起，隔了快一周才看到消息回过去， 当时我心里已经默认这事黄了， 换任何公司都不可能再理你了 结果今天，他们另一个同事专门追过来找我， Quote: 我等了整整一年的东西，终于来了， Cursor今天正式发布了它的SDK， 这回可远不只是又一个编程工具的小更新， 可以说是人类历史上第一次， 把生产级的编程能力，变成了可以随便嵌入的基础设施， 以前你只能在Cursor编辑器里用它的Agent， 现在你可以把同一个Agent， 塞进你的C"
+                  - generic [ref=e1639] [box=763,6767,425,26]:
+                    - generic [ref=e1640] [box=771,6768,32,15]: 1 天前
+                    - generic [ref=e1641] [box=1105,6767,74,18]:
+                      - button "添加收藏" [ref=e1642] [cursor=pointer] [box=1105,6767,26,18]:
+                        - img [ref=e1643] [box=1111,6769,14,14]
+                      - link "查看原文" [ref=e1645] [cursor=pointer] [box=1135,6768,44,15]:
+                        - /url: https://x.com/AYi_AInotes/status/2054568267142840603
+              - article [ref=e1646] [box=256,6949,469,380]:
+                - generic [ref=e1647] [box=269,6958,443,60]:
+                  - generic [ref=e1648] [box=285,6970,84,35]:
+                    - heading "数字生命卡兹克" [level=3] [ref=e1649] [box=285,6970,84,18]
+                    - paragraph [ref=e1650] [box=285,6990,84,15]: wechat
+                  - generic [ref=e1651] [box=691,6958,24,20]: "53"
+                - generic [ref=e1652] [box=269,7018,443,34]:
+                  - generic [ref=e1653] [box=285,7026,78,18]:
+                    - generic [ref=e1654] [box=285,7026,24,18]: "53"
+                    - generic [ref=e1655] [box=313,7027,49,15]: 总更新 53
+                  - generic [ref=e1656] [box=652,7027,44,15]: 采集正常
+                - generic [ref=e1658] [box=277,7052,427,152]:
+                  - generic [ref=e1659] [box=277,7052,427,62]:
+                    - generic [ref=e1663] [cursor=pointer] [box=302,7061,393,18]: 聊聊豆包维权事件的风波。
+                    - generic [ref=e1664] [box=278,7087,425,26]:
+                      - generic [ref=e1665] [box=286,7088,32,15]: 1 天前
+                      - generic [ref=e1666] [box=621,7087,74,18]:
+                        - button "添加收藏" [ref=e1667] [cursor=pointer] [box=621,7087,26,18]:
+                          - img [ref=e1668] [box=627,7089,14,14]
+                        - link "查看原文" [ref=e1670] [cursor=pointer] [box=651,7088,44,15]:
+                          - /url: https://mp.weixin.qq.com/s/famt-E0gUsSt9jHLm8C4Ug
+                  - generic [ref=e1671] [box=277,7122,427,82]:
+                    - generic [ref=e1674] [cursor=pointer] [box=302,7131,393,38]:
+                      - generic [ref=e1675] [box=302,7131,393,18]: 豆包输入法Mac版正式上线，所有人都该试试AI语音输入了。
+                      - paragraph [ref=e1676] [box=302,7149,393,20]: 用完你就再也回不去了
+                    - generic [ref=e1677] [box=278,7177,425,26]:
+                      - generic [ref=e1678] [box=286,7178,32,15]: 1 天前
+                      - generic [ref=e1679] [box=621,7177,74,18]:
+                        - button "添加收藏" [ref=e1680] [cursor=pointer] [box=621,7177,26,18]:
+                          - img [ref=e1681] [box=627,7179,14,14]
+                        - link "查看原文" [ref=e1683] [cursor=pointer] [box=651,7178,44,15]:
+                          - /url: https://mp.weixin.qq.com/s/hNtMrbjT_KmpPcPtCSDpJw
+              - article [ref=e1684] [box=741,6949,469,380]:
+                - generic [ref=e1685] [box=754,6958,443,60]:
+                  - generic [ref=e1686] [box=770,6970,42,35]:
+                    - heading "APPSO" [level=3] [ref=e1687] [box=770,6970,42,18]
+                    - paragraph [ref=e1688] [box=770,6990,42,15]: wechat
+                  - generic [ref=e1689] [box=1168,6958,32,20]: 99+
+                - generic [ref=e1690] [box=754,7018,443,34]:
+                  - generic [ref=e1691] [box=770,7026,92,18]:
+                    - generic [ref=e1692] [box=770,7026,32,18]: 99+
+                    - generic [ref=e1693] [box=805,7027,56,15]: 总更新 115
+                  - generic [ref=e1694] [box=1136,7027,44,15]: 采集正常
+                - generic [ref=e1696] [box=762,7052,419,500]:
+                  - generic [ref=e1697] [box=762,7052,419,82]:
+                    - generic [ref=e1700] [cursor=pointer] [box=787,7061,385,38]:
+                      - generic [ref=e1701] [box=787,7061,385,18]: MiniMax 推出了 Mavis，活脱脱的 Agent「三省六部」
+                      - paragraph [ref=e1702] [box=787,7079,385,20]: 管 agent 要像管人一样，懂得「驭臣之术」……
+                    - generic [ref=e1703] [box=763,7107,417,26]:
+                      - generic [ref=e1704] [box=771,7108,32,15]: 1 天前
+                      - generic [ref=e1705] [box=1097,7107,74,18]:
+                        - button "添加收藏" [ref=e1706] [cursor=pointer] [box=1097,7107,26,18]:
+                          - img [ref=e1707] [box=1103,7109,14,14]
+                        - link "查看原文" [ref=e1709] [cursor=pointer] [box=1127,7108,44,15]:
+                          - /url: https://mp.weixin.qq.com/s/6Uwhg4jH32HyslG7L1jeGw
+                  - generic [ref=e1710] [box=762,7142,419,82]:
+                    - generic [ref=e1713] [cursor=pointer] [box=787,7151,385,38]:
+                      - generic [ref=e1714] [box=787,7151,385,18]: 风暴中的 Manus，蝴蝶还在扇动翅膀
+                      - paragraph [ref=e1715] [box=787,7169,385,20]: 定义新品类的势能需要一种稀缺的时间窗口，不是你想打开就能打开。
+                    - generic [ref=e1716] [box=763,7197,417,26]:
+                      - generic [ref=e1717] [box=771,7198,32,15]: 1 天前
+                      - generic [ref=e1718] [box=1097,7197,74,18]:
+                        - button "添加收藏" [ref=e1719] [cursor=pointer] [box=1097,7197,26,18]:
+                          - img [ref=e1720] [box=1103,7199,14,14]
+                        - link "查看原文" [ref=e1722] [cursor=pointer] [box=1127,7198,44,15]:
+                          - /url: https://mp.weixin.qq.com/s/g1aipVX2aXlls19X8Qhjcg
+                  - generic [ref=e1723] [box=762,7232,419,102]:
+                    - generic [ref=e1726] [cursor=pointer] [box=787,7241,385,58]:
+                      - generic [ref=e1727] [box=787,7241,385,18]: 突发｜曝林俊旸创业，目标估值 20 亿美元
+                      - paragraph [ref=e1728] [box=787,7259,385,40]: 就在刚刚，据 The Information 报道，今年 3 月公开辞职的前阿里巴巴千问大模型技术负责人林俊旸，正在为其新创办的 AI 公司寻求数亿美元融资。 报道援引两名知情人士消息称，本轮融资完成后，该公司的估值约为 20 亿美元。目前谈判仍在进行中，最终估值存在变数。 知情人士透露，风投机构高榕创投和红杉中国正在洽谈参与投资。这家新公司的名称目前尚未对外披露。最近，林俊旸清空社交媒体，或许也是为新公司成立做准备。 另外，据《智能涌现》报道，林俊旸的新公司已初具雏形：方向上，团队正在考虑世界模型与具身大脑；人员上，已陆续招募数名来自字节、腾讯及海外机构的研究人员。 值得一提的是，对于一家刚刚起步的 AI 公司而言，20 亿美元的估值在中国比较罕见。而林俊旸将目标定在这一水位，背后或许有两层支撑：一是他在阿里巴巴期间的实绩，二是资本市场对 AI 标的持续升温的热情。 在阿里巴巴任职的三年里，林俊旸参与组建了 Qwen 研究团队，将 Qwen 系列模型推至全球开源 AI 的前列。其中，低成本的小尺寸 Qwen 版本尤其受到全球注重性价比的开发者青睐。 当然，林俊旸的创业并非孤例。 无论在中国还是美国，AI 领域的明星研究员离开大公司另起炉灶，已成为近两年的普遍现象。 在美国，由 OpenAI 前首席科学家 Ilya Sutskever 联合创办的 SSI，成立仅三个月时便以 50 亿美元估值完成 10 亿美元融资；OpenAI 前 CTO Mira Murati 去年创办的 Thinking Machines Lab，首轮融资即以 100 亿美元估值募得 20 亿美元。 在中国，月之暗面、MiniMax、智谱等一批头部 AI 公司，其创始团队大多来自大厂或顶尖高校。林俊旸走的，是一条已被反复验证过的路。不同之处在于，他出来的时机颇为微妙。 国内 AI 融资热度虽高，但经过两年的密集造势，资本市场对「明星出走」的故事已不像从前那般照单全收，投资人在兴奋之余，也终将追问技术方向、商业路径和团队阵容。 20 亿美元的目标估值，意味着林俊旸需要给出足够清晰的答案。
+                    - generic [ref=e1729] [box=763,7307,417,26]:
+                      - generic [ref=e1730] [box=771,7308,32,15]: 1 天前
+                      - generic [ref=e1731] [box=1097,7307,74,18]:
+                        - button "添加收藏" [ref=e1732] [cursor=pointer] [box=1097,7307,26,18]:
+                          - img [ref=e1733] [box=1103,7309,14,14]
+                        - link "查看原文" [ref=e1735] [cursor=pointer] [box=1127,7308,44,15]:
+                          - /url: https://mp.weixin.qq.com/s/A2ZXgNbEB5ezUueivlsTmA
+                  - generic [ref=e1736] [box=762,7342,419,120]:
+                    - generic [ref=e1739] [cursor=pointer] [box=787,7351,385,76]:
+                      - generic [ref=e1740] [box=787,7351,385,36]: 宇树载人机甲390万售价将会调整/腾讯:微信已读和访客功能已焊死不会开发/Ilya自曝持有70亿美元OpenAI 股权
+                      - paragraph [ref=e1741] [box=787,7387,385,40]: · 小米免费发放 100 万亿 Token · 全国首例 AI 代写种草笔记案终审：赔偿 10 万元，AI 批量炮制「数字泔水」构成侵权 · 390 万元起，宇树发布全球首款量产版载人变形机甲 GD01
+                    - generic [ref=e1742] [box=763,7435,417,26]:
+                      - generic [ref=e1743] [box=771,7436,32,15]: 2 天前
+                      - generic [ref=e1744] [box=1097,7435,74,18]:
+                        - button "添加收藏" [ref=e1745] [cursor=pointer] [box=1097,7435,26,18]:
+                          - img [ref=e1746] [box=1103,7437,14,14]
+                        - link "查看原文" [ref=e1748] [cursor=pointer] [box=1127,7436,44,15]:
+                          - /url: https://mp.weixin.qq.com/s/m18PorTWf42bmNA4vBeNSg
+                  - generic [ref=e1749] [box=762,7470,419,82]:
+                    - generic [ref=e1752] [cursor=pointer] [box=787,7479,385,38]:
+                      - generic [ref=e1753] [box=787,7479,385,18]: Android 不再是操作系统了
+                      - paragraph [ref=e1754] [box=787,7497,385,20]: 。
+                    - generic [ref=e1755] [box=763,7525,417,26]:
+                      - generic [ref=e1756] [box=771,7526,32,15]: 2 天前
+                      - generic [ref=e1757] [box=1097,7525,74,18]:
+                        - button "添加收藏" [ref=e1758] [cursor=pointer] [box=1097,7525,26,18]:
+                          - img [ref=e1759] [box=1103,7527,14,14]
+                        - link "查看原文" [ref=e1761] [cursor=pointer] [box=1127,7526,44,15]:
+                          - /url: https://mp.weixin.qq.com/s/1xHXbqTFLZSEnACR0fErVg
+              - article [ref=e1762] [box=256,7345,469,380]:
+                - generic [ref=e1763] [box=269,7354,443,78]:
+                  - generic [ref=e1764] [box=285,7366,411,53]:
+                    - heading "lidang 立党 （劝人卖房/学CS/买SP500/纳100/OpenAI/Anthrop第一人）" [level=3] [ref=e1765] [box=285,7366,411,36]
+                    - paragraph [ref=e1766] [box=285,7404,411,15]: x
+                  - generic [ref=e1767] [box=691,7354,24,20]: "67"
+                - generic [ref=e1768] [box=269,7432,443,34]:
+                  - generic [ref=e1769] [box=285,7440,78,18]:
+                    - generic [ref=e1770] [box=285,7440,24,18]: "67"
+                    - generic [ref=e1771] [box=313,7441,49,15]: 总更新 67
+                  - generic [ref=e1772] [box=652,7441,44,15]: 采集正常
+                - generic [ref=e1774] [box=277,7466,419,920]:
+                  - generic [ref=e1775] [box=277,7466,419,156]:
+                    - generic [ref=e1778] [cursor=pointer] [box=302,7475,385,112]:
+                      - generic [ref=e1779] [box=302,7475,385,72]: "lidang 立党 （劝人卖房/学CS/买SP500/纳100/OpenAI/Anthrop第一人）: 看老登们写长文或者公开大会演讲，大聊特聊AI展望，真的是极其无聊枯燥恶心的事情。 因为老登们善于用非常油腻、圆滑、完备的语言，去反复描述非常粗糙、非常初级、充"
+                      - paragraph [ref=e1780] [box=302,7547,385,40]: 看老登们写长文或者公开大会演讲，大聊特聊AI展望，真的是极其无聊枯燥恶心的事情。 因为老登们善于用非常油腻、圆滑、完备的语言，去反复描述非常粗糙、非常初级、充满幻想和自我体感的AI初体验。 你听了5分钟，你就知道他大概狗屁不懂，可能没怎么用过，完全空洞无物，但是你连续听个30分钟，
+                    - generic [ref=e1781] [box=278,7595,417,26]:
+                      - generic [ref=e1782] [box=286,7596,32,15]: 1 天前
+                      - generic [ref=e1783] [box=613,7595,74,18]:
+                        - button "添加收藏" [ref=e1784] [cursor=pointer] [box=613,7595,26,18]:
+                          - img [ref=e1785] [box=619,7597,14,14]
+                        - link "查看原文" [ref=e1787] [cursor=pointer] [box=643,7596,44,15]:
+                          - /url: https://x.com/lidangzzz/status/2054532509128356078
+                  - generic [ref=e1788] [box=277,7630,419,156]:
+                    - generic [ref=e1791] [cursor=pointer] [box=302,7639,385,112]:
+                      - generic [ref=e1792] [box=302,7639,385,72]: "lidang 立党 （劝人卖房/学CS/买SP500/纳100/OpenAI/Anthrop第一人）: 说真的，我一直觉得，现在高铁一堆零星小站，是非常低效的制度。 比如天津，东西南北一堆站，各个郊县一堆站，加起来12个高铁站， 每个城市都四五个、十几个市区郊"
+                      - paragraph [ref=e1793] [box=302,7711,385,40]: 说真的，我一直觉得，现在高铁一堆零星小站，是非常低效的制度。 比如天津，东西南北一堆站，各个郊县一堆站，加起来12个高铁站， 每个城市都四五个、十几个市区郊县高铁站，非要给他们连连看、大缝合、合纵连横， 现在在建高铁线路大概基本是，北京通州站，连天津宝坻南，连塘沽，连河北沧州西，
+                    - generic [ref=e1794] [box=278,7759,417,26]:
+                      - generic [ref=e1795] [box=286,7760,32,15]: 1 天前
+                      - generic [ref=e1796] [box=613,7759,74,18]:
+                        - button "添加收藏" [ref=e1797] [cursor=pointer] [box=613,7759,26,18]:
+                          - img [ref=e1798] [box=619,7761,14,14]
+                        - link "查看原文" [ref=e1800] [cursor=pointer] [box=643,7760,44,15]:
+                          - /url: https://x.com/lidangzzz/status/2054523457581326553
+                  - generic [ref=e1801] [box=277,7794,419,100]:
+                    - generic [ref=e1804] [cursor=pointer] [box=302,7803,385,56]:
+                      - generic [ref=e1805] [box=302,7803,385,36]: "lidang 立党 （劝人卖房/学CS/买SP500/纳100/OpenAI/Anthrop第一人）: 太好了"
+                      - paragraph [ref=e1806] [box=302,7839,385,20]: 太好了
+                    - generic [ref=e1807] [box=278,7867,417,26]:
+                      - generic [ref=e1808] [box=286,7868,32,15]: 1 天前
+                      - generic [ref=e1809] [box=613,7867,74,18]:
+                        - button "添加收藏" [ref=e1810] [cursor=pointer] [box=613,7867,26,18]:
+                          - img [ref=e1811] [box=619,7869,14,14]
+                        - link "查看原文" [ref=e1813] [cursor=pointer] [box=643,7868,44,15]:
+                          - /url: https://x.com/lidangzzz/status/2054500375407808961
+                  - generic [ref=e1814] [box=277,7902,419,156]:
+                    - generic [ref=e1817] [cursor=pointer] [box=302,7911,385,112]:
+                      - generic [ref=e1818] [box=302,7911,385,72]: "lidang 立党 （劝人卖房/学CS/买SP500/纳100/OpenAI/Anthrop第一人）: 聚焦在现有工作上用coding Agent去解决，是一条错误道路，人类已经把能吃的红利吃差不多了， 接下来就是无尽的人指令-agent执行-人指令-agent"
+                      - paragraph [ref=e1819] [box=302,7983,385,40]: 聚焦在现有工作上用coding Agent去解决，是一条错误道路，人类已经把能吃的红利吃差不多了， 接下来就是无尽的人指令-agent执行-人指令-agent执行的iteration中逐渐迭代工作，很难把人从这种小幅度高强度反复的iteration中解放出来。
+                    - generic [ref=e1820] [box=278,8031,417,26]:
+                      - generic [ref=e1821] [box=286,8032,32,15]: 1 天前
+                      - generic [ref=e1822] [box=613,8031,74,18]:
+                        - button "添加收藏" [ref=e1823] [cursor=pointer] [box=613,8031,26,18]:
+                          - img [ref=e1824] [box=619,8033,14,14]
+                        - link "查看原文" [ref=e1826] [cursor=pointer] [box=643,8032,44,15]:
+                          - /url: https://x.com/lidangzzz/status/2054447115024159209
+                  - generic [ref=e1827] [box=277,8066,419,156]:
+                    - generic [ref=e1830] [cursor=pointer] [box=302,8075,385,112]:
+                      - generic [ref=e1831] [box=302,8075,385,72]: "lidang 立党 （劝人卖房/学CS/买SP500/纳100/OpenAI/Anthrop第一人）: 为什么总有人在高速公路上面几十个几十个一起走路或者站着， 而且还给你来个夜间大封烟，前面全是烟雾，一旦开过去，立刻连续撞死二三十个。 而且2023年已经发生"
+                      - paragraph [ref=e1832] [box=302,8147,385,40]: 为什么总有人在高速公路上面几十个几十个一起走路或者站着， 而且还给你来个夜间大封烟，前面全是烟雾，一旦开过去，立刻连续撞死二三十个。 而且2023年已经发生过一次江西南昌1.8特大事故，一群人大半夜在高速公路上出殡，直接在上面慢悠悠走路，而且烧了一大堆纸，路上全是白烟， 直接撞死20人。
+                    - generic [ref=e1833] [box=278,8195,417,26]:
+                      - generic [ref=e1834] [box=286,8196,32,15]: 1 天前
+                      - generic [ref=e1835] [box=613,8195,74,18]:
+                        - button "添加收藏" [ref=e1836] [cursor=pointer] [box=613,8195,26,18]:
+                          - img [ref=e1837] [box=619,8197,14,14]
+                        - link "查看原文" [ref=e1839] [cursor=pointer] [box=643,8196,44,15]:
+                          - /url: https://x.com/lidangzzz/status/2054432520557461712
+                  - generic [ref=e1840] [box=277,8230,419,156]:
+                    - generic [ref=e1843] [cursor=pointer] [box=302,8239,385,112]:
+                      - generic [ref=e1844] [box=302,8239,385,72]: "lidang 立党 （劝人卖房/学CS/买SP500/纳100/OpenAI/Anthrop第一人）: 因为还是要赌用户成本的价格模型，给一个最低门槛，赌用户里面有20%~80%的用户用不完， 如果纯粹按照数token收费，成本肯定要再高一截出来，或者无法保证卖"
+                      - paragraph [ref=e1845] [box=302,8311,385,40]: "因为还是要赌用户成本的价格模型，给一个最低门槛，赌用户里面有20%~80%的用户用不完， 如果纯粹按照数token收费，成本肯定要再高一截出来，或者无法保证卖同等token下的profit margin， 归根到底，各家厂商都在赌，赌自家用户里总有那么一小部分token plan最后也用不完，再摊低一点点成本。 Quote: 我发现目前各家AI和中国的推理云服务都逐步转向token plan，但却是包月的，这挺没意义的，你转化成不包月的、token批发打折不就行了？而且5月31日之前，Deepseek V4 Pro的超低价的确都是把这些plan都压得死死的。至于火山发明的Coding P"
+                    - generic [ref=e1846] [box=278,8359,417,26]:
+                      - generic [ref=e1847] [box=286,8360,32,15]: 1 天前
+                      - generic [ref=e1848] [box=613,8359,74,18]:
+                        - button "添加收藏" [ref=e1849] [cursor=pointer] [box=613,8359,26,18]:
+                          - img [ref=e1850] [box=619,8361,14,14]
+                        - link "查看原文" [ref=e1852] [cursor=pointer] [box=643,8360,44,15]:
+                          - /url: https://x.com/lidangzzz/status/2054421468004438135
+              - article [ref=e1853] [box=741,7345,469,380]:
+                - generic [ref=e1854] [box=754,7354,443,60]:
+                  - generic [ref=e1855] [box=770,7366,72,35]:
+                    - heading "太阳照常升起" [level=3] [ref=e1856] [box=770,7366,72,18]
+                    - paragraph [ref=e1857] [box=770,7386,72,15]: wechat
+                  - generic [ref=e1858] [box=1176,7354,24,20]: "75"
+                - generic [ref=e1859] [box=754,7414,443,34]:
+                  - generic [ref=e1860] [box=770,7422,78,18]:
+                    - generic [ref=e1861] [box=770,7422,24,18]: "75"
+                    - generic [ref=e1862] [box=798,7423,49,15]: 总更新 75
+                  - generic [ref=e1863] [box=1136,7423,44,15]: 采集正常
+                - generic [ref=e1866] [box=762,7448,427,82]:
+                  - generic [ref=e1869] [cursor=pointer] [box=787,7457,393,38]:
+                    - generic [ref=e1870] [box=787,7457,393,18]: 合则两利，来就是赢
+                    - paragraph [ref=e1871] [box=787,7475,393,20]: Win-Win
+                  - generic [ref=e1872] [box=763,7503,425,26]:
+                    - generic [ref=e1873] [box=771,7504,32,15]: 1 天前
+                    - generic [ref=e1874] [box=1105,7503,74,18]:
+                      - button "添加收藏" [ref=e1875] [cursor=pointer] [box=1105,7503,26,18]:
+                        - img [ref=e1876] [box=1111,7505,14,14]
+                      - link "查看原文" [ref=e1878] [cursor=pointer] [box=1135,7504,44,15]:
+                        - /url: https://mp.weixin.qq.com/s/W27JfHoS6bOyYu9Wa1ht7g
+              - article [ref=e1879] [box=256,7741,469,380]:
+                - generic [ref=e1880] [box=269,7750,443,60]:
+                  - generic [ref=e1881] [box=285,7762,122,35]:
+                    - heading "YouTube · @OpenAI" [level=3] [ref=e1882] [box=285,7762,122,18]
+                    - paragraph [ref=e1883] [box=285,7782,122,15]: youtube
+                  - generic [ref=e1884] [box=691,7750,24,20]: "31"
+                - generic [ref=e1885] [box=269,7810,443,34]:
+                  - generic [ref=e1886] [box=285,7818,78,18]:
+                    - generic [ref=e1887] [box=285,7818,24,18]: "31"
+                    - generic [ref=e1888] [box=313,7819,49,15]: 总更新 31
+                  - generic [ref=e1889] [box=652,7819,44,15]: 采集正常
+                - generic [ref=e1891] [box=277,7844,427,132]:
+                  - generic [ref=e1892] [box=277,7844,427,62]:
+                    - generic [ref=e1896] [cursor=pointer] [box=302,7853,393,18]: Suraj vs The Future | With ChatGPT
+                    - generic [ref=e1897] [box=278,7879,425,26]:
+                      - generic [ref=e1898] [box=286,7880,32,15]: 1 天前
+                      - generic [ref=e1899] [box=621,7879,74,18]:
+                        - button "添加收藏" [ref=e1900] [cursor=pointer] [box=621,7879,26,18]:
+                          - img [ref=e1901] [box=627,7881,14,14]
+                        - link "查看原文" [ref=e1903] [cursor=pointer] [box=651,7880,44,15]:
+                          - /url: https://www.youtube.com/watch?v=bMmEEa8-6fU
+                  - generic [ref=e1904] [box=277,7914,427,62]:
+                    - generic [ref=e1908] [cursor=pointer] [box=302,7923,393,18]: Computer use in Codex
+                    - generic [ref=e1909] [box=278,7949,425,26]:
+                      - generic [ref=e1910] [box=286,7950,32,15]: 2 天前
+                      - generic [ref=e1911] [box=621,7949,74,18]:
+                        - button "添加收藏" [ref=e1912] [cursor=pointer] [box=621,7949,26,18]:
+                          - img [ref=e1913] [box=627,7951,14,14]
+                        - link "查看原文" [ref=e1915] [cursor=pointer] [box=651,7950,44,15]:
+                          - /url: https://www.youtube.com/watch?v=D_FCYsshMI4
+              - article [ref=e1916] [box=741,7741,469,380]:
+                - generic [ref=e1917] [box=754,7750,443,60]:
+                  - generic [ref=e1918] [box=770,7762,84,35]:
+                    - heading "香帅的金融江湖" [level=3] [ref=e1919] [box=770,7762,84,18]
+                    - paragraph [ref=e1920] [box=770,7782,84,15]: wechat
+                  - generic [ref=e1921] [box=1176,7750,24,20]: "82"
+                - generic [ref=e1922] [box=754,7810,443,34]:
+                  - generic [ref=e1923] [box=770,7818,78,18]:
+                    - generic [ref=e1924] [box=770,7818,24,18]: "82"
+                    - generic [ref=e1925] [box=798,7819,49,15]: 总更新 82
+                  - generic [ref=e1926] [box=1136,7819,44,15]: 采集正常
+                - generic [ref=e1929] [box=762,7844,419,512]:
+                  - generic [ref=e1933] [cursor=pointer] [box=787,7853,385,468]: 美国高通胀下，很多家庭确实开始有压力了。 我一个中登朋友昨天从湾区发来吐槽，costco油价过6美元了，西红柿也是6美元一磅，街角一份普通三明治20美元，自己随时被优化。一边是越来越贵的生活，另一边是松动的工作机会，开始怀疑自己的各种处境。 她不是个例。 刚刚公布的美国4月CPI同比已经上涨3.8%。油价上涨的直接传导很凶，能源环比+3.8%，食品环比+0.5%；好消息是向核心通胀的传导还不算明显，核心商品环比0增长。 虽然加息预期升温，但美联储加息的必要性暂时还不足，因为涨价几乎来自油价的直接传导，向核心通胀的传导暂时不明显。一旦中东问题解决，油价会快速下行。但是普通家庭在这个阶段，已经非常难受了。纽约联储近期研究显示，低收入消费者已经在主动减少实际汽油消耗量，试图控制支出。卡夫亨氏管理层在最近的财报会上也直接讲，低收入消费者已经在动用储蓄维持日常开支。 更耐人寻味的是美股内部的分化，3月至今—— - 标普500耐用消费品和服装行业 −19% - 家庭和个人用品行业 −14% - 计算机硬件设备 +17% - 半导体 +37% 钱在用脚投票，这就是典型的K型分化——上半根越翘越高，下半根越塌越深，尤其在冲击过渡时期。 但对普通家庭来说，问题更具体：通胀在偷走购买力，现金还能放多少？K线下半根的人正在被甩出去，该怎么办？万一最坏的情况发生，谁能托住我的生活？ 这些问题没有标准答案，但有一条底层逻辑我越来越确信——一个家庭真正的安全资产，不是由几个百分点的收益率和波动率定义的，而是由未来生活的支出安全定义的。短期的生活费和房贷、中长期的孩子教育和父母养老、突发的重大风险、跨周期的财富结构……不同期限、不同概率的支出口袋，需要配上不同规则体系下的资产。这个问题，对于生活在世界各个地方的家庭，都是一样的。 这正是5月15日「共潮生·香港专场」要展开的核心脉络之一。那天，我会从全球资金重置讲起，讲到岛链化时代的家庭资产配置思路图，再讲到当前上半根K线的脉络。 「共潮生·香港专场」倒计时2天 后天见。
+                  - generic [ref=e1934] [box=763,8329,417,26]:
+                    - generic [ref=e1935] [box=771,8330,32,15]: 1 天前
+                    - generic [ref=e1936] [box=1097,8329,74,18]:
+                      - button "添加收藏" [ref=e1937] [cursor=pointer] [box=1097,8329,26,18]:
+                        - img [ref=e1938] [box=1103,8331,14,14]
+                      - link "查看原文" [ref=e1940] [cursor=pointer] [box=1127,8330,44,15]:
+                        - /url: https://mp.weixin.qq.com/s/SK2ftFnsqPbQ-v05IrO_hA
+              - article [ref=e1941] [box=256,8137,469,380]:
+                - generic [ref=e1942] [box=269,8146,443,60]:
+                  - generic [ref=e1943] [box=285,8158,37,35]:
+                    - heading "逛逛" [level=3] [ref=e1944] [box=285,8158,37,18]
+                    - paragraph [ref=e1945] [box=285,8178,37,15]: wechat
+                  - generic [ref=e1946] [box=691,8146,24,20]: "50"
+                - generic [ref=e1947] [box=269,8206,443,34]:
+                  - generic [ref=e1948] [box=285,8214,78,18]:
+                    - generic [ref=e1949] [box=285,8214,24,18]: "50"
+                    - generic [ref=e1950] [box=313,8215,49,15]: 总更新 50
+                  - generic [ref=e1951] [box=652,8215,44,15]: 采集正常
+                - generic [ref=e1954] [box=277,8240,427,62]:
+                  - generic [ref=e1958] [cursor=pointer] [box=302,8249,393,18]: 手机用的多模态模型开源了，1.3B 大小的 MiniCPM-V 4.6 真顶。
+                  - generic [ref=e1959] [box=278,8275,425,26]:
+                    - generic [ref=e1960] [box=286,8276,32,15]: 1 天前
+                    - generic [ref=e1961] [box=621,8275,74,18]:
+                      - button "添加收藏" [ref=e1962] [cursor=pointer] [box=621,8275,26,18]:
+                        - img [ref=e1963] [box=627,8277,14,14]
+                      - link "查看原文" [ref=e1965] [cursor=pointer] [box=651,8276,44,15]:
+                        - /url: https://mp.weixin.qq.com/s/sRu7eN9CzjXH2V1nuX-ZXw
+              - article [ref=e1966] [box=741,8137,469,380]:
+                - generic [ref=e1967] [box=754,8146,443,60]:
+                  - generic [ref=e1968] [box=770,8158,48,35]:
+                    - heading "赛博禅心" [level=3] [ref=e1969] [box=770,8158,48,18]
+                    - paragraph [ref=e1970] [box=770,8178,48,15]: wechat
+                  - generic [ref=e1971] [box=1176,8146,24,20]: "84"
+                - generic [ref=e1972] [box=754,8206,443,34]:
+                  - generic [ref=e1973] [box=770,8214,78,18]:
+                    - generic [ref=e1974] [box=770,8214,24,18]: "84"
+                    - generic [ref=e1975] [box=798,8215,49,15]: 总更新 84
+                  - generic [ref=e1976] [box=1136,8215,44,15]: 采集正常
+                - generic [ref=e1978] [box=762,8240,427,172]:
+                  - generic [ref=e1979] [box=762,8240,427,82]:
+                    - generic [ref=e1982] [cursor=pointer] [box=787,8249,393,38]:
+                      - generic [ref=e1983] [box=787,8249,393,18]: 8G 内存的手机，能跑多大的模型？｜MiniCPM-V 4.6 开源
+                      - paragraph [ref=e1984] [box=787,8267,393,20]: 手机下载就能跑，还能用 4090 全量微调
+                    - generic [ref=e1985] [box=763,8295,425,26]:
+                      - generic [ref=e1986] [box=771,8296,32,15]: 1 天前
+                      - generic [ref=e1987] [box=1105,8295,74,18]:
+                        - button "添加收藏" [ref=e1988] [cursor=pointer] [box=1105,8295,26,18]:
+                          - img [ref=e1989] [box=1111,8297,14,14]
+                        - link "查看原文" [ref=e1991] [cursor=pointer] [box=1135,8296,44,15]:
+                          - /url: https://mp.weixin.qq.com/s/Xah5Uwj9SSHsXNS44wVIcA
+                  - generic [ref=e1992] [box=762,8330,427,82]:
+                    - generic [ref=e1995] [cursor=pointer] [box=787,8339,393,38]:
+                      - generic [ref=e1996] [box=787,8339,393,18]: 黄仁勋阿拉斯加登机，临时加入访华团
+                      - paragraph [ref=e1997] [box=787,8357,393,20]: 最后一刻，上车
+                    - generic [ref=e1998] [box=763,8385,425,26]:
+                      - generic [ref=e1999] [box=771,8386,32,15]: 1 天前
+                      - generic [ref=e2000] [box=1105,8385,74,18]:
+                        - button "添加收藏" [ref=e2001] [cursor=pointer] [box=1105,8385,26,18]:
+                          - img [ref=e2002] [box=1111,8387,14,14]
+                        - link "查看原文" [ref=e2004] [cursor=pointer] [box=1135,8386,44,15]:
+                          - /url: https://mp.weixin.qq.com/s/HoOmAwJT89bPbaA3dCl42A
+              - article [ref=e2005] [box=256,8533,469,380]:
+                - generic [ref=e2006] [box=269,8542,443,60]:
+                  - generic [ref=e2007] [box=285,8554,73,35]:
+                    - heading "卡尔的AI沃茨" [level=3] [ref=e2008] [box=285,8554,73,18]
+                    - paragraph [ref=e2009] [box=285,8574,73,15]: wechat
+                  - generic [ref=e2010] [box=691,8542,24,20]: "73"
+                - generic [ref=e2011] [box=269,8602,443,34]:
+                  - generic [ref=e2012] [box=285,8610,78,18]:
+                    - generic [ref=e2013] [box=285,8610,24,18]: "73"
+                    - generic [ref=e2014] [box=313,8611,49,15]: 总更新 73
+                  - generic [ref=e2015] [box=652,8611,44,15]: 采集正常
+                - generic [ref=e2018] [box=277,8636,427,82]:
+                  - generic [ref=e2021] [cursor=pointer] [box=302,8645,393,38]:
+                    - generic [ref=e2022] [box=302,8645,393,18]: 大模型越做越大，面壁智能反手做了个小100倍还能看图的
+                    - paragraph [ref=e2023] [box=302,8663,393,20]: 我们离无限token又近了一步
+                  - generic [ref=e2024] [box=278,8691,425,26]:
+                    - generic [ref=e2025] [box=286,8692,32,15]: 1 天前
+                    - generic [ref=e2026] [box=621,8691,74,18]:
+                      - button "添加收藏" [ref=e2027] [cursor=pointer] [box=621,8691,26,18]:
+                        - img [ref=e2028] [box=627,8693,14,14]
+                      - link "查看原文" [ref=e2030] [cursor=pointer] [box=651,8692,44,15]:
+                        - /url: https://mp.weixin.qq.com/s/-KrW4cYQcRG1VwwN6TF9Zw
+              - article [ref=e2031] [box=741,8533,469,380]:
+                - generic [ref=e2032] [box=754,8542,443,60]:
+                  - generic [ref=e2033] [box=770,8554,60,35]:
+                    - heading "网罗灯下黑" [level=3] [ref=e2034] [box=770,8554,60,18]
+                    - paragraph [ref=e2035] [box=770,8574,60,15]: wechat
+                  - generic [ref=e2036] [box=1176,8542,24,20]: "62"
+                - generic [ref=e2037] [box=754,8602,443,34]:
+                  - generic [ref=e2038] [box=770,8610,78,18]:
+                    - generic [ref=e2039] [box=770,8610,24,18]: "62"
+                    - generic [ref=e2040] [box=798,8611,49,15]: 总更新 62
+                  - generic [ref=e2041] [box=1136,8611,44,15]: 采集正常
+                - generic [ref=e2044] [box=762,8636,427,62]:
+                  - generic [ref=e2048] [cursor=pointer] [box=787,8645,393,18]: 我在iPhone上跑了个多模态大模型，识图速度快到离谱！
+                  - generic [ref=e2049] [box=763,8671,425,26]:
+                    - generic [ref=e2050] [box=771,8672,32,15]: 1 天前
+                    - generic [ref=e2051] [box=1105,8671,74,18]:
+                      - button "添加收藏" [ref=e2052] [cursor=pointer] [box=1105,8671,26,18]:
+                        - img [ref=e2053] [box=1111,8673,14,14]
+                      - link "查看原文" [ref=e2055] [cursor=pointer] [box=1135,8672,44,15]:
+                        - /url: https://mp.weixin.qq.com/s/LK62eWuySkY0ZoI6DKGVaQ
+          - generic [ref=e2056] [box=256,8945,953,2043]:
+            - generic [ref=e2057] [box=256,8945,953,63]:
+              - generic [ref=e2058] [box=256,8945,101,50]:
+                - heading "5月12日" [level=2] [ref=e2059] [box=256,8945,101,28]
+                - paragraph [ref=e2060] [box=256,8977,101,18]: 2026-05-12 · 周二
+              - generic [ref=e2061] [box=1092,8971,117,23]: 10 个订阅源有更新
+            - generic [ref=e2062] [box=256,9024,953,1964]:
+              - article [ref=e2063] [box=256,9024,469,380]:
+                - generic [ref=e2064] [box=269,9033,443,60]:
+                  - generic [ref=e2065] [box=285,9045,70,35]:
+                    - heading "饼干哥哥AGI" [level=3] [ref=e2066] [box=285,9045,70,18]
+                    - paragraph [ref=e2067] [box=285,9065,70,15]: wechat
+                  - generic [ref=e2068] [box=691,9033,24,20]: "65"
+                - generic [ref=e2069] [box=269,9093,443,34]:
+                  - generic [ref=e2070] [box=285,9101,78,18]:
+                    - generic [ref=e2071] [box=285,9101,24,18]: "65"
+                    - generic [ref=e2072] [box=313,9102,49,15]: 总更新 65
+                  - generic [ref=e2073] [box=652,9102,44,15]: 采集正常
+                - generic [ref=e2076] [box=277,9127,427,82]:
+                  - generic [ref=e2079] [cursor=pointer] [box=302,9136,393,38]:
+                    - generic [ref=e2080] [box=302,9136,393,18]: 用千问电脑端实测6大电商场景，搞定了90%的文档工作
+                    - paragraph [ref=e2081] [box=302,9154,393,20]: AI 办公效率拉满了！！
+                  - generic [ref=e2082] [box=278,9182,425,26]:
+                    - generic [ref=e2083] [box=286,9183,32,15]: 2 天前
+                    - generic [ref=e2084] [box=621,9182,74,18]:
+                      - button "添加收藏" [ref=e2085] [cursor=pointer] [box=621,9182,26,18]:
+                        - img [ref=e2086] [box=627,9184,14,14]
+                      - link "查看原文" [ref=e2088] [cursor=pointer] [box=651,9183,44,15]:
+                        - /url: https://mp.weixin.qq.com/s/IwBjUqC8mQi_FvpDZMY4Dg
+              - article [ref=e2089] [box=741,9024,469,380]:
+                - generic [ref=e2090] [box=754,9033,443,60]:
+                  - generic [ref=e2091] [box=770,9045,60,35]:
+                    - heading "与太阳相关" [level=3] [ref=e2092] [box=770,9045,60,18]
+                    - paragraph [ref=e2093] [box=770,9065,60,15]: zhihu
+                  - generic [ref=e2094] [box=1176,9033,24,20]: "14"
+                - generic [ref=e2095] [box=754,9093,443,34]:
+                  - generic [ref=e2096] [box=770,9101,78,18]:
+                    - generic [ref=e2097] [box=770,9101,24,18]: "14"
+                    - generic [ref=e2098] [box=798,9102,49,15]: 总更新 14
+                  - generic [ref=e2099] [box=1136,9102,44,15]: 采集正常
+                - generic [ref=e2102] [box=762,9127,427,102]:
+                  - generic [ref=e2105] [cursor=pointer] [box=787,9136,393,58]:
+                    - generic [ref=e2106] [box=787,9136,393,18]: 如何看待 2026 年 5 月 12 日 A 股市场行情？
+                    - paragraph [ref=e2107] [box=787,9154,393,40]: 回答了问题2026-05-12 23:06如何看待 2026 年 5 月 12 日 A 股市场行情？与太阳相关长势喜人的韭菜，低费率券商可联系我奥大股评评 一、 市场到底怎么了？（大盘大势） 简单来说：大盘今天情绪冰冷，除了AI板块还在群魔乱舞，其他票散户根本不想买，连神秘资金（300ETF）都缩量跑去休息了。 大跌原因：宏观上利空没解除（中东海峡还没通航、油价高、消费低），加上昨天大盘技术性“严重超买”，今天自然就迎来了疲软的调整。 后市预判（画重点）：奥大对大盘的…阅读全文赞同 14添加评论收藏喜欢分享
+                  - generic [ref=e2108] [box=763,9202,425,26]:
+                    - generic [ref=e2109] [box=771,9203,32,15]: 2 天前
+                    - generic [ref=e2110] [box=1105,9202,74,18]:
+                      - button "添加收藏" [ref=e2111] [cursor=pointer] [box=1105,9202,26,18]:
+                        - img [ref=e2112] [box=1111,9204,14,14]
+                      - link "查看原文" [ref=e2114] [cursor=pointer] [box=1135,9203,44,15]:
+                        - /url: https://www.zhihu.com/question/2037503355887554856/answer/2037669900076962660
+              - article [ref=e2115] [box=256,9420,469,380]:
+                - generic [ref=e2116] [box=269,9429,443,60]:
+                  - generic [ref=e2117] [box=285,9441,72,35]:
+                    - heading "寒武纪的鳄鱼" [level=3] [ref=e2118] [box=285,9441,72,18]
+                    - paragraph [ref=e2119] [box=285,9461,72,15]: zhihu
+                  - generic [ref=e2120] [box=691,9429,24,20]: "26"
+                - generic [ref=e2121] [box=269,9489,443,34]:
+                  - generic [ref=e2122] [box=285,9497,78,18]:
+                    - generic [ref=e2123] [box=285,9497,24,18]: "26"
+                    - generic [ref=e2124] [box=313,9498,49,15]: 总更新 26
+                  - generic [ref=e2125] [box=652,9498,44,15]: 采集正常
+                - generic [ref=e2127] [box=277,9523,427,212]:
+                  - generic [ref=e2128] [box=277,9523,427,102]:
+                    - generic [ref=e2131] [cursor=pointer] [box=302,9532,393,58]:
+                      - generic [ref=e2132] [box=302,9532,393,18]: 云背书网站
+                      - paragraph [ref=e2133] [box=302,9550,393,40]: 发表了文章2026-05-12 21:26云背书网站寒武纪的鳄鱼二级市场，职业投资简单弄了一个方便背诵的网站，可以一起背诵文章。…阅读全文赞同 16465 条评论收藏喜欢分享
+                    - generic [ref=e2134] [box=278,9598,425,26]:
+                      - generic [ref=e2135] [box=286,9599,32,15]: 2 天前
+                      - generic [ref=e2136] [box=621,9598,74,18]:
+                        - button "添加收藏" [ref=e2137] [cursor=pointer] [box=621,9598,26,18]:
+                          - img [ref=e2138] [box=627,9600,14,14]
+                        - link "查看原文" [ref=e2140] [cursor=pointer] [box=651,9599,44,15]:
+                          - /url: https://zhuanlan.zhihu.com/p/2037644789030590288
+                  - generic [ref=e2141] [box=277,9633,427,102]:
+                    - generic [ref=e2144] [cursor=pointer] [box=302,9642,393,58]:
+                      - generic [ref=e2145] [box=302,9642,393,18]: 怎样看待自己身边炫富的人？
+                      - paragraph [ref=e2146] [box=302,9660,393,40]: 回答了问题2026-05-12 12:58怎样看待自己身边炫富的人？寒武纪的鳄鱼二级市场，职业投资这些年还是遇到过一些有钱人的。 我没有见过一个不炫富的有钱人，一个都没有。 我们以为的炫富，就是炫美食，炫五星级酒店，炫精致生活，炫美女，炫豪车，炫游艇，炫奢侈品…… 这些东西用来炫富，太低级了。 有钱人只不过有些时候他们和我们普通人离得太远，他们炫富，炫在了我们看不懂的地方而已。 但我就没见过一个真正有钱的人不炫富的。…阅读全文赞同 262126 条评论收藏喜欢分享
+                    - generic [ref=e2147] [box=278,9708,425,26]:
+                      - generic [ref=e2148] [box=286,9709,32,15]: 2 天前
+                      - generic [ref=e2149] [box=621,9708,74,18]:
+                        - button "添加收藏" [ref=e2150] [cursor=pointer] [box=621,9708,26,18]:
+                          - img [ref=e2151] [box=627,9710,14,14]
+                        - link "查看原文" [ref=e2153] [cursor=pointer] [box=651,9709,44,15]:
+                          - /url: https://www.zhihu.com/question/281173734/answer/2037517092342199974
+              - article [ref=e2154] [box=741,9420,469,380]:
+                - generic [ref=e2155] [box=754,9429,443,60]:
+                  - generic [ref=e2156] [box=770,9441,48,35]:
+                    - heading "赛博禅心" [level=3] [ref=e2157] [box=770,9441,48,18]
+                    - paragraph [ref=e2158] [box=770,9461,48,15]: wechat
+                  - generic [ref=e2159] [box=1176,9429,24,20]: "84"
+                - generic [ref=e2160] [box=754,9489,443,34]:
+                  - generic [ref=e2161] [box=770,9497,78,18]:
+                    - generic [ref=e2162] [box=770,9497,24,18]: "84"
+                    - generic [ref=e2163] [box=798,9498,49,15]: 总更新 84
+                  - generic [ref=e2164] [box=1136,9498,44,15]: 采集正常
+                - generic [ref=e2166] [box=762,9523,427,190]:
+                  - generic [ref=e2167] [box=762,9523,427,100]:
+                    - generic [ref=e2170] [cursor=pointer] [box=787,9532,393,56]:
+                      - generic [ref=e2171] [box=787,9532,393,36]: Thinking Machines 刚发的「边听边说」，让我想到了几个月前的面壁智能
+                      - paragraph [ref=e2172] [box=787,9568,393,20]: TML-Interaction 与 MiniCPM-o
+                    - generic [ref=e2173] [box=763,9596,425,26]:
+                      - generic [ref=e2174] [box=771,9597,32,15]: 2 天前
+                      - generic [ref=e2175] [box=1105,9596,74,18]:
+                        - button "添加收藏" [ref=e2176] [cursor=pointer] [box=1105,9596,26,18]:
+                          - img [ref=e2177] [box=1111,9598,14,14]
+                        - link "查看原文" [ref=e2179] [cursor=pointer] [box=1135,9597,44,15]:
+                          - /url: https://mp.weixin.qq.com/s/Cb7JBt-xLZAsxEiLbdkbIQ
+                  - generic [ref=e2180] [box=762,9631,427,82]:
+                    - generic [ref=e2183] [cursor=pointer] [box=787,9640,393,38]:
+                      - generic [ref=e2184] [box=787,9640,393,18]: 我在央媒的分享：上下文即一切
+                      - paragraph [ref=e2185] [box=787,9658,393,20]: AI 的能力、问题和用法，本质都由上下文决定
+                    - generic [ref=e2186] [box=763,9686,425,26]:
+                      - generic [ref=e2187] [box=771,9687,32,15]: 2 天前
+                      - generic [ref=e2188] [box=1105,9686,74,18]:
+                        - button "添加收藏" [ref=e2189] [cursor=pointer] [box=1105,9686,26,18]:
+                          - img [ref=e2190] [box=1111,9688,14,14]
+                        - link "查看原文" [ref=e2192] [cursor=pointer] [box=1135,9687,44,15]:
+                          - /url: https://mp.weixin.qq.com/s/pJ2uaF74SHdf1-ki2JzJyQ
+              - article [ref=e2193] [box=256,9816,469,380]:
+                - generic [ref=e2194] [box=269,9825,443,60]:
+                  - generic [ref=e2195] [box=285,9837,73,35]:
+                    - heading "卡尔的AI沃茨" [level=3] [ref=e2196] [box=285,9837,73,18]
+                    - paragraph [ref=e2197] [box=285,9857,73,15]: wechat
+                  - generic [ref=e2198] [box=691,9825,24,20]: "73"
+                - generic [ref=e2199] [box=269,9885,443,34]:
+                  - generic [ref=e2200] [box=285,9893,78,18]:
+                    - generic [ref=e2201] [box=285,9893,24,18]: "73"
+                    - generic [ref=e2202] [box=313,9894,49,15]: 总更新 73
+                  - generic [ref=e2203] [box=652,9894,44,15]: 采集正常
+                - generic [ref=e2206] [box=277,9919,427,82]:
+                  - generic [ref=e2209] [cursor=pointer] [box=302,9928,393,38]:
+                    - generic [ref=e2210] [box=302,9928,393,18]: RoboNeo组了个Agent团队帮我做视频，一句话生成的上限又刷新了
+                    - paragraph [ref=e2211] [box=302,9946,393,20]: 好用到有点陌生了。。。
+                  - generic [ref=e2212] [box=278,9974,425,26]:
+                    - generic [ref=e2213] [box=286,9975,32,15]: 2 天前
+                    - generic [ref=e2214] [box=621,9974,74,18]:
+                      - button "添加收藏" [ref=e2215] [cursor=pointer] [box=621,9974,26,18]:
+                        - img [ref=e2216] [box=627,9976,14,14]
+                      - link "查看原文" [ref=e2218] [cursor=pointer] [box=651,9975,44,15]:
+                        - /url: https://mp.weixin.qq.com/s/nKDflCoiGxufFodmODL28w
+              - article [ref=e2219] [box=741,9816,469,380]:
+                - generic [ref=e2220] [box=754,9825,443,60]:
+                  - generic [ref=e2221] [box=770,9837,42,35]:
+                    - heading "APPSO" [level=3] [ref=e2222] [box=770,9837,42,18]
+                    - paragraph [ref=e2223] [box=770,9857,42,15]: wechat
+                  - generic [ref=e2224] [box=1168,9825,32,20]: 99+
+                - generic [ref=e2225] [box=754,9885,443,34]:
+                  - generic [ref=e2226] [box=770,9893,92,18]:
+                    - generic [ref=e2227] [box=770,9893,32,18]: 99+
+                    - generic [ref=e2228] [box=805,9894,56,15]: 总更新 115
+                  - generic [ref=e2229] [box=1136,9894,44,15]: 采集正常
+                - generic [ref=e2231] [box=762,9919,419,332]:
+                  - generic [ref=e2232] [box=762,9919,419,82]:
+                    - generic [ref=e2235] [cursor=pointer] [box=787,9928,385,38]:
+                      - generic [ref=e2236] [box=787,9928,385,18]: Seedance 2.0 最强对手偷跑了
+                      - paragraph [ref=e2237] [box=787,9946,385,20]: Google 的大招是图像、文本、视频轮着来
+                    - generic [ref=e2238] [box=763,9974,417,26]:
+                      - generic [ref=e2239] [box=771,9975,32,15]: 2 天前
+                      - generic [ref=e2240] [box=1097,9974,74,18]:
+                        - button "添加收藏" [ref=e2241] [cursor=pointer] [box=1097,9974,26,18]:
+                          - img [ref=e2242] [box=1103,9976,14,14]
+                        - link "查看原文" [ref=e2244] [cursor=pointer] [box=1127,9975,44,15]:
+                          - /url: https://mp.weixin.qq.com/s/oFWAEAN56s6VhyhzdnisSA
+                  - generic [ref=e2245] [box=762,10009,419,82]:
+                    - generic [ref=e2248] [cursor=pointer] [box=787,10018,385,38]:
+                      - generic [ref=e2249] [box=787,10018,385,18]: 刚刚，宇树载人机甲发布，售价 390 万起
+                      - paragraph [ref=e2250] [box=787,10036,385,20]: 我将以高达形态出击！
+                    - generic [ref=e2251] [box=763,10064,417,26]:
+                      - generic [ref=e2252] [box=771,10065,32,15]: 2 天前
+                      - generic [ref=e2253] [box=1097,10064,74,18]:
+                        - button "添加收藏" [ref=e2254] [cursor=pointer] [box=1097,10064,26,18]:
+                          - img [ref=e2255] [box=1103,10066,14,14]
+                        - link "查看原文" [ref=e2257] [cursor=pointer] [box=1127,10065,44,15]:
+                          - /url: https://mp.weixin.qq.com/s/UxehkgUhDMwtTibeQiaXLg
+                  - generic [ref=e2258] [box=762,10099,419,82]:
+                    - generic [ref=e2261] [cursor=pointer] [box=787,10108,385,38]:
+                      - generic [ref=e2262] [box=787,10108,385,18]: Markdown 已死，HTML 当立？
+                      - paragraph [ref=e2263] [box=787,10126,385,20]: 想要什么格式就什么格式
+                    - generic [ref=e2264] [box=763,10154,417,26]:
+                      - generic [ref=e2265] [box=771,10155,32,15]: 2 天前
+                      - generic [ref=e2266] [box=1097,10154,74,18]:
+                        - button "添加收藏" [ref=e2267] [cursor=pointer] [box=1097,10154,26,18]:
+                          - img [ref=e2268] [box=1103,10156,14,14]
+                        - link "查看原文" [ref=e2270] [cursor=pointer] [box=1127,10155,44,15]:
+                          - /url: https://mp.weixin.qq.com/s/dT-Xngpk5f4nvIUL5lQoog
+                  - generic [ref=e2271] [box=762,10189,419,62]:
+                    - generic [ref=e2275] [cursor=pointer] [box=787,10198,385,18]: OpenAI 前 CTO 创业大模型首秀，第一剑先斩 ChatGPT 聊天框
+                    - generic [ref=e2276] [box=763,10224,417,26]:
+                      - generic [ref=e2277] [box=771,10225,32,15]: 2 天前
+                      - generic [ref=e2278] [box=1097,10224,74,18]:
+                        - button "添加收藏" [ref=e2279] [cursor=pointer] [box=1097,10224,26,18]:
+                          - img [ref=e2280] [box=1103,10226,14,14]
+                        - link "查看原文" [ref=e2282] [cursor=pointer] [box=1127,10225,44,15]:
+                          - /url: https://mp.weixin.qq.com/s/METHoYCnuR1Zb4-8y3BDBA
+              - article [ref=e2283] [box=256,10212,469,380]:
+                - generic [ref=e2284] [box=269,10221,443,60]:
+                  - generic [ref=e2285] [box=285,10233,48,35]:
+                    - heading "谷大白话" [level=3] [ref=e2286] [box=285,10233,48,18]
+                    - paragraph [ref=e2287] [box=285,10253,48,15]: weibo
+                  - generic [ref=e2288] [box=691,10221,24,20]: "20"
+                - generic [ref=e2289] [box=269,10281,443,34]:
+                  - generic [ref=e2290] [box=285,10289,78,18]:
+                    - generic [ref=e2291] [box=285,10289,24,18]: "20"
+                    - generic [ref=e2292] [box=313,10290,49,15]: 总更新 20
+                  - generic [ref=e2293] [box=652,10290,44,15]: 采集正常
+                - generic [ref=e2296] [box=277,10315,427,102]:
+                  - generic [ref=e2299] [cursor=pointer] [box=302,10324,393,58]:
+                    - generic [ref=e2300] [box=302,10324,393,18]: "谷大白话: 嚯// @重工组长于彦舒 : [哆啦A梦吃惊]"
+                    - paragraph [ref=e2301] [box=302,10342,393,40]: "嚯// @重工组长于彦舒 : [哆啦A梦吃惊] | 宇树发布: GD01 载人变形机甲 390万元起 全球首款量产版载人机甲，还可以变形，民用交通工具，体重约500kg（载人后） 请大家友好安全的使用机器人 #宇树# #机甲# #载人机甲# #人形机器人# #变形# #AGI# #交通工具# 宇树科技的微博视频 | reposts 67 | comments 28 | likes 69"
+                  - generic [ref=e2302] [box=278,10390,425,26]:
+                    - generic [ref=e2303] [box=286,10391,32,15]: 2 天前
+                    - generic [ref=e2304] [box=621,10390,74,18]:
+                      - button "添加收藏" [ref=e2305] [cursor=pointer] [box=621,10390,26,18]:
+                        - img [ref=e2306] [box=627,10392,14,14]
+                      - link "查看原文" [ref=e2308] [cursor=pointer] [box=651,10391,44,15]:
+                        - /url: https://m.weibo.cn/status/QF1YlpD2o?mblogid=QF1YlpD2o&launchid=10000360-page_H5
+              - article [ref=e2309] [box=741,10212,469,380]:
+                - generic [ref=e2310] [box=754,10221,443,60]:
+                  - generic [ref=e2311] [box=770,10233,84,35]:
+                    - heading "香帅的金融江湖" [level=3] [ref=e2312] [box=770,10233,84,18]
+                    - paragraph [ref=e2313] [box=770,10253,84,15]: wechat
+                  - generic [ref=e2314] [box=1176,10221,24,20]: "82"
+                - generic [ref=e2315] [box=754,10281,443,34]:
+                  - generic [ref=e2316] [box=770,10289,78,18]:
+                    - generic [ref=e2317] [box=770,10289,24,18]: "82"
+                    - generic [ref=e2318] [box=798,10290,49,15]: 总更新 82
+                  - generic [ref=e2319] [box=1136,10290,44,15]: 采集正常
+                - generic [ref=e2321] [box=762,10315,419,978]:
+                  - generic [ref=e2322] [box=762,10315,419,494]:
+                    - generic [ref=e2326] [cursor=pointer] [box=787,10324,385,450]: 近期最重要的事情，是特朗普5月13日至15日访华。这是中美元首继2025年10月釜山会晤后，双方再次面对面交流，也是特朗普时隔九年再次访华。定档经历了一波三折——原来4月，因中东局势升级推迟，直到5月11日才最终官宣落地。特朗普本人在“真实社交”发文，非常期待即将开启的中国之行，并称中国是“一个令人惊叹的国家”。 值得关注的是有近20位顶级CEO随行，覆盖六大行业： - 科技与消费电子：特斯拉CEO马斯克、苹果CEO库克、Meta总裁； - 金融：贝莱德CEO Larry Fink、黑石CEO苏世民、高盛CEO、花旗CEO、万事达CEO 、Visa CEO ； - 航空制造：波音CEO 、GE航空CEO； - 半导体：美光CEO、高通CEO ； - 农业与生命科技：嘉吉CEO 、Illumina CEO 、Coherent CEO 。 最引人注目的缺席者是英伟达CEO黄仁勋——据路透社知情人士，他并非婉拒，而是未收到白宫邀请。 可以看出来此行重心在金融、支付、农业、商业航空等领域，芯片议题被刻意排除在外。特朗普大概率只谈波音、农产品，不谈芯片等核心分歧，为了中期选举稳住基本盘。上周美国国会参议员代表团已经访华，核心任务是推动中方签波音采购订单（最近一次中国航司采购波音飞机是2017年）。 随行名单一出，资本市场已开始定价。最直接的就是马斯克陪同访华的消息，让昨日盘中本来阴跌的特斯拉直线拉升。 理解这次访华的分量，不妨回看上一次。2017年11月8日至10日，特朗普首次访华，规格极高——除第一夫人梅拉尼娅，国务卿、国家安全顾问、白宫幕僚长悉数随行，还带来了29位美国企业大佬，包括高盛CEO、波音民机集团总裁、通用电气副董事长等。那次访华期间，两国企业共签署合作项目34个，金额达2535亿美元——至今仍是中美经贸史上单次峰值之一。 三天行程不长，但配上近20位CEO的豪华商团和波音订单的悬念，这次访华的商业含量被市场寄予厚望。 共潮生香港专场倒计时3天。 理解美国访华背后博弈的脉络。
+                    - generic [ref=e2327] [box=763,10782,417,26]:
+                      - generic [ref=e2328] [box=771,10783,32,15]: 2 天前
+                      - generic [ref=e2329] [box=1097,10782,74,18]:
+                        - button "添加收藏" [ref=e2330] [cursor=pointer] [box=1097,10782,26,18]:
+                          - img [ref=e2331] [box=1103,10784,14,14]
+                        - link "查看原文" [ref=e2333] [cursor=pointer] [box=1127,10783,44,15]:
+                          - /url: https://mp.weixin.qq.com/s/QjVzC_tNKnb4PyGv9TuCvg
+                  - generic [ref=e2334] [box=762,10817,419,476]:
+                    - generic [ref=e2338] [cursor=pointer] [box=787,10826,385,432]: 近期最重要的事情，是特朗普5月13日-15日之行。这是2025年10月釜山会晤后，双方再次面对面交流，也是特朗普时隔九年再次到来。定档过程经历了一波三折——原来定的4月，后因中东局势升级推迟，直到昨天才最终官宣落地。特朗普本人在“真实社交”发文，非常期待，并称中国是“一个令人惊叹的国家”。 值得关注的是有近20位顶级CEO随行，覆盖六大行业： - 科技与消费电子：特斯拉CEO马斯克、苹果CEO库克、Meta总裁； - 金融：贝莱德CEO Larry Fink、黑石CEO苏世民、高盛CEO、花旗CEO、万事达CEO 、Visa CEO ； - 航空制造：波音CEO 、GE航空CEO； - 半导体：美光CEO、高通CEO ； - 农业与生命科技：嘉吉CEO 、Illumina CEO 、Coherent CEO 。 最引人注目的缺席者是英伟达CEO黄仁勋——据路透社知情人士，他并非婉拒，而是未收到白宫邀请。 可以看出来此行重心在金融、支付、农业、商业航空等领域，芯片议题被刻意排除在外。特朗普大概率只谈波音、农产品，不谈芯片等核心分歧，为了中期稳住基本盘。上周美国国会参议员代表团已经到访，核心任务是推动波音采购订单（最近一次中国航司采购波音飞机是2017年）。 随行名单一出，资本市场已开始定价。最直接的就是马斯克陪同到访的消息，让昨日盘中本来阴跌的特斯拉直线拉升。 理解这次的分量，不妨回看上一次。2017年11月8日至10日，特朗普首次来访——除第一夫人梅拉尼娅，国务卿等悉数随行，还带来了29位美国企业大佬，包括高盛CEO、波音民机集团总裁、通用电气副董事长等。那次两国企业共签署合作项目34个，金额达2535亿美元——至今仍是双方经贸史上单次峰值之一。 三天行程不长，但配上近20位CEO的豪华商团和波音订单的悬念，这次来访被市场寄予厚望。 共潮生香港专场倒计时3天。 理解背后博弈的脉络。
+                    - generic [ref=e2339] [box=763,11266,417,26]:
+                      - generic [ref=e2340] [box=771,11267,32,15]: 2 天前
+                      - generic [ref=e2341] [box=1097,11266,74,18]:
+                        - button "添加收藏" [ref=e2342] [cursor=pointer] [box=1097,11266,26,18]:
+                          - img [ref=e2343] [box=1103,11268,14,14]
+                        - link "查看原文" [ref=e2345] [cursor=pointer] [box=1127,11267,44,15]:
+                          - /url: https://mp.weixin.qq.com/s/-f2XGemwplWgplX_mO0y3Q
+              - article [ref=e2346] [box=256,10608,469,380]:
+                - generic [ref=e2347] [box=269,10617,443,60]:
+                  - generic [ref=e2348] [box=285,10629,37,35]:
+                    - heading "逛逛" [level=3] [ref=e2349] [box=285,10629,37,18]
+                    - paragraph [ref=e2350] [box=285,10649,37,15]: wechat
+                  - generic [ref=e2351] [box=691,10617,24,20]: "50"
+                - generic [ref=e2352] [box=269,10677,443,34]:
+                  - generic [ref=e2353] [box=285,10685,78,18]:
+                    - generic [ref=e2354] [box=285,10685,24,18]: "50"
+                    - generic [ref=e2355] [box=313,10686,49,15]: 总更新 50
+                  - generic [ref=e2356] [box=652,10686,44,15]: 采集正常
+                - generic [ref=e2359] [box=277,10711,427,62]:
+                  - generic [ref=e2363] [cursor=pointer] [box=302,10720,393,18]: 盘点 10 个刚刚开源，但 Star 攀升很快的 GitHub 项目。
+                  - generic [ref=e2364] [box=278,10746,425,26]:
+                    - generic [ref=e2365] [box=286,10747,32,15]: 2 天前
+                    - generic [ref=e2366] [box=621,10746,74,18]:
+                      - button "添加收藏" [ref=e2367] [cursor=pointer] [box=621,10746,26,18]:
+                        - img [ref=e2368] [box=627,10748,14,14]
+                      - link "查看原文" [ref=e2370] [cursor=pointer] [box=651,10747,44,15]:
+                        - /url: https://mp.weixin.qq.com/s/GkeO0_BuNnI6T-yaVL67Ww
+              - article [ref=e2371] [box=741,10608,469,380]:
+                - generic [ref=e2372] [box=754,10617,443,60]:
+                  - generic [ref=e2373] [box=770,10629,72,35]:
+                    - heading "太阳照常升起" [level=3] [ref=e2374] [box=770,10629,72,18]
+                    - paragraph [ref=e2375] [box=770,10649,72,15]: wechat
+                  - generic [ref=e2376] [box=1176,10617,24,20]: "75"
+                - generic [ref=e2377] [box=754,10677,443,34]:
+                  - generic [ref=e2378] [box=770,10685,78,18]:
+                    - generic [ref=e2379] [box=770,10685,24,18]: "75"
+                    - generic [ref=e2380] [box=798,10686,49,15]: 总更新 75
+                  - generic [ref=e2381] [box=1136,10686,44,15]: 采集正常
+                - generic [ref=e2384] [box=762,10711,427,82]:
+                  - generic [ref=e2387] [cursor=pointer] [box=787,10720,393,38]:
+                    - generic [ref=e2388] [box=787,10720,393,18]: 512地震已经过去十八年了
+                    - paragraph [ref=e2389] [box=787,10738,393,20]: 转瞬即逝
+                  - generic [ref=e2390] [box=763,10766,425,26]:
+                    - generic [ref=e2391] [box=771,10767,32,15]: 2 天前
+                    - generic [ref=e2392] [box=1105,10766,74,18]:
+                      - button "添加收藏" [ref=e2393] [cursor=pointer] [box=1105,10766,26,18]:
+                        - img [ref=e2394] [box=1111,10768,14,14]
+                      - link "查看原文" [ref=e2396] [cursor=pointer] [box=1135,10767,44,15]:
+                        - /url: https://mp.weixin.qq.com/s/jsTPoAZ0g_MPqeZlvRIEbQ
+          - button "加载更多" [ref=e2398] [cursor=pointer] [box=676,11052,114,52]

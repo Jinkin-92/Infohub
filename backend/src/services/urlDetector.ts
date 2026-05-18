@@ -99,6 +99,11 @@ export class URLDetector {
       return await this.detectYouTube(url);
     }
 
+    // 小红书用户页面
+    if (host === 'xiaohongshu.com') {
+      return this.detectXiaohongshu(url);
+    }
+
     if (path.endsWith('.xml') || path.includes('feed') || path.includes('rss')) {
       return {
         platform: 'custom',
@@ -408,6 +413,38 @@ export class URLDetector {
     }
 
     throw new BadRequestError('Unsupported YouTube URL. Use /@handle or /channel/<id>.');
+  }
+
+  /**
+   * 检测小红书用户
+   * 支持用户主页 URL，如 https://www.xiaohongshu.com/user/profile/xxx
+   */
+  private detectXiaohongshu(url: URL): DetectionResult {
+    const path = url.pathname;
+
+    // 用户主页格式：/user/profile/xxxx
+    // 例如：https://www.xiaohongshu.com/user/profile/63b622ab00000000260066bd
+    if (path.startsWith('/user/profile/')) {
+      const userId = path.split('/user/profile/')[1]?.split('/')[0] || '';
+      if (!userId) {
+        throw new BadRequestError('Could not extract Xiaohongshu user id');
+      }
+
+      return {
+        platform: 'xiaohongshu',
+        platformId: userId,
+        rssUrl: this.rsshubAdapter.buildXiaohongshuUrl(userId),
+        displayName: `小红书 · ${userId.slice(0, 8)}...`,
+      };
+    }
+
+    // 其他小红书链接作为 custom 处理
+    return {
+      platform: 'custom',
+      platformId: '',
+      rssUrl: url.toString(),
+      displayName: 'Xiaohongshu',
+    };
   }
 
   private async resolveYouTubeChannelId(handle: string): Promise<string> {

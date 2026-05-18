@@ -21,8 +21,8 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
   const translateAll = useCallback(() => {
     setIsTranslatingAll(true)
     setTranslationTrigger(prev => prev + 1)
-    // Reset after a delay to allow items to react
-    setTimeout(() => setIsTranslatingAll(false), 1000)
+    // 增加延迟，确保 state 更新传播到所有组件
+    setTimeout(() => setIsTranslatingAll(false), 2000)
   }, [])
 
   return (

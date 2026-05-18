@@ -27,9 +27,10 @@ export function FeedItem({
   useEffect(() => {
     if (translationTrigger > 0 && !translatedSummary && !isTranslating && item.summary) {
       setIsTranslating(true)
+      // 中译英：zh-CN -> en
       Promise.all([
-        translateApi.translate(item.title, 'en', 'zh-CN'),
-        translateApi.translate(item.summary || '', 'en', 'zh-CN')
+        translateApi.translate(item.title, 'zh-CN', 'en'),
+        translateApi.translate(item.summary || '', 'zh-CN', 'en')
       ]).then(([titleResult, summaryResult]) => {
         if (titleResult.ok && titleResult.translatedText) {
           setTranslatedTitle(titleResult.translatedText)
@@ -38,6 +39,8 @@ export function FeedItem({
           setTranslatedSummary(summaryResult.translatedText)
         }
         setShowTranslation(true)
+      }).catch((err) => {
+        console.error('[FeedItem] Translation failed:', err)
       }).finally(() => {
         setIsTranslating(false)
       })
@@ -65,6 +68,8 @@ export function FeedItem({
     event.stopPropagation()
     if (showTranslation) {
       setShowTranslation(false)
+      setTranslatedTitle(null)
+      setTranslatedSummary(null)
       return
     }
     // 如果已有译文，直接显示
@@ -74,10 +79,10 @@ export function FeedItem({
     }
     setIsTranslating(true)
     try {
-      // 并行翻译标题和摘要
+      // 并行翻译标题和摘要：中译英
       const [titleResult, summaryResult] = await Promise.all([
-        translateApi.translate(item.title, 'en', 'zh-CN'),
-        translateApi.translate(item.summary || '', 'en', 'zh-CN')
+        translateApi.translate(item.title, 'zh-CN', 'en'),
+        translateApi.translate(item.summary || '', 'zh-CN', 'en')
       ])
       if (titleResult.ok && titleResult.translatedText) {
         setTranslatedTitle(titleResult.translatedText)
@@ -86,6 +91,8 @@ export function FeedItem({
         setTranslatedSummary(summaryResult.translatedText)
       }
       setShowTranslation(true)
+    } catch (err) {
+      console.error('[FeedItem] Translation error:', err)
     } finally {
       setIsTranslating(false)
     }

@@ -30,6 +30,24 @@
   --shadow-color-hover: rgba(0, 0, 0, 0.6);
 }
 
+/* 深色模式下卡片边框增强 */
+.dark .feed-card {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* 深色模式下X平台订阅源卡片边框增强 - 订阅源列表中X平台标识 */
+.dark [data-platform="x"],
+.dark .source-item:has([data-platform="x"]) {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* 深色模式下平台圆点颜色增强 - 用于X平台的黑色圆点 */
+.dark span[data-platform="x"],
+.dark .platform-dot[data-platform="x"] {
+  background-color: #FFFFFF !important;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.6);
+}
+
 * {
   box-sizing: border-box;
   padding: 0;

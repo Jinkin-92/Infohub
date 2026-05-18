@@ -277,7 +277,7 @@ export default function Home() {
   return (
     <div className="flex min-h-screen">
       {/* 左侧边栏 - 固定定位 */}
-      <aside className="sticky top-0 h-screen w-56 flex-shrink-0 overflow-y-auto border-r border-border-color bg-bg-primary">
+      <aside className="fixed left-0 top-0 h-screen w-56 flex-shrink-0 overflow-y-scroll border-r border-border-color bg-bg-primary scrollbar-hide">
         {/* Logo区域 */}
         <div className="flex items-center gap-2 border-b border-border-color px-4 py-3">
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent">
@@ -445,156 +445,136 @@ export default function Home() {
       </aside>
 
       {/* 主内容区 */}
-      <main className="flex-1 min-w-0">
-        {/* 顶部栏 - 固定定位 */}
-        <div className="sticky top-0 z-40 border-b border-border-color bg-bg-secondary shadow-sm">
-          <div className="w-full px-4 py-2 sm:px-6 lg:px-8">
-            <div className="flex h-12 items-center gap-3">
-              {/* 两级下拉导航 */}
-              <div className="relative flex flex-1 items-center gap-2 flex-wrap">
-                <button
-                  onClick={() => setActiveTab({ sourceType: 'custom', platform: 'all' })}
-                  className={cn(
-                    'flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium transition-all',
-                    activeTab.sourceType === 'custom'
-                      ? 'bg-accent text-white shadow-sm'
-                      : 'bg-bg-tertiary text-text-secondary hover:bg-bg-tertiary/80 hover:text-text-primary'
-                  )}
-                >
-                  定制订阅源
-                </button>
-                <button
-                  onClick={() => setActiveTab({ sourceType: 'public', category: 'all' })}
-                  className={cn(
-                    'flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium transition-all',
-                    activeTab.sourceType === 'public'
-                      ? 'bg-accent text-white shadow-sm'
-                      : 'bg-bg-tertiary text-text-secondary hover:bg-bg-tertiary/80 hover:text-text-primary'
-                  )}
-                >
-                  公开订阅源
-                </button>
-              </div>
+      <main className="ml-56 flex-1 min-w-0">
+        {/* 顶部栏 - 固定定位，整合所有元素 */}
+        <div className="fixed right-0 top-0 z-40 ml-56 w-[calc(100%-14rem)] border-b border-border-color bg-bg-secondary shadow-sm">
+          {/* 第一行：核心操作 */}
+          <div className="flex h-14 items-center gap-3 px-4">
+            {/* 订阅源类型切换 */}
+            <button
+              onClick={() => setActiveTab({ sourceType: 'custom', platform: 'all' })}
+              className={cn(
+                'flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium transition-all',
+                activeTab.sourceType === 'custom'
+                  ? 'bg-accent text-white shadow-sm'
+                  : 'bg-bg-tertiary text-text-secondary hover:bg-bg-tertiary/80 hover:text-text-primary'
+              )}
+            >
+              定制订阅源
+            </button>
+            <button
+              onClick={() => setActiveTab({ sourceType: 'public', category: 'all' })}
+              className={cn(
+                'flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium transition-all',
+                activeTab.sourceType === 'public'
+                  ? 'bg-accent text-white shadow-sm'
+                  : 'bg-bg-tertiary text-text-secondary hover:bg-bg-tertiary/80 hover:text-text-primary'
+              )}
+            >
+              公开订阅源
+            </button>
 
-              {/* 右侧设置按钮 */}
-              <button
-                onClick={() => setIsSettingsOpen(true)}
-                data-testid="open-settings-modal"
-                className="rounded-lg p-2 text-text-secondary transition-all hover:bg-bg-tertiary hover:text-text-primary active:bg-accent/10"
-                aria-label="设置"
-              >
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </button>
+            {/* 搜索框 */}
+            <div className="flex-1 max-w-xs">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="搜索标题、摘要..."
+                className="w-full rounded-lg border border-border-color bg-bg-primary px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:outline-none"
+              />
             </div>
-          </div>
-        </div>
-        <div className="w-full px-4 pb-2 pt-4 sm:px-6 lg:px-8">
-          {repairReport && repairReport.sources.totalFailed > 0 && (
-            <div className="mb-4 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-4 text-amber-900 shadow-sm">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm font-semibold">检测到 {repairReport.sources.totalFailed} 个订阅源需要处理</p>
-                  <p className="mt-1 text-sm text-amber-800">{formatDiagnosisDescription(repairReport)}</p>
-                </div>
-                <button
-                  onClick={() => setIsSettingsOpen(true)}
-                  disabled={repairingCollector}
-                  className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  去设置修复
-                </button>
-              </div>
-            </div>
-          )}
 
-          {collectorIssue && !repairReport && (
-            <div className="mb-4 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-4 text-amber-900 shadow-sm">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm font-semibold">{collectorIssue.title}</p>
-                  <p className="mt-1 text-sm text-amber-800">{collectorIssue.description}</p>
-                </div>
-                <button
-                  onClick={() => void handleRepairCollector()}
-                  disabled={repairingCollector}
-                  className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {repairingCollector ? '修复中...' : '一键修复'}
-                </button>
-              </div>
-            </div>
-          )}
+            {/* 标签筛选 */}
+            <select
+              value={selectedTagId ?? ''}
+              onChange={(e) => setSelectedTagId(e.target.value ? Number(e.target.value) : null)}
+              className="rounded-lg border border-border-color bg-bg-primary px-2 py-2 text-sm text-text-secondary"
+            >
+              <option value="">全部收藏</option>
+              {availableTags.map((tag) => (
+                <option key={tag.id} value={tag.id}>{tag.name}</option>
+              ))}
+            </select>
 
-          {loadingFreshContent && !collectorIssue && !repairReport && (
-            <div className="mb-4 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900 shadow-sm">
-              正在刷新订阅源并检查最新内容...
-            </div>
-          )}
-
-          {refreshMessage && !loadingFreshContent && !collectorIssue && !repairReport && (
-            <div className="mb-4 rounded-2xl border border-border-color bg-bg-secondary px-4 py-3 text-sm text-text-secondary shadow-sm">
-              {refreshMessage}
-            </div>
-          )}
-
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <SearchBar
-              value={searchQuery}
-              onSearch={handleSearch}
-              placeholder="搜索标题、摘要、作者..."
-              className="flex-1"
-            />
-            <FavoriteFilter
-              tags={availableTags}
-              selectedTagId={selectedTagId}
-              onSelectTag={handleTagSelect}
-            />
+            {/* 翻译按钮 */}
             <button
               onClick={() => translateAll()}
               disabled={isTranslatingAll}
-              className="flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-accent-hover disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-lg bg-accent px-3 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-accent-hover disabled:opacity-50"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
               </svg>
-              {isTranslatingAll ? '翻译中...' : '翻译全部'}
+              {isTranslatingAll ? '翻译中' : '翻译'}
+            </button>
+
+            {/* 添加按钮 */}
+            <button
+              onClick={() => setIsAddModalOpen(true)}
+              className="flex items-center gap-1.5 rounded-lg bg-accent px-3 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-accent-hover"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              添加
+            </button>
+
+            {/* 设置按钮 */}
+            <button
+              onClick={() => setIsSettingsOpen(true)}
+              className="rounded-lg p-2 text-text-secondary transition-all hover:bg-bg-tertiary hover:text-text-primary"
+              aria-label="设置"
+            >
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </button>
+          </div>
+
+          {/* 第二行：状态和统计 */}
+          <div className="flex h-9 items-center gap-3 border-t border-border-color px-4 text-sm text-text-secondary">
+            {/* 状态消息 */}
+            {refreshMessage && (
+              <span className="truncate">{refreshMessage}</span>
+            )}
+            {loadingFreshContent && (
+              <span>刷新中...</span>
+            )}
+            {collectorIssue && (
+              <span className="text-amber-600">{collectorIssue.title}</span>
+            )}
+            {repairReport && repairReport.sources.totalFailed > 0 && (
+              <span className="text-amber-600">检测到 {repairReport.sources.totalFailed} 个订阅源需要处理</span>
+            )}
+
+            {/* 分隔 */}
+            {(refreshMessage || loadingFreshContent || collectorIssue || (repairReport && repairReport.sources.totalFailed > 0)) && (
+              <span className="text-text-muted">|</span>
+            )}
+
+            {/* 内容统计 */}
+            <span>内容统计区域</span>
+
+            {/* 分隔 */}
+            <span className="text-text-muted">|</span>
+
+            {/* 标记已读按钮 */}
+            <button
+              onClick={() => {/* 标记已读逻辑 */}}
+              className="text-accent hover:text-accent-hover"
+            >
+              全部标记已读
             </button>
           </div>
         </div>
 
-        <div className="w-full px-4 py-4 sm:px-6 lg:px-8">
-          {activeTab.sourceType === 'custom' && (
-            <div className="flex items-center justify-end mb-4">
-              <button
-                onClick={() => setIsAddModalOpen(true)}
-                data-testid="open-add-source-modal"
-                className="flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-accent-hover"
-              >
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                添加定制订阅源
-              </button>
-            </div>
-          )}
+        {/* 占位，避免内容被顶部栏遮挡 */}
+        <div className="h-20"></div>
 
-          {activeTab.sourceType === 'public' && (
-            <div className="mb-4 flex items-center justify-end">
-              <button
-                onClick={() => setIsPublicSourcesOpen(true)}
-                data-testid="open-public-sources-panel"
-                className="flex-shrink-0 flex items-center gap-1.5 rounded-lg bg-accent px-3 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-accent-hover"
-              >
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                添加公开RSS
-              </button>
-            </div>
-          )}
+        {/* 内容区域 */}
+        <div className="px-4">
 
           <FeedList
             key={`${activeTab.sourceType}-${activeTab.sourceType === 'public' ? activeTab.category : activeTab.platform}-${tabVersion}`}

@@ -54,7 +54,7 @@ export function getSourceTone(source: { is_public?: boolean; category?: string; 
   return {
     header: `linear-gradient(135deg, ${baseColor}${Math.round(alpha * 255).toString(16).padStart(2, '0')}, ${baseColor}22)`,
     body: `${baseColor}08`,
-    border: `${baseColor}33`,
+    border: `${baseColor}66`,
   }
 }
 

@@ -64,6 +64,14 @@ export class RSSHubAdapter {
   }
 
   /**
+   * 构建小红书用户 RSS URL
+   * @param userId 小红书用户 ID
+   */
+  buildXiaohongshuUrl(userId: string): string {
+    return `${this.baseUrl}/xiaohongshu/user/profile/${userId}`;
+  }
+
+  /**
    * 检查RSSHub健康状态
    */
   async healthCheck(): Promise<{ healthy: boolean; latency: number }> {

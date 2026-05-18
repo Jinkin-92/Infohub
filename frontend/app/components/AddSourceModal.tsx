@@ -95,6 +95,12 @@ export function AddSourceModal({ isOpen, onClose, onSuccess }: AddSourceModalPro
       return
     }
 
+    // 小红书
+    if (input.includes('xiaohongshu.com')) {
+      setDetectedPlatform('xiaohongshu')
+      return
+    }
+
     // 通用 RSS
     if (input.endsWith('.xml') || input.includes('rss') || input.includes('feed')) {
       setDetectedPlatform('custom')
@@ -231,7 +237,7 @@ export function AddSourceModal({ isOpen, onClose, onSuccess }: AddSourceModalPro
                 添加订阅源
               </h2>
               <p className="text-sm text-text-secondary">
-                支持知乎、X、微信、微博、B站、YouTube、RSS
+                支持知乎、X、微信、微博、B站、YouTube、小红书、RSS
               </p>
             </div>
           </div>

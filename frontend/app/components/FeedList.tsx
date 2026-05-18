@@ -6,6 +6,8 @@ import { feedApi, favoritesApi, sourcesApi } from '../lib/api'
 import { Item, Source, FavoriteTag } from '../types'
 import { cn, formatDate, getSourceColor, getSourceTone } from '../lib/utils'
 import { useDisplaySettings } from './DisplaySettingsContext'
+import { useTranslation } from './TranslationContext'
+import { translateApi } from '../lib/api'
 
 interface FeedListProps {
   platform?: string
@@ -154,8 +156,13 @@ export function FeedList({
   const [isExpanding, setIsExpanding] = useState(true)
   // 展开的条目ID集合
   const [expandedItemIds, setExpandedItemIds] = useState<Set<number>>(new Set())
+  // 翻译相关状态
+  const [translatedItemIds, setTranslatedItemIds] = useState<Set<number>>(new Set())
+  const [translatingItemIds, setTranslatingItemIds] = useState<Set<number>>(new Set())
+  const [translatedContent, setTranslatedContent] = useState<Map<number, { title: string; summary: string }>>(new Map())
 
   const { settings: displaySettings } = useDisplaySettings()
+  const { translationTrigger } = useTranslation()
 
   const { data: tagsData } = useSWR('favorites', () => favoritesApi.getTags(), {
     revalidateOnFocus: false,
@@ -290,6 +297,49 @@ export function FeedList({
     setHasMore(true)
     void mutate()
   }, [refreshTrigger, mutate])
+
+  // 监听 translationTrigger，自动翻译所有项目
+  useEffect(() => {
+    if (!translationTrigger || translationTrigger <= 0) {
+      return
+    }
+
+    // 翻译所有items
+    const itemsToTranslate = items.slice(0, 20) // 限制最多20条
+    const newTranslatedContent = new Map(translatedContent)
+    const newTranslatedIds = new Set(translatedItemIds)
+    const newTranslatingIds = new Set(translatingItemIds)
+
+    itemsToTranslate.forEach((item) => {
+      if (newTranslatedIds.has(item.id) || newTranslatingIds.has(item.id)) {
+        return
+      }
+      newTranslatingIds.add(item.id)
+
+      Promise.all([
+        translateApi.translate(item.title, 'en', 'zh-CN'),
+        translateApi.translate(item.summary || '', 'en', 'zh-CN')
+      ]).then(([titleResult, summaryResult]) => {
+        if (titleResult.ok && titleResult.translatedText) {
+          newTranslatedContent.set(item.id, {
+            title: titleResult.translatedText,
+            summary: summaryResult.ok && summaryResult.translatedText ? summaryResult.translatedText : ''
+          })
+          newTranslatedIds.add(item.id)
+        }
+      }).finally(() => {
+        setTranslatingItemIds(prev => {
+          const next = new Set(prev)
+          next.delete(item.id)
+          return next
+        })
+        setTranslatedContent(new Map(newTranslatedContent))
+        setTranslatedItemIds(new Set(newTranslatedIds))
+      })
+    })
+
+    setTranslatingItemIds(newTranslatingIds)
+  }, [translationTrigger, items, translatedItemIds, translatingItemIds, translatedContent])
 
   const loadMore = useCallback(() => {
     if (!hasMore || isLoadingMore) {
@@ -552,9 +602,14 @@ export function FeedList({
 
               // Display settings applied as classes
               const densityClass = {
-                compact: 'py-1.5 px-2',
-                normal: 'py-2 px-3',
-                spacious: 'py-3 px-4',
+                compact: 'py-1 px-2',
+                normal: 'py-3 px-4',
+                spacious: 'py-5 px-6',
+              }[displaySettings.card_density]
+              const cardHeightClass = {
+                compact: 'h-[420px]',
+                normal: 'h-[380px]',
+                spacious: 'h-[320px]',
               }[displaySettings.card_density]
               const spacingClass = {
                 tight: 'leading-tight',
@@ -570,15 +625,14 @@ export function FeedList({
               return (
                 <article
                   key={`${section.key}-${group.source.id}`}
-                  className={`relative overflow-hidden rounded-2xl border shadow-card transition-all duration-150 hover:shadow-card-hover hover:-translate-y-0.5 ${densityClass}`}
+                  className={`relative overflow-hidden rounded-2xl border shadow-card transition-all duration-150 hover:shadow-card-hover hover:-translate-y-0.5 ${densityClass} ${cardHeightClass}`}
                   style={{
-                    height: `${CARD_HEIGHT}px`,
                     borderColor: tone.border,
                     backgroundColor: tone.body,
                   }}
                 >
                   <header
-                    className={`flex items-start justify-between gap-3 border-b border-white/50 ${displaySettings.card_density === 'compact' ? 'px-3 py-2' : displaySettings.card_density === 'spacious' ? 'px-5 py-4' : 'px-4 py-3'}`}
+                    className={`flex items-start justify-between gap-3 border-b border-white/50`}
                     style={{ background: tone.header }}
                   >
                     <div>
@@ -640,13 +694,25 @@ export function FeedList({
                             {isExpanded && (
                               <div className="px-2 pb-2 border-t border-border-color bg-[#F8FBFF]">
                                 <div className="pt-2">
-                                  {item.summary ? (
-                                    <p className="text-sm leading-5 text-[#555555] mb-2">
-                                      {item.summary.length > 400 ? item.summary.slice(0, 400) + '...' : item.summary}
-                                    </p>
-                                  ) : (
-                                    <p className="text-sm text-text-muted mb-2">暂无摘要，请查看原文</p>
-                                  )}
+                                  {(() => {
+                                    const translated = translatedContent.get(item.id)
+                                    const displayTitle = translated?.title || item.title
+                                    const displaySummary = translated?.summary || item.summary
+                                    return (
+                                      <>
+                                        {translated && (
+                                          <p className="text-xs text-accent mb-1">翻译: {displayTitle}</p>
+                                        )}
+                                        {displaySummary ? (
+                                          <p className="text-sm leading-5 text-[#555555] mb-2">
+                                            {displaySummary.length > 400 ? displaySummary.slice(0, 400) + '...' : displaySummary}
+                                          </p>
+                                        ) : (
+                                          <p className="text-sm text-text-muted mb-2">暂无摘要，请查看原文</p>
+                                        )}
+                                      </>
+                                    )
+                                  })()}
                                   <div className="flex items-center justify-between">
                                     <span className="text-xs text-[#AAAAAA]">
                                       {new Date(item.published_at).toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
