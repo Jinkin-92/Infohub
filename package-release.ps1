@@ -9,7 +9,7 @@ $timestamp = Get-Date -Format 'yyyyMMdd-HHmm'
 $packageName = "infohub-windows-test-$timestamp"
 $stageDir = Join-Path $stageRoot $packageName
 $zipPath = Join-Path $releaseRoot "$packageName.zip"
-$sizeLimitMb = 50
+$sizeLimitMb = 150
 $portableRuntimeStage = Join-Path $stageDir (Join-Path '.runtime' $script:InfoHubNodeFolderName)
 
 function Copy-Tree {
