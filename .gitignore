@@ -58,3 +58,8 @@ backend/=
 .DS_Store
 Thumbs.db
 .gstack/
+
+# local temp artifacts
+.playwright-mcp/
+temp-check.ps1
+tmp_*.html
